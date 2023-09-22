@@ -7,6 +7,18 @@ export default function ProductCatalogue({ onProductCardHandler, onKeranjangHand
       <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
       <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
       <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
+      <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
+      <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
+      <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
+      <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
+      <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
+      <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
+      <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
+      <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
+      <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
+      <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
+      <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
+      <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
     </section>
   )
 }

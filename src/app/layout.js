@@ -1,7 +1,6 @@
 import './globals.css'
 import localFont from 'next/font/local'
 
-// Font files can be colocated inside of `app`
 const OpenSauceOne = localFont({
   src: [
     {
@@ -35,7 +34,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={OpenSauceOne.className}>
+      <body className={`${OpenSauceOne.className}`}>
         {children}
       </body>
     </html>

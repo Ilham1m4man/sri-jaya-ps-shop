@@ -11,7 +11,7 @@ export default function Navbar({
 
   return (
     <nav className="w-full bg-mainBg_clr">
-      <div className="justify-between py-0 px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
+      <div className="justify-between py-0 px-10 mx-auto lg:max-w-7xl md:items-center md:flex md:px-[3.7rem]">
         <div>
           <div className="flex items-center justify-between py-3 md:py-5">
             <div className="bg-grn-300 rounded-[8px] py-[5px] px-[20px] md:rounded-[10px] md:py-[10px] md:px-[25px]">
