@@ -9,10 +9,13 @@ import ProductCatalogue from '@/components/ProductCatalogue'
 import FilterBtn from '@/components/FilterBtn'
 import SearchBar from '@/components/SearchBar'
 import { useState } from 'react'
+import Footer from '@/components/Footer'
+import Filters from '@/components/Filters'
 
 export default function Home() {
   const [modalCartOpen, setModaCartOpen] = useState(false);
   const [modalProfileOpen, setModaProfileOpen] = useState(false);
+  const [filter, setFilter] = useState(false);
   const [keyword, setKeyword] = useState("");
 
   const onCartOpen = () => {
@@ -39,23 +42,25 @@ export default function Home() {
 
   return (
     <>
-      {modalCartOpen ? <ModalCart modal_cart={onCartOpen} /> : <></>}
-      {modalProfileOpen ? <ModalProfile modal_profile={onProfileOpen} /> : <></>}
+      {modalCartOpen ? <ModalCart modal_cart={onCartOpen} /> : null}
+      {modalProfileOpen ? <ModalProfile modal_profile={onProfileOpen} /> : null}
       <header className="z-50 sticky top-0">
         <Navbar modal_cart={onCartOpen} statusCart={modalCartOpen} modal_profile={onProfileOpen} statusProfile={modalProfileOpen} />
         <section className="max-w-screen flex gap-[55px] justify-between px-20 pb-[50px] bg-mainBg_clr">
-          <FilterBtn filterClicked={onFilterClickHandler} />
+          <FilterBtn filterClicked={() => setFilter(!filter)} />
           <SearchBar keyword={keyword} keywordChange={onKeywordChangeHandler} />
         </section>
       </header>
-      <main className="relative flex bg-mainBg_clr min-h-screen flex-col items-center justify-between">
-      
-        <div className="mb-28 w-full px-20">
+      <main className="relative flex bg-mainBg_clr min-h-screen gap-[55px] justify-between px-20">
+        {filter ? <Filters /> : null}
+        <div className={`mb-[40px] ${filter ? "w-[73.85%]" : "w-full"}`}>
           {/* MAIN CONTENT */}
           {/* PRODUCT CATALOGUE */}
-          <ProductCatalogue onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler} />
+
+          <ProductCatalogue onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler} filterStat={filter} />
         </div>
       </main>
+      <Footer />
     </>
   )
 }

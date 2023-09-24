@@ -1,6 +1,6 @@
 export default function FilterBtn({ filterClicked }) {
   return (
-    <button id="filter-btn" className="flex items-center gap-4 min-w-[21.5%] max-w-[250px] h-[55px] px-5 rounded-[15px] bg-white text-footer_fontClr text-xl font-normal" onClick={filterClicked}>
+    <button id="filter-btn" className="flex items-center gap-4 min-w-[21.5%] max-w-[250px] h-[55px] px-5 rounded-[15px] bg-white text-footer_fontClr text-opacity-60 text-xl font-normal" onClick={filterClicked}>
       <svg
         width="23"
         height="21"

@@ -3,8 +3,8 @@ import React from "react";
 
 export default function ModalProfile({ modal_profile }) {
   return (
-    <section className="modal-profile absolute bg-bg-blur-clr bg-opacity-40 w-full flex justify-end">
-      <div className="rounded-[20px] py-5 px-12 bg-white opacity-100 flex flex-col gap-[68px] items-center justify-center w-[80%]">
+    <section className="modal absolute top-0 bg-bg-blur-clr backdrop-blur bg-opacity-40 w-full flex justify-end">
+      <div className="rounded-[20px] mb-auto py-8 px-12 bg-white opacity-100 flex flex-col gap-[68px] items-center justify-center w-[70%]">
         <div className="flex justify-between w-full">
           <button onClick={modal_profile} className="px-[2px]">
             <svg
@@ -78,27 +78,27 @@ export default function ModalProfile({ modal_profile }) {
             />
           </svg>
         </div>
-        <form className="grid grid-cols-2 grid-rows-3 gap-[70px]">
-          <div className="grid">
+        <form className="grid grid-cols-2 grid-rows-3 gap-x-[70px] gap-y-16 w-full">
+          <div className="grid h-[86px]">
             <label htmlFor="name" className="text-footer_fontClr font-normal text-2xl text-opacity-80">Nama</label>
-            <input type="text" name="name" className="text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none" />
+            <input type="text" name="name" className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none" />
           </div>
-          <div className="grid">
+          <div className="grid h-[86px]">
             <label htmlFor="email" className="text-footer_fontClr font-normal text-2xl text-opacity-80">Email</label>
-            <input type="email" name="email" className="text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none" />
+            <input type="email" name="email" className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none" />
           </div>
-          <div className="grid">
+          <div className="grid h-[86px]">
             <label htmlFor="phone" className="text-footer_fontClr font-normal text-2xl text-opacity-80">No. Telepon</label>
-            <input type="tel" name="phone" className="text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none" />
+            <input type="tel" name="phone" className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none" />
           </div>
-          <div className="grid relative">
+          <div className="grid h-[86px] relative">
             <label htmlFor="password" className="text-footer_fontClr font-normal text-2xl text-opacity-80">Password</label>
-            <input type="password" name="password" className="text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none" />
+            <input type="password" name="password" className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none" />
             <button className="absolute text-danger_clr font-normal text-2xl bottom-[5px] right-0 py-[5px] bg-white">Ubah</button>
           </div>
-          <div className="grid col-span-2">
+          <div className="grid col-span-2 pb-12">
             <label htmlFor="address" className="text-footer_fontClr font-normal text-2xl text-opacity-80">Alamat</label>
-            <input type="text" name="address" className="text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none" />
+            <input type="text" name="address" className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none" />
           </div>
         </form>
       </div>

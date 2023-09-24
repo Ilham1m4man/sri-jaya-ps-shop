@@ -36,6 +36,18 @@ body {
   box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.10), 0px 3px 6px 0px rgba(0, 0, 0, 0.10), 0px 11px 11px 0px rgba(0, 0, 0, 0.09), 0px 26px 15px 0px rgba(0, 0, 0, 0.05), 0px 45px 18px 0px rgba(0, 0, 0, 0.01), 0px 71px 20px 0px rgba(0, 0, 0, 0.00);
 }
 
-.modal-profile {
+.filters {
+  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.10), 0px 11px 24px 0px rgba(0, 0, 0, 0.10), 0px 43px 43px 0px rgba(0, 0, 0, 0.09), 0px 97px 58px 0px rgba(0, 0, 0, 0.05), 0px 173px 69px 0px rgba(0, 0, 0, 0.01), 0px 271px 76px 0px rgba(0, 0, 0, 0.00);
+}
+
+.modal {
   z-index: 100;
+}
+
+.load-more {
+  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.10), 0px 4px 9px 0px rgba(0, 0, 0, 0.10), 0px 16px 16px 0px rgba(0, 0, 0, 0.09), 0px 36px 21px 0px rgba(0, 0, 0, 0.05), 0px 63px 25px 0px rgba(0, 0, 0, 0.01), 0px 99px 28px 0px rgba(0, 0, 0, 0.00);
+}
+
+footer {
+  box-shadow: 10px -10px 25px 0px rgba(230, 230, 230, 0.90), -10px 10px 20px 0px rgba(255, 255, 255, 0.90), 10px 10px 20px 0px rgba(230, 230, 230, 0.20), -10px -10px 20px 0px rgba(230, 230, 230, 0.20);
 }
