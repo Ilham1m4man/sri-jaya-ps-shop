@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
 
-export default function ModalProfile({ modal_profile }) {
+export default function ModalProfile({ modal_profile, onLogOut }) {
   return (
     <section className="modal absolute top-0 bg-bg-blur-clr backdrop-blur bg-opacity-40 w-full flex justify-end">
       <div className="rounded-[20px] mb-auto py-8 px-12 bg-white opacity-100 flex flex-col gap-[68px] items-center justify-center w-[70%]">

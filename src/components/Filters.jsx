@@ -1,4 +1,9 @@
-export default function Filters() {
+export default function Filters({
+  minInputValue,
+  onMinInput,
+  maxInputValue,
+  onMaxInput,
+}) {
   return (
     <section className="filters flex flex-col gap-[30px] max-w-[250px] h-fit bg-white rounded-[20px] py-[30px] px-[27px]">
       <div className="flex flex-col gap-[30px]">
@@ -256,12 +261,46 @@ export default function Filters() {
       <div className="flex flex-col">
         <h3 className="font-bold text-xl text-grn-950">Harga</h3>
         <div className="mt-[30px] flex w-full rounded-[10px] border-2 border-grn-950 py-[13px] px-[15px] items-center gap-[15px]">
-          <label className="text-grn-950 text-xl font-bold border-r-2 border-grn-950 pr-[15px]" htmlFor="min">Rp</label>
-          <input className="text-grn-950 placeholder-footer_fontClr placeholder-opacity-70 text-xl w-full" placeholder="Minimum" type="number" name="min" id="min" />
+          <label
+            className="text-grn-950 text-xl font-bold border-r-2 border-grn-950 pr-[15px]"
+            htmlFor="min"
+          >
+            Rp
+          </label>
+          <input
+            className="harga text-grn-950 placeholder-footer_fontClr placeholder-opacity-70 text-xl w-full outline-none"
+            placeholder="Minimum"
+            type="text"
+            name="min"
+            id="min"
+            value={minInputValue}
+            onInput={(e) => {
+              const value = e.target.value;
+              const numericValue = value.replace(/[^0-9]/g, "");
+              onMinInput(numericValue);
+            }}
+          />
         </div>
         <div className="mt-[20px] flex w-full rounded-[10px] border-2 border-grn-950 py-[13px] px-[15px] items-center gap-[15px]">
-          <label className="text-grn-950 text-xl font-bold border-r-2 border-grn-950 pr-[15px]" htmlFor="max">Rp</label>
-          <input className="text-grn-950 placeholder-footer_fontClr placeholder-opacity-70 text-xl w-full" placeholder="Maksimum" type="number" name="max" id="max" />
+          <label
+            className="text-grn-950 text-xl font-bold border-r-2 border-grn-950 pr-[15px]"
+            htmlFor="max"
+          >
+            Rp
+          </label>
+          <input
+            className="harga text-grn-950 placeholder-footer_fontClr placeholder-opacity-70 text-xl w-full outline-none"
+            placeholder="Maksimum"
+            type="text"
+            name="max"
+            id="max"
+            value={maxInputValue}
+            onInput={(e) => {
+              const value = e.target.value;
+              const numericValue = value.replace(/[^0-9]/g, "");
+              onMaxInput(numericValue);
+            }}
+          />
         </div>
       </div>
     </section>
