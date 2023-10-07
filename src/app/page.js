@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar'
 import ModalCart from '@/components/ModalCart'
 import ModalProfile from '@/components/ModalProfile'
 import ModalLogin from '@/components/ModalLogin'
+import ModalProduct from '@/components/ModalProduct'
 import ProductCatalogue from '@/components/ProductCatalogue'
 import FilterBtn from '@/components/FilterBtn'
 import SearchBar from '@/components/SearchBar'
@@ -20,6 +21,7 @@ export default function Home() {
   const [modalProfileOpen, setModaProfileOpen] = useState(false);
   const [modalLoginOpen, setModalLoginOpen] = useState(false);
   const [modalRegisterOpen, setModalRegisterOpen] = useState(false);
+  const [modalProductOpen, setModalProductOpen] = useState(false);
   const [userRole, setUserRole] = useState("konsumer");
   const [filter, setFilter] = useState(false);
   const [minInput, setMinInput] = useState();
@@ -61,7 +63,7 @@ export default function Home() {
   }
   
   const onProductCardHandler = () => {
-    return console.log('product card handler')
+    return setModalProductOpen(!modalProductOpen)
   }
 
   const onKeranjangHandler = () => {
@@ -82,6 +84,7 @@ export default function Home() {
       {modalProfileOpen ? <ModalProfile modal_profile={onProfileOpen} onLogOut={onLogOutHandler} /> : null}
       {modalLoginOpen ? <ModalLogin modal_login={onLoginOpen} onRegister={onRegisterHandler} /> : null}
       {modalRegisterOpen ? <ModalRegister modal_register={onRegisterOpen} onLogin={onLoginHandler} changeRole={onChangeRoleHandler} currentRole={userRole} /> : null}
+      {modalProductOpen ? <ModalProduct modal_product={onProductCardHandler} currentRole={userRole} /> : null}
       <header className="z-50 sticky top-0">
         <Navbar modal_cart={onCartOpen} statusCart={modalCartOpen} modal_profile={onProfileOpen} modal_login={onLoginOpen} modal_register={onRegisterOpen} statusProfile={modalProfileOpen} statusLoggedIn={loggedIn} />
         <section className="max-w-screen flex gap-[55px] justify-between px-20 pb-[50px] bg-mainBg_clr">

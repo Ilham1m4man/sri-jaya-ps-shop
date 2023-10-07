@@ -8,7 +8,7 @@ export default function CardProduct({ onProductCardHandler, onKeranjangHandler }
         onClick={onProductCardHandler}
         className="w-full h-full bg-white rounded-[15px]"
       >
-        <div className="flex justify-center  border-blue-500">
+        <div className="flex justify-center border-blue-500">
           <img
             className="max-h-[165px] w-8/12 object-cover object-bottom"
             src="../../images/A594K-removebg-preview.jpg"
