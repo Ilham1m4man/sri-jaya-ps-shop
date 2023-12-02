@@ -5,7 +5,7 @@ export default function Filters({
   onMaxInput,
 }) {
   return (
-    <section className="filters flex flex-col gap-[30px] max-w-[250px] h-fit bg-white rounded-[20px] py-[30px] px-[27px]">
+    <section className="filters flex flex-col gap-[30px] max-w-[250px] h-fit bg-white rounded-[15px] py-[30px] px-[27px]">
       <div className="flex flex-col gap-[30px]">
         <h3 className="font-bold text-xl text-grn-950">kategori</h3>
         <ul className="grid gap-[20px] font-normal text-xl text-grn-950">

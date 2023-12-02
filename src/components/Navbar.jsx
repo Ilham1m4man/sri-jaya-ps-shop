@@ -138,7 +138,7 @@ export default function Navbar({
           </div>
         </div>
         {/* LOGO DESKTOP */}
-        <div className="hidden ml-0 md:block md:ml-[10%]">
+        <div className={`hidden ml-0 md:block  ${statusLoggedIn ? "" : "md:ml-[10%]"}`}>
           <Link href="/">
             <svg
               width="207"
