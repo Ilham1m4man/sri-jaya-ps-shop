@@ -2,8 +2,9 @@
 
 import { getApps } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
-import firebase from "firebase/auth";
-var admin = require("firebase-admin");
+import sendEmailVerif from "./sendEmailVerif";
+const admin = require("firebase-admin");
+const fireUser = require("firebase/auth");
 
 const firebaseConfig = {
   apiKey: "AIzaSyASH-InjMS8MggycH1knfADrCZSSnzD6Vo",
@@ -15,24 +16,54 @@ const firebaseConfig = {
   measurementId: "G-M0N07F1YHY"
 };
 
-const serviceAccount = require('G:\\Per-kuli-ahan\\SKRIPSI\\Final Project\\sri-jaya-ps-shop\\src\\app\\firebase\\service-account.json'); 
+const serviceAccount = require('G:\\Per-kuli-ahan\\SKRIPSI\\Final Project\\sri-jaya-ps-shop\\src\\app\\firebase\\service-account.json');
 
 /* // Hapus FirebaseApp default
 admin.app().delete();
  */
-const alreadyCreatedAps = getApps();
+const alreadyCreatedApps = getApps();
 /* const app = admin.initializeApp({ credential: admin.credential.cert(serviceAccount) }) */
-const App =
-  !admin.app.length
+const App = () => {
+  try {
+    return admin.initializeApp({ credential: admin.credential.cert(serviceAccount) })
+  } catch {
+    return alreadyCreatedApps[0]
+  }
+}
+/* const App =
+  admin.app.length === 0
     ? admin.initializeApp({ credential: admin.credential.cert(serviceAccount) })
-    : alreadyCreatedAps[0];
-
-    const userRecord = getAuth(App).getUserByEmail("ilham141623@gmail.com") 
+    :  alreadyCreatedAps[0]; */
+/* const userRecord = getAuth(App()).getUserByEmail("ilham141623@gmail.com")
 userRecord.then((item) => {
   console.log(item.toJSON())
-})
+}) */
+const actionCodeSettings = {
+  // URL you want to redirect back to. The domain (www.example.com) for
+  // this URL must be whitelisted in the Firebase Console.
+  url: 'http://localhost:3000/',
+  // This must be true for email link sign-in.
+  handleCodeInApp: true,
+  /* iOS: {
+    bundleId: 'com.example.ios',
+  },
+  android: {
+    packageName: 'com.example.android',
+    installApp: true,
+    minimumVersion: '12',
+  },
+  // FDL custom domain.
+  dynamicLinkDomain: 'coolapp.page.link', */
+};
 
-/* const auth = getAuth(App); */
+
+const user = admin.auth(App()).getUser("IKSenEFUJZgP0HhCaKqD5D2j22J3")
+
+/* user.then((item) => {
+  console.log(item);
+}) */
+
+const auth = getAuth(App);
 
 /* const credential = App.auth.GoogleAuthProvider.credential(serviceAccount); */
 
@@ -45,51 +76,33 @@ const registrasi = async ({ name, businessName, phone, email, password, role }) 
     try {
       // Buat pengguna Konsumer baru
       /* const user = await createUserWithEmailAndPassword(auth, email, password); */
-      const user = await auth.createUser({ displayName:name ,email: email, password: password });
+      const user = await auth.createUser({ displayName: name, email: email, password: password });
 
       // Menambah data sesuai jenis akun
       /* await setCustomClaims(user.user.uid, { displayName: name, role }); */
       /* await updateProfile(auth.currentUser, { displayName: name, role }); */
       const uid = user.uid
       await auth.setCustomUserClaims(uid, { role: role });
-
-      // Kirim email verifikasi
-      const userEmail = user.email
-      
-      await firebase.sendEmailVerification(userEmail)
-      /* await sendEmailVerification(); */
-
-      window.alert(
-        "Email verifikasi telah dikirim ke email anda, lihat inbox atau folder spam anda!"
-      );
       return user;
     } catch (error) {
-      /* window.alert(error.message); */
-      console.log(error.message)
+      window.alert(error.message);
       return error.message;
     }
   } else {
     try {
       // Buat pengguna Peretail baru
-      const user = await app.auth().createUserWithEmailAndPassword(email, password);
+      const user = await auth.createUser({ displayName: name, email: email, phoneNumber: phone, password: password });
 
       // Menambah data sesuai jenis akun
-      await user.user.updateProfile({ displayName: name, businessName: businessName, phoneNumber: phone, role });
+      const uid = user.uid
+      await auth.setCustomUserClaims(uid, { businessName: businessName, role: role });
 
-      // Kirim email verifikasi
-      await user.sendEmailVerification();
-
-      window.alert(
-        "Email verifikasi telah dikirim ke email anda, lihat inbox atau folder spam anda!"
-      );
       return user;
     } catch (error) {
-      console.log(error.message);
-      /* window.alert(error.message); */
+      window.alert(error.message);
       return error.message;
     }
   }
 };
 
-// Contoh penggunaan fungsi registrasi
 export default registrasi;

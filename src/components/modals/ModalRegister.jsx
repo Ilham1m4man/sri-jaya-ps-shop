@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
-import { app, auth } from "@/app/firebase/firebase.config";
 import BackBtn from "../buttons/BackBtn";
 import RegistKonsumer from "../forms/RegistKonsumer";
 import registrasi from "@/app/services/registrasi";
@@ -16,12 +15,10 @@ export default function ModalRegister({
   const [role, setRole] = useState("konsumer");
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
-  const [error, setError] = useState();
   const router = useRouter();
 
   const register = async (e) => {
     e.preventDefault();
-    setError("");
 
     let dataInput;
 
@@ -33,7 +30,7 @@ export default function ModalRegister({
         confirmPassword: confirmPassword,
         role: role,
       };
-    } else {
+    } else if(role === "peretail") {
       dataInput = {
         name: e.target[0].value,
         businessName: e.target[1].value,
@@ -43,6 +40,8 @@ export default function ModalRegister({
         confirmPassword: confirmPassword,
         role: role,
       };
+    } else {
+      return window.alert("Terjadi kesalahan dalam registrasi akun, mohon coba lagi!")
     }
 
     if (dataInput.password === dataInput.confirmPassword) {

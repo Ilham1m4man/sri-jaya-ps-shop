@@ -84,7 +84,7 @@ export default function Home() {
       {modalCartOpen ? <ModalCart modal_cart={onCartOpen} /> : null}
       <ModalProfile modal_profile={onProfileOpen} onLogOut={onLogOutHandler} currentRole={userRole} isModalProfileOpen={modalProfileOpen} />
       <ModalLogin modal_login={onLoginOpen} onRegister={onRegisterHandler} isModalLoginOpen={modalLoginOpen} />
-      <ModalRegister modal_register={onRegisterOpen} onLogin={onLoginHandler} changeRole={onChangeRoleHandler} currentRole={userRole} isModalRegisterOpen={modalRegisterOpen} />
+      <ModalRegister modal_register={onRegisterOpen} onLogin={onLoginHandler} isModalRegisterOpen={modalRegisterOpen} />
       {modalProductOpen ? <ModalProduct modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} changeRole={onChangeRoleHandler} /> : null} 
       <header className="z-10 sticky top-0">
         <Navbar modal_cart={onCartOpen} statusCart={modalCartOpen} modal_profile={onProfileOpen} modal_login={onLoginOpen} modal_register={onRegisterOpen} statusProfile={modalProfileOpen} statusLoggedIn={loggedIn} />
