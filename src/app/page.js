@@ -2,6 +2,8 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { auth } from './firebase/firebase.config';
+import { onAuthStateChanged } from "firebase/auth";
 import Navbar from '@/components/Navbar'
 import ModalCart from '@/components/modals/ModalCart'
 import ModalProfile from '@/components/modals/ModalProfile'
@@ -10,13 +12,15 @@ import ModalProduct from '@/components/modals/ModalProduct'
 import ProductCatalogue from '@/components/ProductCatalogue'
 import FilterBtn from '@/components/buttons/FilterBtn'
 import SearchBar from '@/components/SearchBar'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Footer from '@/components/Footer'
 import Filters from '@/components/Filters'
 import ModalRegister from '@/components/modals/ModalRegister'
+import getUserData from './services/getUserData';
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [userProfile, setUserProfile] = useState();
   const [modalCartOpen, setModalCartOpen] = useState(false);
   const [modalProfileOpen, setModalProfileOpen] = useState(false);
   const [modalLoginOpen, setModalLoginOpen] = useState(false);
@@ -27,6 +31,28 @@ export default function Home() {
   const [minInput, setMinInput] = useState();
   const [maxInput, setMaxInput] = useState();
   const [keyword, setKeyword] = useState("");
+
+  const cekAuth = () => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setLoggedIn(true)
+        const uid = user.uid;
+        getUserData(uid).then((profile) => {
+          setUserProfile(profile)
+          setUserRole(profile.customClaims.role)
+        }).catch((err) => {
+          window.alert(err.message)
+        })
+      } else {
+        setLoggedIn(false)
+        console.log("gk ada user cuk")
+      }
+    });
+  }
+
+  useEffect(() => {
+    cekAuth()
+  }, [])
 
   const onCartOpen = () => {
     return setModalCartOpen(!modalCartOpen)
@@ -52,7 +78,7 @@ export default function Home() {
   }
 
   const onProfileOpen = () => {
-    loggedIn ? setModalProfileOpen(!modalProfileOpen) : setModalLoginOpen(!modalLoginOpen)  
+    loggedIn ? setModalProfileOpen(!modalProfileOpen) : setModalLoginOpen(!modalLoginOpen)
   }
 
   const onLoginOpen = () => {
@@ -62,7 +88,7 @@ export default function Home() {
   const onRegisterOpen = () => {
     return setModalRegisterOpen(!modalRegisterOpen)
   }
-  
+
   const onProductCardHandler = () => {
     return setModalProductOpen(!modalProductOpen)
   }
@@ -82,10 +108,10 @@ export default function Home() {
   return (
     <>
       {modalCartOpen ? <ModalCart modal_cart={onCartOpen} /> : null}
-      <ModalProfile modal_profile={onProfileOpen} onLogOut={onLogOutHandler} currentRole={userRole} isModalProfileOpen={modalProfileOpen} />
+      <ModalProfile userProfile={userProfile} modal_profile={onProfileOpen} onLogOut={onLogOutHandler} currentRole={userRole} isModalProfileOpen={modalProfileOpen} />
       <ModalLogin modal_login={onLoginOpen} onRegister={onRegisterHandler} isModalLoginOpen={modalLoginOpen} />
       <ModalRegister modal_register={onRegisterOpen} onLogin={onLoginHandler} isModalRegisterOpen={modalRegisterOpen} />
-      {modalProductOpen ? <ModalProduct modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} changeRole={onChangeRoleHandler} /> : null} 
+      {modalProductOpen ? <ModalProduct modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} changeRole={onChangeRoleHandler} /> : null}
       <header className="z-10 sticky top-0">
         <Navbar modal_cart={onCartOpen} statusCart={modalCartOpen} modal_profile={onProfileOpen} modal_login={onLoginOpen} modal_register={onRegisterOpen} statusProfile={modalProfileOpen} statusLoggedIn={loggedIn} />
         <section className="max-w-screen flex gap-[55px] justify-between px-20 pb-[50px] bg-mainBg_clr">

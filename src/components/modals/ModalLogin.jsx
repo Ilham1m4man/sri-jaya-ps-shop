@@ -1,24 +1,38 @@
 import Link from "next/link";
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState, useRef } from "react";
+import { Fragment, useState } from "react";
+import { auth } from "@/app/firebase/firebase.config";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import BackBtn from "../buttons/BackBtn";
-import PeekBtn from "../buttons/PeekBtn";
+import LoginForm from "../forms/LoginForm";
+import Spinner from "../loaders/Spinner";
 
 export default function ModalLogin({
   modal_login,
   onRegister,
   isModalLoginOpen,
 }) {
-  const [isPasswordHidden, setPasswordHidden] = useState(true);
+  const [isLoading, setIsloading] = useState();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-  const formRef = useRef();
 
   const loginHandler = (e) => {
     e.preventDefault();
+    setIsloading(true);
 
-    email && console.log("ini email" + email);
-    password && console.log("ini password" + password);
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const name = userCredential.displayName;
+        
+        window.alert(`Selamat berbelanja ${name} 😊`);
+        modal_login();
+      })
+      .catch((error) => {
+        window.alert(error.message);
+      });
+
+    setIsloading(false);
   };
 
   return (
@@ -57,60 +71,15 @@ export default function ModalLogin({
                   </Dialog.Title>
                   <BackBtn backFrom={modal_login} />
                 </div>
-                <form
-                  ref={formRef}
-                  onSubmit={loginHandler}
-                  className="flex flex-col gap-[20px] md:gap-[50px] w-[90%] md:w-[65%]"
-                >
-                  <div className="grid">
-                    <label
-                      htmlFor="email"
-                      className="text-footer_fontClr font-normal text-base md:text-xl text-opacity-80"
-                    >
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      id="email"
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full text-grn-950 font-normal text-base md:text-xl border-b-2 border-grn-950 p-[10px] outline-none"
-                    />
-                  </div>
-                  <div className="grid">
-                    <label
-                      htmlFor="password"
-                      className="text-footer_fontClr font-normal text-base md:text-xl text-opacity-80"
-                    >
-                      Password
-                    </label>
-                    <div className="relative w-full mt-2">
-                      <PeekBtn
-                        isPasswordHidden={isPasswordHidden}
-                        setPasswordHidden={setPasswordHidden}
-                      />
-                      <input
-                        type={isPasswordHidden ? "password" : "text"}
-                        id="password"
-                        name="password"
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full text-grn-950 font-normal text-base md:text-xl border-b-2 border-grn-950 p-[10px] outline-none"
-                      />
-                    </div>
-                    <Link
-                      href={`/`}
-                      className="text-sm font-normal text-footer_fontClr place-self-end mt-[30px]"
-                    >
-                      Lupa Password
-                    </Link>
-                  </div>
-                  <button
-                    type="submit"
-                    className="max-w-[176px] bg-footer_fontClr text-base md:text-xl font-normal text-grn-50 rounded-[10px] px-[30px] py-[10px] place-self-center"
-                  >
-                    Masuk
-                  </button>
-                </form>
+                {isLoading ? (
+                  <Spinner />
+                ) : (
+                  <LoginForm
+                    inputHandler={loginHandler}
+                    setEmail={setEmail}
+                    setPW={setPassword}
+                  />
+                )}
                 <p className="text-grn-950 font-normal text-base md:text-xl">
                   Belum punya akun?{" "}
                   <button onClick={onRegister} className="buat-akun ml-[30px]">

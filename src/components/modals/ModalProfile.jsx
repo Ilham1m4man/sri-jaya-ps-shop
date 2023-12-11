@@ -3,8 +3,39 @@ import React from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import BackBtn from "../buttons/BackBtn";
+import LogoutBtn from "../buttons/LogoutBtn";
 
-export default function ModalProfile({ modal_profile, onLogOut, currentRole, isModalProfileOpen }) {
+export default function ModalProfile({
+  userProfile,
+  modal_profile,
+  onLogOut,
+  currentRole,
+  isModalProfileOpen,
+}) {
+
+  const cekNoTelepon = () => {
+    if (
+      userProfile.phoneNumber == null ||
+      userProfile.phoneNumber === "" ||
+      userProfile.phoneNumber == undefined
+    ) {
+      return `-`;
+    } else {
+      return userProfile.phoneNumber;
+    }
+  };
+
+  const cekAlamat = () => {
+    if (
+      userProfile.address == null ||
+      userProfile.address === "" ||
+      userProfile.address == undefined
+    ) {
+      return `Mohon isi alamat anda untuk tujuan pengiriman`;
+    } else {
+      return userProfile.address;
+    }
+  };
   return (
     <Transition appear show={isModalProfileOpen} as={Fragment}>
       <Dialog as="div" className="relative z-20" onClose={modal_profile}>
@@ -34,7 +65,6 @@ export default function ModalProfile({ modal_profile, onLogOut, currentRole, isM
               <Dialog.Panel className="w-[70%] transform overflow-hidden rounded-[20px] bg-white py-[34px] px-12 text-left flex flex-col gap-[70px] items-center shadow-xl transition-all">
                 <div className="flex justify-between w-full">
                   <BackBtn backFrom={modal_profile} customClass={"px-[2px]"} />
-                  {/* GANTI JENIS AKUN BERDASARKAN DATA PADA DATABASE */}
                   <div
                     className={`rounded-[15px] border-[2px] ${
                       currentRole === "konsumer"
@@ -45,52 +75,13 @@ export default function ModalProfile({ modal_profile, onLogOut, currentRole, isM
                     <Dialog.Title
                       as="h3"
                       className={`text-grn-950 font-normal text-2xl px-10 py-4 ${
-                        currentRole === "konsumer"
-                          ? "bg-grn-300"
-                          : "bg-ble-300"
+                        currentRole === "konsumer" ? "bg-grn-300" : "bg-ble-300"
                       } rounded-[10px]`}
                     >
                       {currentRole}
                     </Dialog.Title>
                   </div>
-                  <button onClick={onLogOut}>
-                    <svg
-                      width="30"
-                      height="30"
-                      viewBox="0 0 30 30"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <g clip-path="url(#clip0_395_1149)">
-                        <path
-                          d="M11 28H5C4.20435 28 3.44129 27.6956 2.87868 27.1539C2.31607 26.6121 2 25.8773 2 25.1111V4.88889C2 4.12271 2.31607 3.38791 2.87868 2.84614C3.44129 2.30436 4.20435 2 5 2H11"
-                          stroke="#05150F"
-                          stroke-width="4"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                        <path
-                          d="M21 22L28 15L21 8"
-                          stroke="#05150F"
-                          stroke-width="4"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                        <path
-                          d="M28 15H11"
-                          stroke="#05150F"
-                          stroke-width="4"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </g>
-                      <defs>
-                        <clipPath id="clip0_395_1149">
-                          <rect width="30" height="30" fill="white" />
-                        </clipPath>
-                      </defs>
-                    </svg>
-                  </button>
+                  <LogoutBtn onLogOut={onLogOut} />
                 </div>
                 <div>
                   <svg
@@ -117,6 +108,7 @@ export default function ModalProfile({ modal_profile, onLogOut, currentRole, isM
                     <input
                       type="text"
                       name="name"
+                      defaultValue={userProfile && userProfile.displayName}
                       className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none"
                     />
                   </div>
@@ -130,6 +122,7 @@ export default function ModalProfile({ modal_profile, onLogOut, currentRole, isM
                     <input
                       type="email"
                       name="email"
+                      defaultValue={userProfile && userProfile.email}
                       className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none"
                     />
                   </div>
@@ -143,10 +136,11 @@ export default function ModalProfile({ modal_profile, onLogOut, currentRole, isM
                     <input
                       type="tel"
                       name="phone"
-                      className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none"
+                      defaultValue={userProfile && cekNoTelepon()}
+                      className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none placeholder:text-grn-800"
                     />
                   </div>
-                  <div className="grid h-[86px] relative">
+                  {/* <div className="grid h-[86px] relative">
                     <label
                       htmlFor="password"
                       className="text-footer_fontClr font-normal text-2xl text-opacity-80"
@@ -161,7 +155,7 @@ export default function ModalProfile({ modal_profile, onLogOut, currentRole, isM
                     <button className="absolute text-danger_clr font-normal text-2xl bottom-[5px] right-0 py-[5px] bg-white">
                       Ubah
                     </button>
-                  </div>
+                  </div> */}
                   <div className="grid col-span-2 pb-12">
                     <label
                       htmlFor="address"
@@ -172,6 +166,7 @@ export default function ModalProfile({ modal_profile, onLogOut, currentRole, isM
                     <input
                       type="text"
                       name="address"
+                      defaultValue={userProfile && cekAlamat()}
                       className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none"
                     />
                   </div>

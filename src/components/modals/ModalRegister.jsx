@@ -1,17 +1,24 @@
-import Link from "next/link";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
+import { auth } from "@/app/firebase/firebase.config";
+import {
+  signInWithCustomToken,
+  sendEmailVerification,
+  signOut,
+} from "firebase/auth";
 import BackBtn from "../buttons/BackBtn";
 import RegistKonsumer from "../forms/RegistKonsumer";
 import registrasi from "@/app/services/registrasi";
 import RegistPeretail from "../forms/RegistPeretail";
+import Spinner from "../loaders/Spinner";
 
 export default function ModalRegister({
   modal_register,
   onLogin,
   isModalRegisterOpen,
 }) {
+  const [isLoading, setIsloading] = useState();
   const [role, setRole] = useState("konsumer");
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
@@ -19,6 +26,7 @@ export default function ModalRegister({
 
   const register = async (e) => {
     e.preventDefault();
+    setIsloading(true);
 
     let dataInput;
 
@@ -30,7 +38,7 @@ export default function ModalRegister({
         confirmPassword: confirmPassword,
         role: role,
       };
-    } else if(role === "peretail") {
+    } else if (role === "peretail") {
       dataInput = {
         name: e.target[0].value,
         businessName: e.target[1].value,
@@ -41,16 +49,49 @@ export default function ModalRegister({
         role: role,
       };
     } else {
-      return window.alert("Terjadi kesalahan dalam registrasi akun, mohon coba lagi!")
+      return window.alert(
+        "Terjadi kesalahan dalam registrasi akun, mohon coba lagi!"
+      );
     }
 
     if (dataInput.password === dataInput.confirmPassword) {
-      registrasi(dataInput);
-      router.refresh();
+      try {
+        await registrasi(dataInput)
+          .then((response) => {
+            if (!response.code) {
+              signInWithCustomToken(auth, response)
+                .then((user) => {
+                  sendEmailVerification(user.user);
+                  signOut(auth)
+                    .then((respon) => {
+                      window.alert(
+                        "Email verifikasi telah dikirim, periksa email dan folder spam anda!"
+                      );
+                      onLogin();
+                    })
+                    .catch((err) => {
+                      window.alert(err);
+                    });
+                })
+                .catch((err) => window.alert(err));
+            } else {
+              window.alert(response.message);
+            }
+            router.refresh();
+          })
+          .catch((error) => {
+            window.alert(error);
+          });
+      } catch (err) {
+        window.alert(err);
+      }
     } else {
       window.alert("Password tidak sesuai!");
     }
+    setIsloading(false);
   };
+
+  const customClass = "fill-grn-400";
 
   return (
     <Transition appear show={isModalRegisterOpen} as={Fragment}>
@@ -110,7 +151,9 @@ export default function ModalRegister({
                     Peretail
                   </button>
                 </div>
-                {role === "konsumer" ? (
+                {isLoading ? (
+                  <Spinner customClass={customClass} />
+                ) : role === "konsumer" ? (
                   <RegistKonsumer
                     inputHandler={register}
                     setPW={setPassword}
