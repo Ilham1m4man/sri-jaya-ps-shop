@@ -8,12 +8,12 @@ export default function RegistPeretail({ inputHandler, setPW, setConfPW }) {
   return (
     <form
       onSubmit={inputHandler}
-      className="grid grid-cols-2 grid-rows-6 gap-x-[40px] gap-y-[15px] w-full"
+      className="grid grid-cols-2 grid-rows-6 gap-x-[30px] gap-y-[15px] w-full"
     >
       <div className="grid">
         <label
           htmlFor="name"
-          className="text-footer_fontClr font-normal text-base md:text-xl text-opacity-80"
+          className="text-footer_fontClr font-normal text-base md:text-lg text-opacity-80"
         >
           Nama
         </label>
@@ -21,13 +21,13 @@ export default function RegistPeretail({ inputHandler, setPW, setConfPW }) {
           required
           type="text"
           name="name"
-          className="w-full text-ble-950 font-normal text-base md:text-xl border-b-2 border-ble-950 p-[10px] outline-none"
+          className="w-full text-ble-950 font-normal text-base md:text-lg border-b-2 border-ble-950 p-[5px] md:p-[10px] outline-none"
         />
       </div>
       <div className="grid">
         <label
           htmlFor="business-name"
-          className="text-footer_fontClr font-normal text-base md:text-xl text-opacity-80"
+          className="text-footer_fontClr font-normal text-base md:text-lg text-opacity-80"
         >
           Nama Bisnis
         </label>
@@ -35,13 +35,13 @@ export default function RegistPeretail({ inputHandler, setPW, setConfPW }) {
           required
           type="text"
           name="business-name"
-          className="w-full text-ble-950 font-normal text-base md:text-xl border-b-2 border-ble-950 p-[10px] outline-none"
+          className="w-full text-ble-950 font-normal text-base md:text-lg border-b-2 border-ble-950 p-[5px] md:p-[10px] outline-none"
         />
       </div>
       <div className="grid">
         <label
           htmlFor="email"
-          className="text-footer_fontClr font-normal text-base md:text-xl text-opacity-80"
+          className="text-footer_fontClr font-normal text-base md:text-lg text-opacity-80"
         >
           Email
         </label>
@@ -49,13 +49,13 @@ export default function RegistPeretail({ inputHandler, setPW, setConfPW }) {
           required
           type="email"
           name="email"
-          className="w-full text-ble-950 font-normal text-base md:text-xl border-b-2 border-ble-950 p-[10px] outline-none"
+          className="w-full text-ble-950 font-normal text-base md:text-lg border-b-2 border-ble-950 p-[5px] md:p-[10px] outline-none"
         />
       </div>
       <div className="grid">
         <label
           htmlFor="phone"
-          className="text-footer_fontClr font-normal text-base md:text-xl text-opacity-80"
+          className="text-footer_fontClr font-normal text-base md:text-lg text-opacity-80"
         >
           No. Telepon
         </label>
@@ -63,13 +63,13 @@ export default function RegistPeretail({ inputHandler, setPW, setConfPW }) {
           required
           type="tel"
           name="phone"
-          className="w-full text-ble-950 font-normal text-base md:text-xl border-b-2 border-ble-950 p-[10px] outline-none"
+          className="w-full text-ble-950 font-normal text-base md:text-lg border-b-2 border-ble-950 p-[5px] md:p-[10px] outline-none"
         />
       </div>
       <div className="grid">
         <label
           htmlFor="password"
-          className="text-footer_fontClr font-normal text-base md:text-xl text-opacity-80"
+          className="text-footer_fontClr font-normal text-base md:text-lg text-opacity-80"
         >
           Password
         </label>
@@ -83,14 +83,14 @@ export default function RegistPeretail({ inputHandler, setPW, setConfPW }) {
             type={isPasswordHidden ? "password" : "text"}
             name="password"
             onChange={(e) => setPW(e.target.value)}
-            className="w-full text-ble-950 font-normal text-base md:text-xl border-b-2 border-ble-950 p-[10px] outline-none"
+            className="w-full text-ble-950 font-normal text-base md:text-lg border-b-2 border-ble-950 p-[5px] md:p-[10px] outline-none"
           />
         </div>
       </div>
       <div className="grid">
         <label
           htmlFor="confirm-password"
-          className="text-footer_fontClr font-normal text-base md:text-xl text-opacity-80"
+          className="text-footer_fontClr font-normal text-base md:text-lg text-opacity-80"
         >
           Ulangi Password
         </label>
@@ -104,7 +104,7 @@ export default function RegistPeretail({ inputHandler, setPW, setConfPW }) {
             type={isConfirmPasswordHidden ? "password" : "text"}
             name="confirm-password"
             onChange={(e) => setConfPW(e.target.value)}
-            className="w-full text-ble-950 font-normal text-base md:text-xl border-b-2 border-ble-950 p-[10px] outline-none"
+            className="w-full text-ble-950 font-normal text-base md:text-lg border-b-2 border-ble-950 p-[5px] md:p-[10px] outline-none"
           />
         </div>
       </div>
@@ -128,7 +128,7 @@ export default function RegistPeretail({ inputHandler, setPW, setConfPW }) {
       </div>
       <button
         type="submit"
-        className="col-span-2 max-w-[176px] bg-footer_fontClr text-base md:text-xl font-normal text-ble-50 rounded-[10px] px-[30px] py-[10px] place-self-center"
+        className="col-span-2 max-w-[176px] hover:opacity-90 active:scale-95 transition-all bg-footer_fontClr text-base md:text-xl font-normal text-ble-50 rounded-[10px] px-[30px] py-[10px] place-self-center"
       >
         Daftar
       </button>

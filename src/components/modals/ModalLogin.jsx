@@ -23,7 +23,7 @@ export default function ModalLogin({
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        const name = userCredential.displayName;
+        const name = userCredential.user.displayName;
         
         window.alert(`Selamat berbelanja ${name} 😊`);
         modal_login();
@@ -61,7 +61,7 @@ export default function ModalLogin({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-[90%] sm:w-[70%] lg:w-[50%] transform overflow-hidden rounded-[20px] bg-white p-10 text-left flex flex-col gap-[20px] md:gap-[50px] items-center shadow-xl transition-all">
+              <Dialog.Panel className="w-[90%] sm:w-[70%] lg:w-[50%] transform overflow-hidden rounded-[20px] bg-white p-8 text-left flex flex-col gap-[15px] md:gap-[40px] items-center shadow-xl transition-all">
                 <div className="flex justify-end w-full relative items-center">
                   <Dialog.Title
                     as="h3"
@@ -80,9 +80,9 @@ export default function ModalLogin({
                     setPW={setPassword}
                   />
                 )}
-                <p className="text-grn-950 font-normal text-base md:text-xl">
+                <p className="text-grn-950 font-normal text-base">
                   Belum punya akun?{" "}
-                  <button onClick={onRegister} className="buat-akun ml-[30px]">
+                  <button onClick={onRegister} className="buat-akun ml-[20px]">
                     Buat di sini
                   </button>
                 </p>

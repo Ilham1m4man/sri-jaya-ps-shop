@@ -119,7 +119,7 @@ export default function ModalRegister({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-[90%] sm:w-[70%] lg:w-[50%] transform overflow-hidden rounded-[20px] bg-white p-10 text-left flex flex-col gap-[20px] md:gap-[50px] items-center shadow-xl transition-all">
+              <Dialog.Panel className="w-full sm:w-[70%] lg:w-[50%] transform overflow-hidden rounded-[20px] bg-white p-8 text-left flex flex-col gap-[15px] md:gap-[40px] items-center shadow-xl transition-all">
                 <div className="flex justify-end w-full relative items-center">
                   <Dialog.Title
                     as="h3"
@@ -135,7 +135,7 @@ export default function ModalRegister({
                     className={`rounded-[10px] text-base md:text-xl font-normal p-[10px] ${
                       role === "konsumer"
                         ? "bg-grn-300 text-grn-950 "
-                        : "bg-transparent text-grn-50 hover:bg-grn-600"
+                        : "bg-transparent text-grn-50 hover:bg-grn-950"
                     }`}
                   >
                     Konsumer
@@ -145,7 +145,7 @@ export default function ModalRegister({
                     className={`rounded-[10px] text-base md:text-xl font-normal py-[10px] px-[19px] ${
                       role === "peretail"
                         ? "bg-ble-300 text-ble-950"
-                        : "bg-transparent text-ble-50 hover:bg-ble-600"
+                        : "bg-transparent text-ble-50 hover:bg-ble-950"
                     }`}
                   >
                     Peretail
@@ -166,9 +166,9 @@ export default function ModalRegister({
                     setConfPW={setConfirmPassword}
                   />
                 )}
-                <p className="text-grn-950 font-normal text-base md:text-xl">
+                <p className="text-grn-950 font-normal text-base">
                   Sudah punya akun?{" "}
-                  <button onClick={onLogin} className="buat-akun ml-[30px]">
+                  <button onClick={onLogin} className="buat-akun ml-[20px]">
                     Masuk
                   </button>
                 </p>

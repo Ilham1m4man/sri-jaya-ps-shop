@@ -1,9 +1,10 @@
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import BackBtn from "../buttons/BackBtn";
 import LogoutBtn from "../buttons/LogoutBtn";
+import ProfileForm from "../forms/ProfileForm";
 
 export default function ModalProfile({
   userProfile,
@@ -12,6 +13,13 @@ export default function ModalProfile({
   currentRole,
   isModalProfileOpen,
 }) {
+  const [image, setImage] = useState();
+  const [imagePreviews, setImagePreviews] = useState();
+  const [previewsFromServer, setPreviewsFromServer] = useState();
+  const [name, setName] = useState(userProfile && userProfile.displayName);
+  const [email, setEmail] = useState(userProfile && userProfile.email);
+  const [phone, setPhone] = useState();
+  const [address, setAddress] = useState();
 
   const cekNoTelepon = () => {
     if (
@@ -19,7 +27,7 @@ export default function ModalProfile({
       userProfile.phoneNumber === "" ||
       userProfile.phoneNumber == undefined
     ) {
-      return `-`;
+      return `- (Disarankan untuk diisi)`;
     } else {
       return userProfile.phoneNumber;
     }
@@ -35,6 +43,24 @@ export default function ModalProfile({
     } else {
       return userProfile.address;
     }
+  };
+
+  const batalHandler = () => {
+    setName();
+    setEmail();
+    setPhone();
+    setAddress();
+    console.log("form have been reset");
+  };
+
+  const resetPWHandler = () => {
+    console.log("reset PW");
+  };
+
+  const editProfileHandler = () => {
+    console.log("edit handler");
+    console.log(address ? address : null);
+    console.log(name, email, phone, address);
   };
   return (
     <Transition appear show={isModalProfileOpen} as={Fragment}>
@@ -52,7 +78,7 @@ export default function ModalProfile({
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-end pb-4 text-center">
+          <div className="flex min-h-full items-center justify-end p-4 text-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -62,11 +88,10 @@ export default function ModalProfile({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-[70%] transform overflow-hidden rounded-[20px] bg-white py-[34px] px-12 text-left flex flex-col gap-[70px] items-center shadow-xl transition-all">
-                <div className="flex justify-between w-full">
-                  <BackBtn backFrom={modal_profile} customClass={"px-[2px]"} />
+              <Dialog.Panel className="w-full sm:w-[80%] lg:w-[60%] transform overflow-hidden rounded-[20px] bg-white py-[25px] px-10 text-left flex flex-col gap-[50px] items-center shadow-xl transition-all">
+                <div className="flex justify-between w-full relative">
                   <div
-                    className={`rounded-[15px] border-[2px] ${
+                    className={`rounded-[13px] mx-auto border-[2px] ${
                       currentRole === "konsumer"
                         ? "border-grn-800"
                         : "border-ble-800"
@@ -74,16 +99,19 @@ export default function ModalProfile({
                   >
                     <Dialog.Title
                       as="h3"
-                      className={`text-grn-950 font-normal text-2xl px-10 py-4 ${
+                      className={`text-grn-950 font-normal text-lg md:text-xl px-3 py-1 md:px-6 md:py-2 ${
                         currentRole === "konsumer" ? "bg-grn-300" : "bg-ble-300"
-                      } rounded-[10px]`}
+                      } rounded-[8px]`}
                     >
                       {currentRole}
                     </Dialog.Title>
                   </div>
-                  <LogoutBtn onLogOut={onLogOut} />
+                  <BackBtn
+                    backFrom={modal_profile}
+                    customClass={"absolute -translate-y-1/2 top-1/2 right-0"}
+                  />
                 </div>
-                <div>
+                <div className="flex flex-col md:flex-row justify-around items-center w-full gap-7 md:gap-10">
                   <svg
                     width="200"
                     height="200"
@@ -96,81 +124,59 @@ export default function ModalProfile({
                       fill="black"
                     />
                   </svg>
+                  <ProfileForm
+                    editProfileHandler={editProfileHandler}
+                    userProfile={userProfile}
+                    cekNoTelepon={cekNoTelepon}
+                    setName={setName}
+                    setEmail={setEmail}
+                    setPhone={setPhone}
+                  />
                 </div>
-                <form className="grid grid-cols-2 grid-rows-3 gap-x-[70px] gap-y-16 w-full">
-                  <div className="grid h-[86px]">
-                    <label
-                      htmlFor="name"
-                      className="text-footer_fontClr font-normal text-2xl text-opacity-80"
-                    >
-                      Nama
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      defaultValue={userProfile && userProfile.displayName}
-                      className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none"
-                    />
-                  </div>
-                  <div className="grid h-[86px]">
-                    <label
-                      htmlFor="email"
-                      className="text-footer_fontClr font-normal text-2xl text-opacity-80"
-                    >
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      defaultValue={userProfile && userProfile.email}
-                      className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none"
-                    />
-                  </div>
-                  <div className="grid h-[86px]">
-                    <label
-                      htmlFor="phone"
-                      className="text-footer_fontClr font-normal text-2xl text-opacity-80"
-                    >
-                      No. Telepon
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      defaultValue={userProfile && cekNoTelepon()}
-                      className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none placeholder:text-grn-800"
-                    />
-                  </div>
-                  {/* <div className="grid h-[86px] relative">
-                    <label
-                      htmlFor="password"
-                      className="text-footer_fontClr font-normal text-2xl text-opacity-80"
-                    >
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      name="password"
-                      className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none"
-                    />
-                    <button className="absolute text-danger_clr font-normal text-2xl bottom-[5px] right-0 py-[5px] bg-white">
-                      Ubah
-                    </button>
-                  </div> */}
-                  <div className="grid col-span-2 pb-12">
+
+                <form action={editProfileHandler} className="flex w-full">
+                  <div className="grid gap-4 w-full">
                     <label
                       htmlFor="address"
-                      className="text-footer_fontClr font-normal text-2xl text-opacity-80"
+                      className="text-footer_fontClr font-normal text-base text-opacity-80"
                     >
                       Alamat
                     </label>
-                    <input
-                      type="text"
+                    <textarea
+                      rows={3}
                       name="address"
                       defaultValue={userProfile && cekAlamat()}
-                      className="w-full text-grn-950 font-normal text-2xl border-b-2 border-grn-950 p-[10px] outline-none"
+                      onChange={(e) => setAddress(e.target.value)}
+                      className="w-full resize-none rounded-xl text-grn-950 font-normal text-base border-2 border-grn-950 p-[10px] outline-none"
                     />
                   </div>
                 </form>
+                <div className="flex flex-col gap-4 w-full">
+                  <button
+                    type="button"
+                    onClick={resetPWHandler}
+                    className="text-danger_clr hover:opacity-90 active:scale-95 transition-all font-normal text-base mr-auto"
+                  >
+                    Ubah password
+                  </button>
+                  <LogoutBtn onLogOut={onLogOut} />
+                  <div className="flex gap-4 justify-end w-full">
+                    <button
+                      className="bg-footer_fontClr hover:opacity-90 active:scale-95 transition-all text-base px-4 py-2 rounded-lg"
+                      type="button"
+                      onClick={batalHandler}
+                    >
+                      Batal
+                    </button>
+                    <button
+                      className={`${currentRole === "konsumer" ? " bg-grn-500 text-grn-950" : "bg-ble-500 text-ble-950"} hover:opacity-90 active:scale-95 transition-all text-base px-4 py-2 rounded-lg`}
+                      type="submit"
+                      onClick={editProfileHandler}
+                    >
+                      Simpan
+                    </button>
+                  </div>
+                </div>
               </Dialog.Panel>
             </Transition.Child>
           </div>

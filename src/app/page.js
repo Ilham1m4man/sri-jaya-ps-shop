@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { auth } from './firebase/firebase.config';
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import Navbar from '@/components/Navbar'
 import ModalCart from '@/components/modals/ModalCart'
 import ModalProfile from '@/components/modals/ModalProfile'
@@ -45,7 +45,6 @@ export default function Home() {
         })
       } else {
         setLoggedIn(false)
-        console.log("gk ada user cuk")
       }
     });
   }
@@ -59,8 +58,14 @@ export default function Home() {
   }
 
   const onLogOutHandler = () => {
-    setModalProfileOpen(!modalProfileOpen)
-    return setLoggedIn(!loggedIn)
+    signOut(auth).then(() => {
+      setLoggedIn(false)
+      window.alert("Berhasil logout");
+    })
+      .catch((err) => {
+        window.alert(err);
+      });
+    return setModalProfileOpen(!modalProfileOpen)
   }
 
   const onRegisterHandler = () => {

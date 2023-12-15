@@ -1,9 +1,12 @@
 export default function LogoutBtn({ onLogOut }) {
   return (
-    <button onClick={onLogOut}>
+    <button
+      onClick={onLogOut}
+      className="hover:opacity-90 active:scale-95 transition-all text-footer_fontClr font-normal text-base flex gap-2 mr-auto"
+    >
       <svg
-        width="30"
-        height="30"
+        width="22"
+        height="22"
         viewBox="0 0 30 30"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -37,6 +40,7 @@ export default function LogoutBtn({ onLogOut }) {
           </clipPath>
         </defs>
       </svg>
+      Keluar
     </button>
   );
 }
