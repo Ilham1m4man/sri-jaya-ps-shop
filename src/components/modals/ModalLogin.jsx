@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { auth } from "@/app/firebase/firebase.config";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import BackBtn from "../buttons/BackBtn";
 import LoginForm from "../forms/LoginForm";
 import Spinner from "../loaders/Spinner";
@@ -16,17 +16,25 @@ export default function ModalLogin({
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
-  const loginHandler = (e) => {
+  const loginHandler = async (e) => {
     e.preventDefault();
     setIsloading(true);
 
-    signInWithEmailAndPassword(auth, email, password)
+    await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         const name = userCredential.user.displayName;
-        
-        window.alert(`Selamat berbelanja ${name} 😊`);
-        modal_login();
+        const isEmailVerified = userCredential.user.emailVerified;
+
+        if (isEmailVerified) {
+          window.alert(`Selamat berbelanja ${name} 😊`);
+          modal_login();
+        } else {
+          window.alert(
+            "Mohon verifikasi email terlebih dahulu, periksa email dan folder spam anda"
+          );
+          signOut(auth);
+        }
       })
       .catch((error) => {
         window.alert(error.message);

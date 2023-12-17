@@ -1,7 +1,15 @@
 import { useState } from "react";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 import PeekBtn from "../buttons/PeekBtn";
 
-export default function RegistPeretail({ inputHandler, setPW, setConfPW }) {
+export default function RegistPeretail({
+  inputHandler,
+  setPW,
+  setConfPW,
+  phoneValue,
+  setPhoneValue,
+}) {
   const [isPasswordHidden, setPasswordHidden] = useState(true);
   const [isConfirmPasswordHidden, setConfirmPasswordHidden] = useState(true);
 
@@ -59,12 +67,20 @@ export default function RegistPeretail({ inputHandler, setPW, setConfPW }) {
         >
           No. Telepon
         </label>
-        <input
+        <PhoneInput
+          className="text-ble-950 font-normal text-base md:text-lg border-b-2 border-ble-950 p-[5px] md:p-[10px] outline-none"
+          international
+          countryCallingCodeEditable={false}
+          defaultCountry="ID"
+          value={phoneValue}
+          onChange={setPhoneValue}
+        />
+        {/* <input
           required
           type="tel"
           name="phone"
           className="w-full text-ble-950 font-normal text-base md:text-lg border-b-2 border-ble-950 p-[5px] md:p-[10px] outline-none"
-        />
+        /> */}
       </div>
       <div className="grid">
         <label

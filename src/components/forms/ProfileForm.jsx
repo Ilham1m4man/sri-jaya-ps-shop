@@ -1,8 +1,21 @@
-export default function ProfileForm({ editProfileHandler, userProfile, cekNoTelepon, setName, setEmail, setPhone }) {
+import PhoneInput from "react-phone-number-input";
+
+export default function ProfileForm({
+  editProfileHandler,
+  userProfile,
+  cekNoTelepon,
+  onChange,
+  state,
+}) {
+  const isKonsumer = userProfile?.customClaims?.role.includes("Konsumer");
+
   return (
     <form
-    action={editProfileHandler} 
-    className="flex flex-col w-full md:w-[60%] gap-5 border-2 border-grn-950 rounded-xl p-5">
+      action={editProfileHandler}
+      className={`flex flex-col w-full md:w-[60%] gap-5 border-2 ${
+        isKonsumer ? "border-grn-950" : "border-ble-950"
+      } rounded-xl p-5`}
+    >
       <div className="grid">
         <label
           htmlFor="name"
@@ -13,9 +26,14 @@ export default function ProfileForm({ editProfileHandler, userProfile, cekNoTele
         <input
           type="text"
           name="name"
+          value={state.name}
+          onChange={onChange}
           defaultValue={userProfile && userProfile.displayName}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full text-grn-950 font-normal text-base border-b-2 border-grn-950 px-2 outline-none"
+          className={`w-full font-normal text-base border-b-2 ${
+            isKonsumer
+              ? "border-grn-950 text-grn-950"
+              : "border-ble-950 text-ble-950"
+          } px-2 outline-none`}
         />
       </div>
       <div className="grid">
@@ -28,9 +46,14 @@ export default function ProfileForm({ editProfileHandler, userProfile, cekNoTele
         <input
           type="email"
           name="email"
+          value={state.email}
+          onChange={onChange}
           defaultValue={userProfile && userProfile.email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full text-grn-950 font-normal text-base border-b-2 border-grn-950 px-2 outline-none"
+          className={`w-full font-normal text-base border-b-2 ${
+            isKonsumer
+              ? "border-grn-950 text-grn-950"
+              : "border-ble-950 text-ble-950"
+          } px-2 outline-none`}
         />
       </div>
       <div className="grid">
@@ -38,14 +61,24 @@ export default function ProfileForm({ editProfileHandler, userProfile, cekNoTele
           htmlFor="phone"
           className="text-footer_fontClr font-normal text-base text-opacity-80"
         >
-          No. Telepon
+          No. Telepon{" "}
+          <span className="text-xs opacity-70">
+            {userProfile &&
+              (cekNoTelepon() ? null : "(Disarankan untuk diisi)")}
+          </span>
         </label>
-        <input
-          type="tel"
+        <PhoneInput
           name="phone"
-          defaultValue={userProfile && cekNoTelepon()}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full text-grn-950 font-normal text-base border-b-2 border-grn-950 px-2 outline-none placeholder:text-grn-800"
+          className={`font-normal text-base md:text-lg border-b-2 ${
+            isKonsumer
+              ? "border-grn-950 text-grn-950"
+              : "border-ble-950 text-ble-950"
+          } p-[5px] md:p-[10px] outline-none`}
+          international
+          countryCallingCodeEditable={false}
+          defaultCountry="ID"
+          value={state.phone}
+          onChange={onChange}
         />
       </div>
     </form>

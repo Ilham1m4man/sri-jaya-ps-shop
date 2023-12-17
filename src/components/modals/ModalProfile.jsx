@@ -1,10 +1,11 @@
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import BackBtn from "../buttons/BackBtn";
 import LogoutBtn from "../buttons/LogoutBtn";
 import ProfileForm from "../forms/ProfileForm";
+import UploadFotoProfile from "../UploadFotoProfile";
 
 export default function ModalProfile({
   userProfile,
@@ -13,13 +14,100 @@ export default function ModalProfile({
   currentRole,
   isModalProfileOpen,
 }) {
+  const [isDisabled, setIsDisabled] = useState(true);
   const [image, setImage] = useState();
   const [imagePreviews, setImagePreviews] = useState();
   const [previewsFromServer, setPreviewsFromServer] = useState();
-  const [name, setName] = useState(userProfile && userProfile.displayName);
+  /* const [name, setName] = useState(userProfile && userProfile.displayName);
   const [email, setEmail] = useState(userProfile && userProfile.email);
   const [phone, setPhone] = useState();
-  const [address, setAddress] = useState();
+  const [address, setAddress] = useState(); */
+
+  const initialState = {
+    name: userProfile && userProfile.displayName,
+    email: userProfile && userProfile.email,
+    phone:
+      userProfile &&
+      (userProfile.phoneNumber == undefined ? "" : userProfile.phoneNumber),
+    address:
+      userProfile &&
+      (userProfile.customClaims.address === ""
+        ? "Mohon isi alamat anda untuk tujuan pengiriman"
+        : userProfile.customClaims.address),
+    photo:
+      userProfile &&
+      (userProfile.photoUrl === undefined ? "" : userProfile.photoUrl),
+  };
+
+  const reducerState = (state, action) => {
+    const { name, email, phone, address } = initialState;
+    switch (action.type) {
+      case "RESET":
+        return initialState;
+      case "SET_DATA":
+        return initialState;
+      case "CEK_EDIT":
+        if (
+          state?.name?.includes(name) &&
+          state?.email?.includes(email) &&
+          state?.phone?.includes(phone) &&
+          state?.address?.includes(address)
+        ) {
+          setIsDisabled(true);
+          return state;
+        }
+        setIsDisabled(false);
+        return state;
+      default:
+        const result = { ...state };
+        result[action.type] = action.value;
+        return result;
+    }
+    /* if (action.type === "RESET") {
+      return initialState;
+    } else if (action.type === "SET_DATA") {
+      return initialState;
+    }
+
+    const result = { ...state };
+    result[action.type] = action.value;
+    return result; */
+  };
+
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case "ADD_FILE_TO_LIST":
+        if (state.fileList.length > 0) {
+          state.fileList.shift();
+        }
+        return { ...state, fileList: state.fileList.concat(action.files) };
+      default:
+        return state;
+    }
+  };
+
+  // destructuring state and dispatch, initializing fileList to empty array
+  const [state, dispatchState] = useReducer(reducerState, {});
+  const { name, email, phone, address, photo } = state;
+  console.log(state);
+
+  const [data, dispatch] = useReducer(reducer, {
+    inDropZone: false,
+    fileList: [],
+  });
+
+  data.fileList.map((item) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setImagePreviews(reader.result);
+      setImage(item);
+    };
+
+    if (item) {
+      reader.readAsDataURL(item);
+    }
+  });
 
   const cekNoTelepon = () => {
     if (
@@ -27,29 +115,34 @@ export default function ModalProfile({
       userProfile.phoneNumber === "" ||
       userProfile.phoneNumber == undefined
     ) {
-      return `- (Disarankan untuk diisi)`;
+      return false;
     } else {
-      return userProfile.phoneNumber;
+      return true;
     }
   };
 
   const cekAlamat = () => {
     if (
-      userProfile.address == null ||
-      userProfile.address === "" ||
-      userProfile.address == undefined
+      userProfile.customClaims.address == null ||
+      userProfile.customClaims.address === "" ||
+      userProfile.customClaims.address == undefined
     ) {
       return `Mohon isi alamat anda untuk tujuan pengiriman`;
     } else {
-      return userProfile.address;
+      return userProfile.customClaims.address;
     }
   };
 
   const batalHandler = () => {
-    setName();
-    setEmail();
-    setPhone();
-    setAddress();
+    dispatchState({ type: "RESET" });
+    /* userProfile && console.log(userProfile.phoneNumber)
+    setName(userProfile.displayName);
+    setEmail(userProfile.email);
+    setPhone(userProfile.phoneNumber);
+    setAddress(userProfile.customClaims.address); */
+    data.fileList = [];
+    setImage();
+    setImagePreviews();
     console.log("form have been reset");
   };
 
@@ -57,11 +150,68 @@ export default function ModalProfile({
     console.log("reset PW");
   };
 
-  const editProfileHandler = () => {
-    console.log("edit handler");
-    console.log(address ? address : null);
-    console.log(name, email, phone, address);
+  const onChange = (e) => {
+    if (typeof e == "string" || e == undefined) {
+      const value = e;
+      dispatchState({ type: "phone", value });
+    } else {
+      const { name, value } = e.target;
+      dispatchState({ type: name, value });
+    }
   };
+
+  const editProfileHandler = (e) => {
+    /* e.preventDefault(); */
+    console.log("edit handler");
+    name && console.log(name, email, phone, address);
+  };
+
+  const cekEdit = () => {
+    name && console.log(name);
+    email && console.log(email);
+    if (name && name.includes(userProfile.displayName)) {
+      console.log("iya sama");
+      setIsDisabled(true);
+    } else {
+      console.log("beda cuk");
+      setIsDisabled(false);
+    }
+
+    /* if (email && email.includes(userProfile.email)) {
+      console.log("iya sama");
+      setIsDisabled(true);
+    } else {
+      console.log("beda cuk");
+      setIsDisabled(false);
+    } */
+
+    /* if ((phone && phone.includes(cekNoTelepon()))) {
+      console.log("iya sama");
+      setIsDisabled(true);
+    } else {
+      console.log("beda cuk");
+      setIsDisabled(false);
+    }
+
+    if ((address && address.toLowerCase().includes(cekAlamat().toLowerCase()))) {
+      console.log("iya sama");
+      setIsDisabled(true);
+    } else {
+      console.log("beda cuk");
+      setIsDisabled(false);
+    } */
+  };
+
+  useEffect(() => {
+    userProfile && dispatchState({ type: "SET_DATA" });
+  }, [userProfile]);
+
+  useEffect(() => {
+    /* userProfile && cekEdit(); */
+    dispatchState({ type: "CEK_EDIT" });
+  }, [name, email, phone, address, imagePreviews]);
+
+  const customClass = "";
   return (
     <Transition appear show={isModalProfileOpen} as={Fragment}>
       <Dialog as="div" className="relative z-20" onClose={modal_profile}>
@@ -92,7 +242,7 @@ export default function ModalProfile({
                 <div className="flex justify-between w-full relative">
                   <div
                     className={`rounded-[13px] mx-auto border-[2px] ${
-                      currentRole === "konsumer"
+                      currentRole === "Konsumer"
                         ? "border-grn-800"
                         : "border-ble-800"
                     } px-2 py-2`}
@@ -100,7 +250,7 @@ export default function ModalProfile({
                     <Dialog.Title
                       as="h3"
                       className={`text-grn-950 font-normal text-lg md:text-xl px-3 py-1 md:px-6 md:py-2 ${
-                        currentRole === "konsumer" ? "bg-grn-300" : "bg-ble-300"
+                        currentRole === "Konsumer" ? "bg-grn-300" : "bg-ble-300"
                       } rounded-[8px]`}
                     >
                       {currentRole}
@@ -111,26 +261,62 @@ export default function ModalProfile({
                     customClass={"absolute -translate-y-1/2 top-1/2 right-0"}
                   />
                 </div>
+                {currentRole === "Peretail" && (
+                  <h3 className="text-ble-950 text-lg md:text-2xl font-bold">
+                    {userProfile && userProfile.customClaims.businessName}
+                  </h3>
+                )}
                 <div className="flex flex-col md:flex-row justify-around items-center w-full gap-7 md:gap-10">
-                  <svg
-                    width="200"
-                    height="200"
-                    viewBox="0 0 200 200"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M200 99.9C200 44.75 155.2 0 100 0C44.8 0 0 44.75 0 99.9C0 130.275 13.8 157.65 35.4 176.025C35.6 176.225 35.8 176.225 35.8 176.425C37.6 177.825 39.4 179.225 41.4 180.625C42.4 181.225 43.2 182.012 44.2 182.812C60.7258 194.017 80.2339 200.004 100.2 200C120.166 200.004 139.674 194.017 156.2 182.812C157.2 182.212 158 181.425 159 180.812C160.8 179.425 162.8 178.025 164.6 176.625C164.8 176.425 165 176.425 165 176.225C186.2 157.637 200 130.275 200 99.9ZM100 187.413C81.2 187.413 64 181.412 49.8 171.425C50 169.825 50.4 168.238 50.8 166.637C51.9917 162.301 53.7396 158.138 56 154.25C58.2 150.45 60.8 147.05 64 144.05C67 141.05 70.6 138.262 74.2 136.062C78 133.863 82 132.262 86.4 131.062C90.8342 129.867 95.4075 129.266 100 129.275C113.633 129.178 126.765 134.408 136.6 143.85C141.2 148.45 144.8 153.85 147.4 160.038C148.8 163.638 149.8 167.438 150.4 171.425C135.64 181.802 118.043 187.384 100 187.413ZM69.4 94.9125C67.6378 90.8777 66.7516 86.515 66.8 82.1125C66.8 77.725 67.6 73.325 69.4 69.325C71.2 65.325 73.6 61.7375 76.6 58.7375C79.6 55.7375 83.2 53.35 87.2 51.55C91.2 49.75 95.6 48.95 100 48.95C104.6 48.95 108.8 49.75 112.8 51.55C116.8 53.35 120.4 55.75 123.4 58.7375C126.4 61.7375 128.8 65.3375 130.6 69.325C132.4 73.325 133.2 77.725 133.2 82.1125C133.2 86.7125 132.4 90.9125 130.6 94.9C128.863 98.8408 126.423 102.433 123.4 105.5C120.332 108.519 116.74 110.954 112.8 112.688C104.535 116.084 95.2647 116.084 87 112.688C83.0602 110.954 79.4684 108.519 76.4 105.5C73.3727 102.477 70.9912 98.8836 69.4 94.9125ZM162.2 161.238C162.2 160.838 162 160.637 162 160.238C160.033 153.98 157.134 148.055 153.4 142.663C149.663 137.23 145.07 132.438 139.8 128.475C135.775 125.447 131.413 122.897 126.8 120.875C128.899 119.491 130.843 117.886 132.6 116.087C135.582 113.144 138.2 109.854 140.4 106.288C144.829 99.0101 147.117 90.6311 147 82.1125C147.062 75.8064 145.837 69.554 143.4 63.7375C140.994 58.133 137.531 53.0445 133.2 48.75C128.876 44.5004 123.786 41.1074 118.2 38.75C112.374 36.3174 106.113 35.0968 99.8 35.1625C93.4859 35.1007 87.2253 36.3256 81.4 38.7625C75.7657 41.1148 70.6639 44.5798 66.4 48.95C62.1505 53.2698 58.7574 58.3552 56.4 63.9375C53.9631 69.754 52.7381 76.0064 52.8 82.3125C52.8 86.7125 53.4 90.9125 54.6 94.9C55.8 99.1 57.4 102.9 59.6 106.488C61.6 110.088 64.4 113.288 67.4 116.288C69.2 118.088 71.2 119.675 73.4 121.075C68.7729 123.151 64.409 125.769 60.4 128.875C55.2 132.875 50.6 137.663 46.8 142.863C43.0282 148.233 40.126 154.164 38.2 160.438C38 160.837 38 161.238 38 161.438C22.2 145.45 12.4 123.875 12.4 99.9C12.4 51.75 51.8 12.3875 100 12.3875C148.2 12.3875 187.6 51.75 187.6 99.9C187.574 122.899 178.441 144.953 162.2 161.238Z"
-                      fill="black"
+                  <div className="relative rounded-[15px] overflow-hidden">
+                    {previewsFromServer ? (
+                      <div className="absolute w-full top-1/2 -translate-y-1/2">
+                        <img
+                          priority
+                          className={`${
+                            imagePreviews ? "hidden" : "block"
+                          } object-cover h-full rounded-[15px]`}
+                          src={`http://127.0.0.1:8000/images/${previewsFromServer}`}
+                          alt={`Preview`}
+                        />
+                        <img
+                          className={`${
+                            !imagePreviews ? "hidden" : "block"
+                          } object-cover rounded-[15px]`}
+                          src={imagePreviews}
+                          alt={`Preview`}
+                        />
+                      </div>
+                    ) : (
+                      <div className="absolute w-full top-1/2 -translate-y-1/2">
+                        <img
+                          className={`${
+                            !imagePreviews ? "hidden" : "block"
+                          } object-cover rounded-[15px]`}
+                          src={imagePreviews}
+                          alt={`Preview`}
+                        />
+                      </div>
+                    )}
+                    <UploadFotoProfile
+                      data={data}
+                      dispatch={dispatch}
+                      imagePreviews={imagePreviews}
+                      previewsFromServer={previewsFromServer}
+                      customClass={customClass}
+                      currentRole={currentRole}
                     />
-                  </svg>
+                  </div>
                   <ProfileForm
                     editProfileHandler={editProfileHandler}
                     userProfile={userProfile}
                     cekNoTelepon={cekNoTelepon}
-                    setName={setName}
+                    onChange={onChange}
+                    state={state}
+                    dispatchState={dispatchState}
+                    phoneValue={phone}
+                    /* setName={setName}
                     setEmail={setEmail}
-                    setPhone={setPhone}
+                    setPhoneValue={setPhone} */
                   />
                 </div>
 
@@ -145,8 +331,10 @@ export default function ModalProfile({
                     <textarea
                       rows={3}
                       name="address"
+                      value={state.address}
                       defaultValue={userProfile && cekAlamat()}
-                      onChange={(e) => setAddress(e.target.value)}
+                      /* onChange={(e) => setAddress(e.target.value)} */
+                      onChange={onChange}
                       className="w-full resize-none rounded-xl text-grn-950 font-normal text-base border-2 border-grn-950 p-[10px] outline-none"
                     />
                   </div>
@@ -169,7 +357,12 @@ export default function ModalProfile({
                       Batal
                     </button>
                     <button
-                      className={`${currentRole === "konsumer" ? " bg-grn-500 text-grn-950" : "bg-ble-500 text-ble-950"} hover:opacity-90 active:scale-95 transition-all text-base px-4 py-2 rounded-lg`}
+                      disabled={isDisabled}
+                      className={`${
+                        currentRole === "Konsumer"
+                          ? " bg-grn-500 text-grn-950"
+                          : "bg-ble-500 text-ble-950"
+                      } hover:opacity-90 active:scale-95 disabled:opacity-80 disabled:cursor-not-allowed disabled:active:scale-100 transition-all text-base px-4 py-2 rounded-lg`}
                       type="submit"
                       onClick={editProfileHandler}
                     >

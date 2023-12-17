@@ -26,7 +26,7 @@ export default function Home() {
   const [modalLoginOpen, setModalLoginOpen] = useState(false);
   const [modalRegisterOpen, setModalRegisterOpen] = useState(false);
   const [modalProductOpen, setModalProductOpen] = useState(false);
-  const [userRole, setUserRole] = useState("konsumer");
+  const [userRole, setUserRole] = useState("Konsumer");
   const [filter, setFilter] = useState(false);
   const [minInput, setMinInput] = useState();
   const [maxInput, setMaxInput] = useState();
@@ -79,7 +79,7 @@ export default function Home() {
   }
 
   const onChangeRoleHandler = () => {
-    userRole === "konsumer" ? setUserRole("peretail") : setUserRole("konsumer")
+    userRole === "Konsumer" ? setUserRole("Peretail") : setUserRole("Konsumer")
   }
 
   const onProfileOpen = () => {

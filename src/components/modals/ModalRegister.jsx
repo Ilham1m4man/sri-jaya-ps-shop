@@ -19,9 +19,10 @@ export default function ModalRegister({
   isModalRegisterOpen,
 }) {
   const [isLoading, setIsloading] = useState();
-  const [role, setRole] = useState("konsumer");
+  const [role, setRole] = useState("Konsumer");
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
+  const [phone, setPhone] = useState();
   const router = useRouter();
 
   const register = async (e) => {
@@ -30,7 +31,7 @@ export default function ModalRegister({
 
     let dataInput;
 
-    if (role === "konsumer") {
+    if (role === "Konsumer") {
       dataInput = {
         name: e.target[0].value,
         email: e.target[1].value,
@@ -38,12 +39,12 @@ export default function ModalRegister({
         confirmPassword: confirmPassword,
         role: role,
       };
-    } else if (role === "peretail") {
+    } else if (role === "Peretail") {
       dataInput = {
         name: e.target[0].value,
         businessName: e.target[1].value,
         email: e.target[2].value,
-        phone: e.target[3].value,
+        phone: phone,
         password: password,
         confirmPassword: confirmPassword,
         role: role,
@@ -131,9 +132,9 @@ export default function ModalRegister({
                 </div>
                 <div className="flex items-center max-w-[228px] max-h-[45px] rounded-[10px] overflow-hidden bg-footer_fontClr border-2 border-black">
                   <button
-                    onClick={() => setRole("konsumer")}
+                    onClick={() => setRole("Konsumer")}
                     className={`rounded-[10px] text-base md:text-xl font-normal p-[10px] ${
-                      role === "konsumer"
+                      role === "Konsumer"
                         ? "bg-grn-300 text-grn-950 "
                         : "bg-transparent text-grn-50 hover:bg-grn-950"
                     }`}
@@ -141,9 +142,9 @@ export default function ModalRegister({
                     Konsumer
                   </button>
                   <button
-                    onClick={() => setRole("peretail")}
+                    onClick={() => setRole("Peretail")}
                     className={`rounded-[10px] text-base md:text-xl font-normal py-[10px] px-[19px] ${
-                      role === "peretail"
+                      role === "Peretail"
                         ? "bg-ble-300 text-ble-950"
                         : "bg-transparent text-ble-50 hover:bg-ble-950"
                     }`}
@@ -153,7 +154,7 @@ export default function ModalRegister({
                 </div>
                 {isLoading ? (
                   <Spinner customClass={customClass} />
-                ) : role === "konsumer" ? (
+                ) : role === "Konsumer" ? (
                   <RegistKonsumer
                     inputHandler={register}
                     setPW={setPassword}
@@ -164,6 +165,8 @@ export default function ModalRegister({
                     inputHandler={register}
                     setPW={setPassword}
                     setConfPW={setConfirmPassword}
+                    phoneValue={phone}
+                    setPhoneValue={setPhone}
                   />
                 )}
                 <p className="text-grn-950 font-normal text-base">
