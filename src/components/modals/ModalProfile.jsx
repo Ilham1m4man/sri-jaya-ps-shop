@@ -2,10 +2,14 @@ import Image from "next/image";
 import React, { useState, useReducer, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { sendPasswordResetEmail, signOut } from "firebase/auth";
+import { auth, storage } from "@/app/firebase/firebase.config";
 import BackBtn from "../buttons/BackBtn";
 import LogoutBtn from "../buttons/LogoutBtn";
 import ProfileForm from "../forms/ProfileForm";
 import UploadFotoProfile from "../UploadFotoProfile";
+import editProfile from "@/app/services/editProfile";
 
 export default function ModalProfile({
   userProfile,
@@ -14,16 +18,15 @@ export default function ModalProfile({
   currentRole,
   isModalProfileOpen,
 }) {
+  const [isLoading, setIsLoading] = useState(false);
   const [isDisabled, setIsDisabled] = useState(true);
   const [image, setImage] = useState();
   const [imagePreviews, setImagePreviews] = useState();
   const [previewsFromServer, setPreviewsFromServer] = useState();
-  /* const [name, setName] = useState(userProfile && userProfile.displayName);
-  const [email, setEmail] = useState(userProfile && userProfile.email);
-  const [phone, setPhone] = useState();
-  const [address, setAddress] = useState(); */
 
+  /* ================================================= INITIALSTATE OBJECT ================================================= */
   const initialState = {
+    uid: userProfile && userProfile.uid,
     name: userProfile && userProfile.displayName,
     email: userProfile && userProfile.email,
     phone:
@@ -34,11 +37,35 @@ export default function ModalProfile({
       (userProfile.customClaims.address === ""
         ? "Mohon isi alamat anda untuk tujuan pengiriman"
         : userProfile.customClaims.address),
+    businessName: userProfile && userProfile.customClaims.businessName,
+    role: userProfile && userProfile.customClaims.role,
     photo:
       userProfile &&
-      (userProfile.photoUrl === undefined ? "" : userProfile.photoUrl),
+      (userProfile.photoURL === undefined ? "" : userProfile.photoURL),
   };
 
+  /* ================================================= REDUCER FUNC FOR IMAGE ================================================= */
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case "RESET":
+        return { ...state, fileList: [] };
+      case "ADD_FILE_TO_LIST":
+        if (state.fileList.length > 0) {
+          state.fileList.shift();
+        }
+        return { ...state, fileList: state.fileList.concat(action.files) };
+      default:
+        return state;
+    }
+  };
+
+  /* ================================================= REDUCER FOR IMAGE ================================================= */
+  const [data, dispatch] = useReducer(reducer, {
+    inDropZone: false,
+    fileList: [],
+  });
+
+  /* ================================================= REDUCER FUNC FOR STATE ================================================= */
   const reducerState = (state, action) => {
     const { name, email, phone, address } = initialState;
     switch (action.type) {
@@ -46,12 +73,16 @@ export default function ModalProfile({
         return initialState;
       case "SET_DATA":
         return initialState;
+      case "SET_IMG_PROFILE":
+        const url = action.url;
+        return { ...state, photo: url };
       case "CEK_EDIT":
         if (
-          state?.name?.includes(name) &&
-          state?.email?.includes(email) &&
-          state?.phone?.includes(phone) &&
-          state?.address?.includes(address)
+          state?.name == name &&
+          state?.email == email &&
+          state?.phone == phone &&
+          state?.address == address &&
+          data.fileList.length === 0
         ) {
           setIsDisabled(true);
           return state;
@@ -63,39 +94,14 @@ export default function ModalProfile({
         result[action.type] = action.value;
         return result;
     }
-    /* if (action.type === "RESET") {
-      return initialState;
-    } else if (action.type === "SET_DATA") {
-      return initialState;
-    }
-
-    const result = { ...state };
-    result[action.type] = action.value;
-    return result; */
   };
 
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case "ADD_FILE_TO_LIST":
-        if (state.fileList.length > 0) {
-          state.fileList.shift();
-        }
-        return { ...state, fileList: state.fileList.concat(action.files) };
-      default:
-        return state;
-    }
-  };
-
-  // destructuring state and dispatch, initializing fileList to empty array
+  /* ================================================= REDUCER FOR STATE ================================================= */
   const [state, dispatchState] = useReducer(reducerState, {});
-  const { name, email, phone, address, photo } = state;
-  console.log(state);
+  const { uid, name, email, phone, address, photo } = state;
+  /* console.log(state); */
 
-  const [data, dispatch] = useReducer(reducer, {
-    inDropZone: false,
-    fileList: [],
-  });
-
+  /* ================================================= PREVIEW IMG AND SETIMAGE ================================================= */
   data.fileList.map((item) => {
     const reader = new FileReader();
 
@@ -109,6 +115,7 @@ export default function ModalProfile({
     }
   });
 
+  /* ================================================= CEK TELEPON ================================================= */
   const cekNoTelepon = () => {
     if (
       userProfile.phoneNumber == null ||
@@ -121,6 +128,7 @@ export default function ModalProfile({
     }
   };
 
+  /* ================================================= CEK ALAMAT ================================================= */
   const cekAlamat = () => {
     if (
       userProfile.customClaims.address == null ||
@@ -133,23 +141,31 @@ export default function ModalProfile({
     }
   };
 
+  /* ================================================= BATAL HANDLER ================================================= */
   const batalHandler = () => {
     dispatchState({ type: "RESET" });
-    /* userProfile && console.log(userProfile.phoneNumber)
-    setName(userProfile.displayName);
-    setEmail(userProfile.email);
-    setPhone(userProfile.phoneNumber);
-    setAddress(userProfile.customClaims.address); */
-    data.fileList = [];
-    setImage();
-    setImagePreviews();
+    dispatch({ type: "RESET" });
+    setImage(null);
+    setImagePreviews(null);
     console.log("form have been reset");
   };
 
+  /* ================================================= RESET PW HANDLER ================================================= */
   const resetPWHandler = () => {
-    console.log("reset PW");
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        window.alert(
+          "Email reset password telah terkirim, mohon periksa email dan folder spam anda"
+        );
+        signOut(auth);
+        window.location.reload();
+      })
+      .catch((err) => {
+        window.alert(err);
+      });
   };
 
+  /* ================================================= ONCHANGE HANDLER ================================================= */
   const onChange = (e) => {
     if (typeof e == "string" || e == undefined) {
       const value = e;
@@ -160,54 +176,67 @@ export default function ModalProfile({
     }
   };
 
-  const editProfileHandler = (e) => {
-    /* e.preventDefault(); */
-    console.log("edit handler");
-    name && console.log(name, email, phone, address);
-  };
+  /* ================================================= ONSUBMIT HANDLER ================================================= */
+  const editProfileHandler = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-  const cekEdit = () => {
-    name && console.log(name);
-    email && console.log(email);
-    if (name && name.includes(userProfile.displayName)) {
-      console.log("iya sama");
-      setIsDisabled(true);
+    const imgRef = ref(storage, `images/profile/${uid}`);
+    if (image) {
+      uploadBytes(imgRef, image)
+        .then(() => {
+          getDownloadURL(imgRef)
+            .then((url) => {
+              setPreviewsFromServer(url);
+              editProfile({
+                ...state,
+                photo: url,
+                businessName: state.businessName,
+                role: state.role,
+              })
+                .then((response) => {
+                  console.log(response);
+                  window.alert("Edit profil berhasil");
+                  window.location.reload();
+                })
+                .catch((err) => {
+                  window.alert("Edit profil gagal");
+                  console.log(err);
+                });
+            })
+            .catch((err) => {
+              window.alert(err.message);
+            });
+        })
+        .catch((err) => {
+          window.alert(err.message);
+        });
     } else {
-      console.log("beda cuk");
-      setIsDisabled(false);
+      editProfile({
+        ...state,
+        businessName: state.businessName,
+        role: state.role,
+      })
+        .then((response) => {
+          console.log(response);
+          window.alert("Edit profil berhasil");
+          window.location.reload();
+        })
+        .catch((err) => {
+          window.alert("Edit profil gagal");
+          console.log(err);
+        });
     }
 
-    /* if (email && email.includes(userProfile.email)) {
-      console.log("iya sama");
-      setIsDisabled(true);
-    } else {
-      console.log("beda cuk");
-      setIsDisabled(false);
-    } */
-
-    /* if ((phone && phone.includes(cekNoTelepon()))) {
-      console.log("iya sama");
-      setIsDisabled(true);
-    } else {
-      console.log("beda cuk");
-      setIsDisabled(false);
-    }
-
-    if ((address && address.toLowerCase().includes(cekAlamat().toLowerCase()))) {
-      console.log("iya sama");
-      setIsDisabled(true);
-    } else {
-      console.log("beda cuk");
-      setIsDisabled(false);
-    } */
+    setIsLoading(false);
   };
 
   useEffect(() => {
     userProfile && dispatchState({ type: "SET_DATA" });
+    userProfile && setPreviewsFromServer(initialState.photo);
   }, [userProfile]);
 
   useEffect(() => {
-    /* userProfile && cekEdit(); */
     dispatchState({ type: "CEK_EDIT" });
   }, [name, email, phone, address, imagePreviews]);
 
@@ -275,7 +304,7 @@ export default function ModalProfile({
                           className={`${
                             imagePreviews ? "hidden" : "block"
                           } object-cover h-full rounded-[15px]`}
-                          src={`http://127.0.0.1:8000/images/${previewsFromServer}`}
+                          src={`${previewsFromServer}`}
                           alt={`Preview`}
                         />
                         <img
@@ -314,9 +343,6 @@ export default function ModalProfile({
                     state={state}
                     dispatchState={dispatchState}
                     phoneValue={phone}
-                    /* setName={setName}
-                    setEmail={setEmail}
-                    setPhoneValue={setPhone} */
                   />
                 </div>
 
@@ -333,7 +359,6 @@ export default function ModalProfile({
                       name="address"
                       value={state.address}
                       defaultValue={userProfile && cekAlamat()}
-                      /* onChange={(e) => setAddress(e.target.value)} */
                       onChange={onChange}
                       className="w-full resize-none rounded-xl text-grn-950 font-normal text-base border-2 border-grn-950 p-[10px] outline-none"
                     />

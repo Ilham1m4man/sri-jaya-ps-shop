@@ -37,7 +37,7 @@ export default function ModalLogin({
         }
       })
       .catch((error) => {
-        window.alert(error.message);
+        window.alert("Email atau password tidak sesuai \n \n" + error.message);
       });
 
     setIsloading(false);
