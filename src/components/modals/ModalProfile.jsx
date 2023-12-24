@@ -18,7 +18,7 @@ export default function ModalProfile({
   currentRole,
   isModalProfileOpen,
 }) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState();
   const [isDisabled, setIsDisabled] = useState(true);
   const [image, setImage] = useState();
   const [imagePreviews, setImagePreviews] = useState();

@@ -92,7 +92,7 @@ export default function ModalRegister({
     setIsloading(false);
   };
 
-  const customClass = "fill-grn-400";
+  const customClass = (role === "Konsumer" ? "fill-grn-400" : "fill-ble-400");
 
   return (
     <Transition appear show={isModalRegisterOpen} as={Fragment}>

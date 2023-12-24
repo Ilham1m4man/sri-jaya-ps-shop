@@ -5,7 +5,6 @@ import { auth } from "@/app/firebase/firebase.config";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import BackBtn from "../buttons/BackBtn";
 import LoginForm from "../forms/LoginForm";
-import Spinner from "../loaders/Spinner";
 
 export default function ModalLogin({
   modal_login,
@@ -69,31 +68,39 @@ export default function ModalLogin({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-[90%] sm:w-[70%] lg:w-[50%] transform overflow-hidden rounded-[20px] bg-white p-8 text-left flex flex-col gap-[15px] md:gap-[40px] items-center shadow-xl transition-all">
-                <div className="flex justify-end w-full relative items-center">
-                  <Dialog.Title
-                    as="h3"
-                    className="text-grn-950 text-2xl md:text-[2.3rem] rounded-[10px] mx-auto font-bold"
-                  >
-                    Masuk
-                  </Dialog.Title>
-                  <BackBtn backFrom={modal_login} />
-                </div>
-                {isLoading ? (
-                  <Spinner />
-                ) : (
+              <Dialog.Panel
+                className={`w-[90%] sm:w-[70%] lg:w-[50%] transform overflow-hidden rounded-[20px] bg-white shadow-xl transition-all`}
+              >
+                <div
+                  className={`${
+                    isLoading && "opacity-60 text-opacity-60"
+                  } text-left flex flex-col gap-[15px] md:gap-[40px] items-center p-8`}
+                >
+                  <div className="flex justify-end w-full relative items-center">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-grn-950 text-2xl md:text-[2.3rem] rounded-[10px] mx-auto font-bold"
+                    >
+                      Masuk
+                    </Dialog.Title>
+                    <BackBtn isLoading={isLoading} backFrom={modal_login} />
+                  </div>
                   <LoginForm
+                    isLoading={isLoading}
                     inputHandler={loginHandler}
                     setEmail={setEmail}
                     setPW={setPassword}
                   />
-                )}
-                <p className="text-grn-950 font-normal text-base">
-                  Belum punya akun?{" "}
-                  <button onClick={onRegister} className="buat-akun ml-[20px]">
-                    Buat di sini
-                  </button>
-                </p>
+                  <p className="text-grn-950 font-normal text-base">
+                    Belum punya akun?{" "}
+                    <button
+                      onClick={onRegister}
+                      className="buat-akun ml-[20px]"
+                    >
+                      Buat di sini
+                    </button>
+                  </p>
+                </div>
               </Dialog.Panel>
             </Transition.Child>
           </div>

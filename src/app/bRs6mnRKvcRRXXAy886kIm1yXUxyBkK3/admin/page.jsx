@@ -2,8 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation';
-import { auth } from './firebase/firebase.config';
+import { auth } from '../../firebase/firebase.config';
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import Navbar from '@/components/Navbar'
 import ModalCart from '@/components/modals/ModalCart'
@@ -17,7 +16,7 @@ import { useState, useEffect } from 'react'
 import Footer from '@/components/Footer'
 import Filters from '@/components/Filters'
 import ModalRegister from '@/components/modals/ModalRegister'
-import getUserData from './services/getUserData';
+import getUserData from '../../services/getUserData';
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -32,7 +31,6 @@ export default function Home() {
   const [minInput, setMinInput] = useState();
   const [maxInput, setMaxInput] = useState();
   const [keyword, setKeyword] = useState("");
-  const router = useRouter()
 
   const cekAuth = () => {
     onAuthStateChanged(auth, (user) => {
@@ -42,9 +40,6 @@ export default function Home() {
         getUserData(uid).then((profile) => {
           setUserProfile(profile)
           setUserRole(profile.customClaims.role)
-          if (profile.customClaims.role === "Admin" ) {
-            router.push("bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin")
-          }
         }).catch((err) => {
           window.alert(err.message)
         })
@@ -111,7 +106,7 @@ export default function Home() {
     return console.log("Filter Click Handler")
   }
 
-  /* const coba = (length) => {
+  const coba = (length) => {
     const characters =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   const charactersLength = characters.length;
@@ -126,9 +121,10 @@ export default function Home() {
     result += characters.charAt(value % charactersLength);
   });
   return(result)
-  } */
+  }
 
   const onKeywordChangeHandler = (keyword) => {
+    console.log(coba(32))
     setKeyword(keyword)
   }
   const minInputHandler = (e) => setMinInput(e)
@@ -136,11 +132,6 @@ export default function Home() {
 
   return (
     <>
-      {modalCartOpen ? <ModalCart modal_cart={onCartOpen} /> : null}
-      <ModalProfile userProfile={userProfile} modal_profile={onProfileOpen} onLogOut={onLogOutHandler} currentRole={userRole} isModalProfileOpen={modalProfileOpen} />
-      <ModalLogin modal_login={onLoginOpen} onRegister={onRegisterHandler} isModalLoginOpen={modalLoginOpen} />
-      <ModalRegister modal_register={onRegisterOpen} onLogin={onLoginHandler} isModalRegisterOpen={modalRegisterOpen} />
-      {modalProductOpen ? <ModalProduct modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} changeRole={onChangeRoleHandler} /> : null}
       <header className="z-10 sticky top-0">
         <Navbar userProfile={userProfile} modal_cart={onCartOpen} statusCart={modalCartOpen} modal_profile={onProfileOpen} modal_login={onLoginOpen} modal_register={onRegisterOpen} statusProfile={modalProfileOpen} statusLoggedIn={loggedIn} />
         <section className="max-w-screen flex gap-[55px] justify-between px-20 pb-[50px] bg-mainBg_clr">

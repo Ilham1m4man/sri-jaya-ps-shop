@@ -1,9 +1,17 @@
 import Link from "next/link";
 import { useState } from "react";
 import PeekBtn from "../buttons/PeekBtn";
+import Spinner from "../loaders/Spinner";
 
-export default function LoginForm({ inputHandler, setEmail, setPW }) {
+export default function LoginForm({
+  isLoading,
+  inputHandler,
+  setEmail,
+  setPW,
+}) {
   const [isPasswordHidden, setPasswordHidden] = useState(true);
+
+  const customClass = "fill-grn-400 w-12 h-6";
 
   return (
     <form
@@ -18,6 +26,7 @@ export default function LoginForm({ inputHandler, setEmail, setPW }) {
           Email
         </label>
         <input
+          disabled={isLoading ? true : false}
           type="email"
           name="email"
           id="email"
@@ -38,6 +47,7 @@ export default function LoginForm({ inputHandler, setEmail, setPW }) {
             setPasswordHidden={setPasswordHidden}
           />
           <input
+            disabled={isLoading ? true : false}
             type={isPasswordHidden ? "password" : "text"}
             id="password"
             name="password"
@@ -53,10 +63,11 @@ export default function LoginForm({ inputHandler, setEmail, setPW }) {
         </Link>
       </div>
       <button
+        disabled={isLoading ? true : false}
         type="submit"
-        className="max-w-[176px] bg-footer_fontClr hover:opacity-90 active:scale-95 text-base md:text-xl font-normal text-grn-50 rounded-[10px] px-[25px] py-[8px] md:px-[30px] md:py-[10px] place-self-center transition-all"
+        className="max-w-[176px] disabled:cursor-not-allowed disabled:active:scale-100 bg-footer_fontClr hover:opacity-90 active:scale-95 text-base md:text-xl font-normal text-grn-50 rounded-[10px] px-[25px] py-[8px] md:px-[30px] md:py-[10px] place-self-center transition-all"
       >
-        Masuk
+        {isLoading ? <Spinner customClass={customClass} /> : "Masuk"}
       </button>
     </form>
   );

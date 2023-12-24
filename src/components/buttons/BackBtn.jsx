@@ -1,10 +1,14 @@
-export default function BackBtn({ backFrom, customClass }) {
+export default function BackBtn({ isLoading, backFrom, customClass }) {
   return (
-    <button onClick={backFrom} className={`${customClass ? customClass : "absolute" }`}>
+    <button
+      disabled={isLoading ? true : false}
+      onClick={backFrom}
+      className={`${customClass ? customClass : "absolute"}`}
+    >
       <svg
         width="15"
         height="15"
-        viewBox="0 0 26 26"
+        viewBox="0 0 28 28"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >

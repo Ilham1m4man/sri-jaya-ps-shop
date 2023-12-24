@@ -75,12 +75,6 @@ export default function RegistPeretail({
           value={phoneValue}
           onChange={setPhoneValue}
         />
-        {/* <input
-          required
-          type="tel"
-          name="phone"
-          className="w-full text-ble-950 font-normal text-base md:text-lg border-b-2 border-ble-950 p-[5px] md:p-[10px] outline-none"
-        /> */}
       </div>
       <div className="grid">
         <label

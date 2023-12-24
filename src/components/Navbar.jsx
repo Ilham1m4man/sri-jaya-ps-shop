@@ -2,6 +2,7 @@ import { useState } from "react";
 import Link from "next/link";
 
 export default function Navbar({
+  userProfile,
   modal_cart,
   statusCart,
   modal_profile,
@@ -11,6 +12,7 @@ export default function Navbar({
   statusLoggedIn,
 }) {
   const [navbar, setNavbar] = useState(false);
+  const role = userProfile ? userProfile.customClaims.role : "Konsumer"
 
   const LoggedInComp = () => {
     return (
@@ -39,15 +41,11 @@ export default function Navbar({
     return (
       <div className="flex items-start gap-[20px] flex-col md:flex-row md:items-center">
         <button
-          className="masuk-btn rounded-[10px]"
+          className="masuk-btn rounded-[10px] hover:opacity-80 active:scale-95 transition-all"
           onClick={modal_login}
           disabled={statusCart ? true : false}
         >
-          <div className="bg-mainBg_clr m-[2px] rounded-[8px]">
-            <p className="masuk-btn-text text-base font-bold py-[8px] px-[23px]">
-              Masuk
-            </p>
-          </div>
+          <p className="masuk-btn-text">Masuk</p>
         </button>
         <button
           className="register-btn flex justify-center items-center text-base font-bold text-grn-50 py-[10px] px-[25px] rounded-[10px]"
@@ -65,10 +63,10 @@ export default function Navbar({
       <div className="justify-between py-0 px-10 mx-auto lg:max-w-7xl md:items-center md:flex md:px-[3.7rem]">
         <div>
           <div className="flex items-center justify-between py-3 md:py-5">
-            <div className="bg-grn-300 rounded-[8px] py-[5px] px-[20px] md:rounded-[10px] md:py-[10px] md:px-[25px]">
-              <h3 className="text-base text-grn-950">
+            <div className={`${role === "Konsumer" ? "bg-grn-300" : "bg-ble-300"} rounded-[8px] py-[5px] px-[20px] md:rounded-[10px] md:py-[10px] md:px-[25px]`}>
+              <h3 className={`text-base ${role === "Konsumer" ? "text-grn-950" : "text-ble-950"}`}>
                 {/* AMBIL DATA JENIS AKUN DARI FIREBASE */}
-                Konsumer
+                {role}
               </h3>
             </div>
             {/* LOGO MOBILE */}
