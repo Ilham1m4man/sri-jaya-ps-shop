@@ -13,11 +13,13 @@ import ModalProduct from '@/components/modals/ModalProduct'
 import ProductCatalogue from '@/components/ProductCatalogue'
 import FilterBtn from '@/components/buttons/FilterBtn'
 import SearchBar from '@/components/SearchBar'
+import Spinner from '@/components/loaders/Spinner';
 import { useState, useEffect } from 'react'
 import Footer from '@/components/Footer'
 import Filters from '@/components/Filters'
 import ModalRegister from '@/components/modals/ModalRegister'
 import getUserData from './services/getUserData';
+import { useAppContext } from './context/AppWrapper';
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -33,30 +35,38 @@ export default function Home() {
   const [maxInput, setMaxInput] = useState();
   const [keyword, setKeyword] = useState("");
   const router = useRouter()
-
-  const cekAuth = () => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setLoggedIn(true)
-        const uid = user.uid;
-        getUserData(uid).then((profile) => {
-          setUserProfile(profile)
-          setUserRole(profile.customClaims.role)
-          if (profile.customClaims.role === "Admin" ) {
-            router.push("bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin")
-          }
-        }).catch((err) => {
-          window.alert(err.message)
-        })
-      } else {
-        setLoggedIn(false)
-      }
-    });
-  }
+  const {
+    isLoading,
+    hideLoading,
+    showLoading,
+  } = useAppContext()
 
   useEffect(() => {
+    const cekAuth = () => {
+      showLoading();
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setLoggedIn(true)
+          const uid = user.uid;
+          getUserData(uid).then((profile) => {
+            setUserProfile(profile)
+            setUserRole(profile.customClaims.role)
+            if (profile.customClaims.role === "Admin") {
+              router.push("bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin")
+            }
+          }).catch((err) => {
+            window.alert(err.message)
+          })
+          hideLoading()
+        } else {
+          setLoggedIn(false)
+          hideLoading()
+        }
+      });
+    }
+
     cekAuth()
-  }, [])
+  }, [router])
 
   const onCartOpen = () => {
     return setModalCartOpen(!modalCartOpen)
@@ -66,6 +76,7 @@ export default function Home() {
     signOut(auth).then(() => {
       setLoggedIn(false)
       window.alert("Berhasil logout");
+      setUserRole("Konsumer")
     })
       .catch((err) => {
         window.alert(err);
@@ -134,30 +145,40 @@ export default function Home() {
   const minInputHandler = (e) => setMinInput(e)
   const maxInputHandler = (e) => setMaxInput(e)
 
+  const customClass = "fill-grn-400 w-20 h-20";
+
   return (
     <>
-      {modalCartOpen ? <ModalCart modal_cart={onCartOpen} /> : null}
-      <ModalProfile userProfile={userProfile} modal_profile={onProfileOpen} onLogOut={onLogOutHandler} currentRole={userRole} isModalProfileOpen={modalProfileOpen} />
-      <ModalLogin modal_login={onLoginOpen} onRegister={onRegisterHandler} isModalLoginOpen={modalLoginOpen} />
-      <ModalRegister modal_register={onRegisterOpen} onLogin={onLoginHandler} isModalRegisterOpen={modalRegisterOpen} />
-      {modalProductOpen ? <ModalProduct modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} changeRole={onChangeRoleHandler} /> : null}
-      <header className="z-10 sticky top-0">
-        <Navbar userProfile={userProfile} modal_cart={onCartOpen} statusCart={modalCartOpen} modal_profile={onProfileOpen} modal_login={onLoginOpen} modal_register={onRegisterOpen} statusProfile={modalProfileOpen} statusLoggedIn={loggedIn} />
-        <section className="max-w-screen flex gap-[55px] justify-between px-20 pb-[50px] bg-mainBg_clr">
-          <FilterBtn filterClicked={() => setFilter(!filter)} />
-          <SearchBar keyword={keyword} keywordChange={onKeywordChangeHandler} />
-        </section>
-      </header>
-      <main className="relative flex bg-mainBg_clr min-h-screen gap-[55px] justify-between px-20">
-        {filter ? <Filters minInputValue={minInput} onMinInput={minInputHandler} maxInputValue={maxInput} onMaxInput={maxInputHandler} /> : null}
-        <div className={`mb-[40px] ${filter ? "w-[73.85%]" : "w-full"}`}>
-          {/* MAIN CONTENT */}
-          {/* PRODUCT CATALOGUE */}
-
-          <ProductCatalogue onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler} filterStat={filter} />
+      {isLoading ? (
+        <div className="w-screen h-screen grid place-items-center bg-mainBg_clr">
+          <Spinner customClass={customClass} />
         </div>
-      </main>
-      <Footer />
+      ) : (
+        <>
+          {modalCartOpen ? <ModalCart modal_cart={onCartOpen} /> : null}
+          <ModalProfile userProfile={userProfile} modal_profile={onProfileOpen} onLogOut={onLogOutHandler} currentRole={userRole} isModalProfileOpen={modalProfileOpen} />
+          <ModalLogin modal_login={onLoginOpen} onRegister={onRegisterHandler} isModalLoginOpen={modalLoginOpen} />
+          <ModalRegister modal_register={onRegisterOpen} onLogin={onLoginHandler} isModalRegisterOpen={modalRegisterOpen} />
+          {modalProductOpen ? <ModalProduct modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} changeRole={onChangeRoleHandler} /> : null}
+          <header className="z-10 sticky top-0">
+            <Navbar userProfile={userProfile} currentRole={userRole} modal_cart={onCartOpen} statusCart={modalCartOpen} modal_profile={onProfileOpen} modal_login={onLoginOpen} modal_register={onRegisterOpen} statusProfile={modalProfileOpen} statusLoggedIn={loggedIn} />
+            <section className="max-w-screen flex gap-[55px] justify-between px-20 pb-[50px] bg-mainBg_clr">
+              <FilterBtn filterClicked={() => setFilter(!filter)} />
+              <SearchBar keyword={keyword} keywordChange={onKeywordChangeHandler} />
+            </section>
+          </header>
+          <main className="relative flex bg-mainBg_clr min-h-screen gap-[55px] justify-between px-20">
+            {filter ? <Filters minInputValue={minInput} onMinInput={minInputHandler} maxInputValue={maxInput} onMaxInput={maxInputHandler} /> : null}
+            <div className={`mb-[40px] ${filter ? "w-[73.85%]" : "w-full"}`}>
+              {/* MAIN CONTENT */}
+              {/* PRODUCT CATALOGUE */}
+
+              <ProductCatalogue onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler} filterStat={filter} />
+            </div>
+          </main>
+          <Footer />
+        </>
+      )}
     </>
   )
 }

@@ -1,0 +1,171 @@
+"use client";
+
+import Link from "next/link";
+import Spinner from "@/components/loaders/Spinner";
+import { useRouter } from "next/navigation";
+import { FaChevronLeft } from "react-icons/fa6";
+import { useAppContext } from "@/app/context/AppWrapper";
+import { useEffect, useReducer, useState } from "react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import MainImgInput from "../components/MainImgInput";
+import OptImgInput from "../components/OptImgInput";
+import BasicInfoInput from "../components/BasicInfoInput";
+import MoreInfoInput from "../components/MoreInfoInput";
+import storeProduk from "@/app/services/storeProduk";
+
+export default function TambahProduk() {
+  const { isLoading, hideLoading, showLoading } = useAppContext();
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [mainImage, setMainImage] = useState();
+  const [optImage1, setOptImage1] = useState();
+  const [optImage2, setOptImage2] = useState();
+  const router = useRouter();
+  const homeAdminURL = "/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin"
+
+  const reducerProduct = (state, action) => {
+    switch (action.type) {
+      case "RESET":
+        return null;
+      case "CEK_MAIN_IMG":
+        if (mainImage === undefined || mainImage === null) {
+          setIsDisabled(true);
+          return state;
+        }
+        setIsDisabled(false);
+        return state;
+      default:
+        const result = { ...state };
+        result[action.type] = action.value;
+        return result;
+    }
+  };
+
+  const [product, dispatchProduct] = useReducer(reducerProduct, {});
+
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    dispatchProduct({ type: name, value });
+  };
+
+  const batalHandler = () => {
+    router.push(homeAdminURL);
+  };
+
+  const uploadProduk = async(e) => {
+    e.preventDefault();
+
+    if (optImage1) {
+      const imgRef = ref(storage, `images/product/${product.name}/${mainImage.name}`);
+      
+      await uploadBytes(imgRef, mainImage)
+        .then(() => {
+          getDownloadURL(imgRef)
+            .then((url) => {
+              storeProduk({...product, mainImgURL: url})
+                .then((response) => {
+                  console.log(response);
+                  window.alert("Berhasil menambah produk");
+                  router.push(homeAdminURL)
+                })
+                .catch((err) => {
+                  window.alert("Gagal menambah produk");
+                  console.log(err);
+                });
+            })
+            .catch((err) => {
+              window.alert(err.message);
+            });
+        })
+        .catch((err) => {
+          window.alert(err.message);
+        });
+    }
+
+  };
+
+  useEffect(() => {
+    dispatchProduct({ type: "CEK_MAIN_IMG" });
+  }, [mainImage]);
+
+  const customClassSpinner = "fill-grn-400 w-20 h-20";
+  hideLoading();
+
+  return (
+    <>
+      {isLoading ? (
+        <div className="w-screen h-screen grid place-items-center bg-mainBg_clr">
+          <Spinner customClass={customClassSpinner} />
+        </div>
+      ) : (
+        <>
+          <main className="relative flex flex-col gap-0 md:gap-8 bg-mainBg_clr min-h-screen">
+            <div className="z-10 w-full h-[20vw] max-h-[70px] pl-[10px] sm:pl-[40px] md:pl-[80px] bg-title-grey justify-start items-center gap-2 md:gap-4 inline-flex">
+              <Link href={"/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin"}>
+                <FaChevronLeft className="w-4 h-4 md:w-7 md:h-7 fill-ble-950 text-ble-950" />
+              </Link>
+              <h1 className="text-ble-900 text-lg md:text-3xl font-bold">
+                Tambah Produk
+              </h1>
+            </div>
+            <div className="container  mx-auto mb-4 px-4 sm:px-0">
+              <form onSubmit={uploadProduk} className="grid gap-4">
+                {/* SECTION UNTUK INPUT NAMA, HARGA, KATEGORI, dan GAMBAR PRODUK */}
+                <section className="flex flex-wrap gap-4 w-full justify-around text-green-950">
+                  <BasicInfoInput onChange={onChange} />
+                  <div className="bg-white rounded-3xl shadow-xl p-4 grow">
+                    <h3 className=" font-bold text-base sm:text-xl mb-4">
+                      Gambar Utama Produk
+                    </h3>
+                    <MainImgInput
+                      mainImage={mainImage}
+                      setMainImage={setMainImage}
+                    />
+                  </div>
+                  <div className="bg-white flex flex-col gap-4 rounded-3xl shadow-xl p-4 grow">
+                    <h4 className="font-bold text-sm sm:text-lg">
+                      Gambar Opsional Produk
+                    </h4>
+                    <div className="flex flex-col xs:flex-row gap-4 h-full">
+                      <OptImgInput
+                        optImage1={optImage1}
+                        setOptImage1={setOptImage1}
+                      />
+                      <OptImgInput
+                        optImage2={optImage2}
+                        setOptImage2={setOptImage2}
+                      />
+                    </div>
+                  </div>
+                </section>
+                {/* SECTION PETUNJUK PEMAKAIAN DAN KETERANGAN */}
+                <section className="flex flex-wrap gap-4 w-full justify-around text-green-950">
+                  <MoreInfoInput onChange={onChange} />
+                </section>
+                {/* SECTION TOMBOL BATAL & TOMBOL SIMPAN */}
+                <section className="flex flex-wrap gap-4 w-full justify-end text-green-950">
+                  <div className="flex gap-4">
+                    <button
+                      className="shadow-xl bg-footer_fontClr text-white hover:opacity-80 active:scale-95 transition-all text-base px-4 py-2 rounded-lg"
+                      type="button"
+                      onClick={batalHandler}
+                    >
+                      Batal
+                    </button>
+                    <button
+                      disabled={isDisabled}
+                      className={`shadow-xl bg-white hover:bg-gray-100 active:scale-95 disabled:opacity-80 disabled:cursor-not-allowed disabled:active:scale-100 disabled:hover:bg-white transition-all text-base px-4 py-2 rounded-lg`}
+                      type="submit"
+                      onClick={uploadProduk}
+                    >
+                      Simpan
+                    </button>
+                  </div>
+                </section>
+              </form>
+            </div>
+          </main>
+        </>
+      )}
+    </>
+  );
+}

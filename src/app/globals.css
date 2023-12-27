@@ -88,3 +88,9 @@ footer {
 .PhoneInputInput {
   outline: none;
 }
+
+.produk-card-admin {
+  background: linear-gradient(rgb(245, 245, 245), rgb(245, 245, 245)) padding-box,
+  var(--Daftar-Gradient, linear-gradient(93deg, rgba(38, 166, 119, 0.90) 24.48%, rgba(3, 99, 201, 0.55) 100%)) border-box;
+  border: 2px solid transparent;
+}

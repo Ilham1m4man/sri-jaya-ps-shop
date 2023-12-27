@@ -1,8 +1,12 @@
+import AddProductCard from "@/app/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin/components/AddProductCard";
 import CardProduct from "./CardProduct";
 
-export default function ProductCatalogue({ onProductCardHandler, onKeranjangHandler, filterStat }) {
+export default function ProductCatalogue({ userProfile, onProductCardHandler, onKeranjangHandler, filterStat }) {
+  const role = userProfile && userProfile.customClaims.role
+
   return (
     <section className={`grid gap-[55px] max-w-full ${filterStat ? "grid-cols-3" : "grid-cols-4"}`}>
+      {role === "Admin" && <AddProductCard />}
       <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
       <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>
       <CardProduct onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler}/>

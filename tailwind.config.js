@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -6,6 +8,10 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    screens: {
+      'xs': '475px',
+      ...defaultTheme.screens,
+    },
     extend: {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -28,6 +34,7 @@ module.exports = {
         'grn-600': '#26A677',
         'grn-700': '#1D7C59',
         'grn-800': '#13533C',
+        'grn-900': '#0A291E',
         'grn-950': '#05150F',
         'ble-50': '#E6F2FF',
         'ble-100': '#CDE5FE',
@@ -38,6 +45,7 @@ module.exports = {
         'ble-600': '#0363C9',
         'ble-700': '#024A97',
         'ble-800': '#023164',
+        'ble-900': '#011932',
         'ble-950': '#000C19',
       },
     },

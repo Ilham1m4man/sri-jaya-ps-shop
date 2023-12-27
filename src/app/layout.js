@@ -1,3 +1,4 @@
+import { AppWrapper } from './context/AppWrapper'
 import './globals.css'
 import localFont from 'next/font/local'
 
@@ -35,7 +36,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${OpenSauceOne.className}`}>
-        {children}
+        <AppWrapper>{children}</AppWrapper>
       </body>
     </html>
   )

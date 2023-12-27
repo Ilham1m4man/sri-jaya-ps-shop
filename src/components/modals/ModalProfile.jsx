@@ -375,7 +375,7 @@ export default function ModalProfile({
                   <LogoutBtn onLogOut={onLogOut} />
                   <div className="flex gap-4 justify-end w-full">
                     <button
-                      className="bg-footer_fontClr hover:opacity-90 active:scale-95 transition-all text-base px-4 py-2 rounded-lg"
+                      className="bg-footer_fontClr text-white hover:opacity-90 active:scale-95 transition-all text-base px-4 py-2 rounded-lg"
                       type="button"
                       onClick={batalHandler}
                     >
