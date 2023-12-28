@@ -1,7 +1,7 @@
 import { addDoc, collection, Timestamp, getDocs } from "firebase/firestore";
 import { firestore } from "../firebase/firebase.config";
 
-const storeProduk = async ({ name, price, category, desc, userGuide }) => {
+const storeProduk = async ({ name, price, category, desc, userGuide, productImgURLs }) => {
   const ref = collection(firestore, "products");
   await addDoc(ref, {
     name,
@@ -9,6 +9,7 @@ const storeProduk = async ({ name, price, category, desc, userGuide }) => {
     category,
     desc,
     userGuide,
+    productImgURLs,
     sentAt: Timestamp.now().toDate(),
   }).then((response) => {
     return response

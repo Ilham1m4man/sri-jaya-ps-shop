@@ -5,6 +5,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation';
 import { auth } from './firebase/firebase.config';
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useAppContext } from './context/AppWrapper';
+import { useState, useEffect } from 'react'
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
+import { firestore } from './firebase/firebase.config';
 import Navbar from '@/components/Navbar'
 import ModalCart from '@/components/modals/ModalCart'
 import ModalProfile from '@/components/modals/ModalProfile'
@@ -14,12 +18,10 @@ import ProductCatalogue from '@/components/ProductCatalogue'
 import FilterBtn from '@/components/buttons/FilterBtn'
 import SearchBar from '@/components/SearchBar'
 import Spinner from '@/components/loaders/Spinner';
-import { useState, useEffect } from 'react'
 import Footer from '@/components/Footer'
 import Filters from '@/components/Filters'
 import ModalRegister from '@/components/modals/ModalRegister'
 import getUserData from './services/getUserData';
-import { useAppContext } from './context/AppWrapper';
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -34,6 +36,7 @@ export default function Home() {
   const [minInput, setMinInput] = useState();
   const [maxInput, setMaxInput] = useState();
   const [keyword, setKeyword] = useState("");
+  const [dataProduct, setDataProduct] = useState();
   const router = useRouter()
   const {
     isLoading,
@@ -67,6 +70,22 @@ export default function Home() {
 
     cekAuth()
   }, [router])
+
+  useEffect(() => {
+    const cekProduk = async () => {
+      const colRef = collection(firestore, "products");
+
+      onSnapshot(colRef, (doc) => {
+        setDataProduct(
+          doc.docs.map((item) => {
+            return { ...item.data(), idProduct: item.id };
+          })
+        );
+      });
+    };
+
+    cekProduk()
+  }, [])
 
   const onCartOpen = () => {
     return setModalCartOpen(!modalCartOpen)
@@ -173,7 +192,7 @@ export default function Home() {
               {/* MAIN CONTENT */}
               {/* PRODUCT CATALOGUE */}
 
-              <ProductCatalogue onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler} filterStat={filter} />
+              <ProductCatalogue dataProduct={dataProduct} onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler} filterStat={filter} />
             </div>
           </main>
           <Footer />

@@ -1,6 +1,6 @@
-export default function BasicInfoInput({ onChange }) {
+export default function BasicInfoInput({ isDisabled, onChange }) {
   return (
-    <div className="bg-white grid gap-2 rounded-3xl shadow-xl p-6 grow">
+    <div className="bg-white grid gap-6 rounded-3xl shadow-xl p-6 grow">
       <div className="grid">
         <label
           htmlFor="name"
@@ -10,12 +10,12 @@ export default function BasicInfoInput({ onChange }) {
         </label>
         <input
           required
-          /* disabled={isLoading ? true : false} */
-          type="name"
+          disabled={isDisabled}
+          type="text"
           name="name"
           id="name"
           onChange={onChange}
-          className="w-full text-grn-950 font-normal text-sm md:text-base border-b-[1px] border-grn-950 p-[1px] md:p-[5px] outline-none"
+          className="w-full text-grn-950 font-normal text-sm md:text-base border-b-[1px] border-grn-950 p-[3px] md:p-[5px] outline-none"
         />
       </div>
       <div className="grid">
@@ -25,15 +25,25 @@ export default function BasicInfoInput({ onChange }) {
         >
           Harga Produk
         </label>
-        <input
-          required
-          /* disabled={isLoading ? true : false} */
-          type="price"
-          name="price"
-          id="price"
-          onChange={onChange}
-          className="w-full text-grn-950 font-normal text-sm md:text-base border-b-[1px] border-grn-950 p-[1px] md:p-[5px] outline-none"
-        />
+        <div className="flex items-center w-full">
+          <h3 className="leading-3 font-bold text-sm md:text-base text-ble-950 px-2">
+            Rp
+          </h3>
+          <input
+          disabled={isDisabled}
+            type="number"
+            className="remove-arrow text-grn-950 resize-none w-full h-full border-b-[1px] border-grn-950 p-[3px] md:p-[5px] outline-none"
+            id="price"
+            name="price"
+            onKeyDown={(e) => {
+              if ([38, 40].indexOf(e.keyCode) > -1) {
+                e.preventDefault();
+              }
+            }}
+            onWheel={(e) => e.target.blur()}
+            onChange={onChange}
+          />
+        </div>
       </div>
       <div className="grid">
         <label
@@ -44,12 +54,12 @@ export default function BasicInfoInput({ onChange }) {
         </label>
         <input
           required
-          /* disabled={isLoading ? true : false} */
-          type="category"
+          disabled={isDisabled}
+          type="text"
           name="category"
           id="category"
           onChange={onChange}
-          className="w-full text-grn-950 font-normal text-sm md:text-base border-b-[1px] border-grn-950 p-[1px] md:p-[5px] outline-none"
+          className="w-full text-grn-950 font-normal text-sm md:text-base border-b-[1px] border-grn-950 p-[3px] md:p-[5px] outline-none"
         />
       </div>
     </div>

@@ -7,6 +7,7 @@ import { FaChevronLeft } from "react-icons/fa6";
 import { useAppContext } from "@/app/context/AppWrapper";
 import { useEffect, useReducer, useState } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "@/app/firebase/firebase.config";
 import MainImgInput from "../components/MainImgInput";
 import OptImgInput from "../components/OptImgInput";
 import BasicInfoInput from "../components/BasicInfoInput";
@@ -16,11 +17,12 @@ import storeProduk from "@/app/services/storeProduk";
 export default function TambahProduk() {
   const { isLoading, hideLoading, showLoading } = useAppContext();
   const [isDisabled, setIsDisabled] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [mainImage, setMainImage] = useState();
   const [optImage1, setOptImage1] = useState();
   const [optImage2, setOptImage2] = useState();
   const router = useRouter();
-  const homeAdminURL = "/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin"
+  const homeAdminURL = "/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin";
 
   const reducerProduct = (state, action) => {
     switch (action.type) {
@@ -51,36 +53,55 @@ export default function TambahProduk() {
     router.push(homeAdminURL);
   };
 
-  const uploadProduk = async(e) => {
-    e.preventDefault();
+  const uploadProductImg = async () => {
+    const imgRef = ref(
+      storage,
+      `images/product/${product.name}/${mainImage.name}`
+    );
+    const imgRefOpt1 = ref(
+      storage,
+      `images/product/${product.name}/${optImage1.name}`
+    );
+    const imgRefOpt2 = ref(
+      storage,
+      `images/product/${product.name}/${optImage2.name}`
+    );
 
-    if (optImage1) {
-      const imgRef = ref(storage, `images/product/${product.name}/${mainImage.name}`);
-      
-      await uploadBytes(imgRef, mainImage)
-        .then(() => {
-          getDownloadURL(imgRef)
-            .then((url) => {
-              storeProduk({...product, mainImgURL: url})
-                .then((response) => {
-                  console.log(response);
-                  window.alert("Berhasil menambah produk");
-                  router.push(homeAdminURL)
-                })
-                .catch((err) => {
-                  window.alert("Gagal menambah produk");
-                  console.log(err);
-                });
-            })
-            .catch((err) => {
-              window.alert(err.message);
-            });
-        })
-        .catch((err) => {
-          window.alert(err.message);
-        });
+    await uploadBytes(imgRef, mainImage);
+    const mainImgURL = await getDownloadURL(imgRef);
+
+    let optImg1URL;
+    let optImg2URL;
+
+    if (optImage1 && optImage2) {
+      await uploadBytes(imgRefOpt1, optImage1);
+      optImg1URL = await getDownloadURL(imgRefOpt1);
+
+      await uploadBytes(imgRefOpt2, optImage2);
+      optImg2URL = await getDownloadURL(imgRefOpt2);
+    } else if (optImage1) {
+      await uploadBytes(imgRefOpt1, optImage1);
+      optImg1URL = await getDownloadURL(imgRefOpt1);
+    } else if (optImage2) {
+      await uploadBytes(imgRefOpt2, optImage2);
+      optImg2URL = await getDownloadURL(imgRefOpt2);
     }
+    return { mainImgURL, optImg1URL, optImg2URL };
+  };
 
+  const uploadProduk = async (e) => {
+    e.preventDefault();
+    setIsUploading(true);
+    console.log("harusnya uploading");
+
+    /* const imgURLs = await uploadProductImg();
+    const response = await storeProduk({ ...product, productImgURLs: imgURLs });
+
+    console.log(response); */
+    setTimeout(() => {
+      console.log("harusnya gak uploading");
+      setIsUploading(false);
+    }, 5000);
   };
 
   useEffect(() => {
@@ -88,6 +109,7 @@ export default function TambahProduk() {
   }, [mainImage]);
 
   const customClassSpinner = "fill-grn-400 w-20 h-20";
+  const customClassMiniSpinner = "fill-grn-600 w-12 h-6";
   hideLoading();
 
   return (
@@ -98,7 +120,11 @@ export default function TambahProduk() {
         </div>
       ) : (
         <>
-          <main className="relative flex flex-col gap-0 md:gap-8 bg-mainBg_clr min-h-screen">
+          <main
+            className={`relative flex flex-col gap-0 md:gap-8 bg-mainBg_clr min-h-screen ${
+              isUploading && "opacity-70 cursor-not-allowed"
+            }`}
+          >
             <div className="z-10 w-full h-[20vw] max-h-[70px] pl-[10px] sm:pl-[40px] md:pl-[80px] bg-title-grey justify-start items-center gap-2 md:gap-4 inline-flex">
               <Link href={"/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin"}>
                 <FaChevronLeft className="w-4 h-4 md:w-7 md:h-7 fill-ble-950 text-ble-950" />
@@ -107,44 +133,45 @@ export default function TambahProduk() {
                 Tambah Produk
               </h1>
             </div>
-            <div className="container  mx-auto mb-4 px-4 sm:px-0">
+            <div className="container  mx-auto mb-4 px-4">
               <form onSubmit={uploadProduk} className="grid gap-4">
-                {/* SECTION UNTUK INPUT NAMA, HARGA, KATEGORI, dan GAMBAR PRODUK */}
                 <section className="flex flex-wrap gap-4 w-full justify-around text-green-950">
-                  <BasicInfoInput onChange={onChange} />
+                  {/* SECTION UNTUK INPUT NAMA, HARGA, KATEGORI, dan GAMBAR PRODUK */}
+                  <BasicInfoInput isDisabled={isUploading} onChange={onChange} />
+                  <MoreInfoInput isDisabled={isUploading} onChange={onChange} />
+                  {/* SECTION PETUNJUK PEMAKAIAN DAN KETERANGAN */}
+
+                  <div className="bg-white flex flex-col gap-4 rounded-3xl shadow-xl p-4 grow">
+                    <h3 className="font-bold text-base sm:text-xl">
+                      Gambar Opsional Produk
+                    </h3>
+                    <div className="flex flex-col sm:flex-row gap-4 h-full">
+                      <OptImgInput
+                        isDisabled={isUploading}
+                        setOptImage1={setOptImage1}
+                      />
+                      <OptImgInput
+                        isDisabled={isUploading}
+                        setOptImage2={setOptImage2}
+                      />
+                    </div>
+                  </div>
                   <div className="bg-white rounded-3xl shadow-xl p-4 grow">
                     <h3 className=" font-bold text-base sm:text-xl mb-4">
                       Gambar Utama Produk
                     </h3>
                     <MainImgInput
+                      isDisabled={isUploading}
                       mainImage={mainImage}
                       setMainImage={setMainImage}
                     />
                   </div>
-                  <div className="bg-white flex flex-col gap-4 rounded-3xl shadow-xl p-4 grow">
-                    <h4 className="font-bold text-sm sm:text-lg">
-                      Gambar Opsional Produk
-                    </h4>
-                    <div className="flex flex-col xs:flex-row gap-4 h-full">
-                      <OptImgInput
-                        optImage1={optImage1}
-                        setOptImage1={setOptImage1}
-                      />
-                      <OptImgInput
-                        optImage2={optImage2}
-                        setOptImage2={setOptImage2}
-                      />
-                    </div>
-                  </div>
-                </section>
-                {/* SECTION PETUNJUK PEMAKAIAN DAN KETERANGAN */}
-                <section className="flex flex-wrap gap-4 w-full justify-around text-green-950">
-                  <MoreInfoInput onChange={onChange} />
                 </section>
                 {/* SECTION TOMBOL BATAL & TOMBOL SIMPAN */}
                 <section className="flex flex-wrap gap-4 w-full justify-end text-green-950">
                   <div className="flex gap-4">
                     <button
+                      disabled={isUploading}
                       className="shadow-xl bg-footer_fontClr text-white hover:opacity-80 active:scale-95 transition-all text-base px-4 py-2 rounded-lg"
                       type="button"
                       onClick={batalHandler}
@@ -157,7 +184,11 @@ export default function TambahProduk() {
                       type="submit"
                       onClick={uploadProduk}
                     >
-                      Simpan
+                      {isUploading ? (
+                        <Spinner customClass={customClassMiniSpinner} />
+                      ) : (
+                        "Simpan"
+                      )}
                     </button>
                   </div>
                 </section>

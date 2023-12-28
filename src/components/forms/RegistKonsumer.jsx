@@ -1,9 +1,12 @@
 import { useState } from "react";
 import PeekBtn from "../buttons/PeekBtn";
+import Spinner from "../loaders/Spinner";
 
-export default function RegistKonsumer({ inputHandler, setPW, setConfPW }) {
+export default function RegistKonsumer({ isLoading, inputHandler, setPW, setConfPW }) {
   const [isPasswordHidden, setPasswordHidden] = useState(true);
   const [isConfirmPasswordHidden, setConfirmPasswordHidden] = useState(true);
+
+  const customClass = "fill-grn-400 w-12 h-6";
 
   return (
     <form
@@ -84,7 +87,7 @@ export default function RegistKonsumer({ inputHandler, setPW, setConfPW }) {
         type="submit"
         className="max-w-[176px] bg-footer_fontClr hover:opacity-90 active:scale-95 transition-all text-base md:text-lg font-normal text-grn-50 rounded-[10px] px-[30px] py-[10px] place-self-center"
       >
-        Daftar
+        {isLoading ? <Spinner customClass={customClass} /> : "Daftar"}
       </button>
     </form>
   );

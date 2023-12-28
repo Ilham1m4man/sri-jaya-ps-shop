@@ -2,19 +2,21 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "../../firebase/firebase.config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
+import { firestore } from "../../firebase/firebase.config";
+import { useAppContext } from "@/app/context/AppWrapper";
 import ModalProfile from "@/components/modals/ModalProfile";
 import Navbar from "@/components/Navbar";
 import ProductCatalogue from "@/components/ProductCatalogue";
 import FilterBtn from "@/components/buttons/FilterBtn";
 import SearchBar from "@/components/SearchBar";
-import { useState, useEffect } from "react";
 import Footer from "@/components/Footer";
 import Filters from "@/components/Filters";
 import getUserData from "../../services/getUserData";
-import { useAppContext } from "@/app/context/AppWrapper";
 import Spinner from "@/components/loaders/Spinner";
 
 export default function Home() {
@@ -30,6 +32,7 @@ export default function Home() {
   const [minInput, setMinInput] = useState();
   const [maxInput, setMaxInput] = useState();
   const [keyword, setKeyword] = useState("");
+  const [dataProduct, setDataProduct] = useState();
   const router = useRouter();
   const {
     isLoading,
@@ -57,12 +60,26 @@ export default function Home() {
             });
         } else {
           setLoggedIn(false);
-          router.push("/")
+          router.push("/");
         }
       });
     };
 
+    const cekProduk = async () => {
+      showLoading();
+      const colRef = collection(firestore, "products");
+
+      onSnapshot(colRef, (doc) => {
+        setDataProduct(
+          doc.docs.map((item) => {
+            return { ...item.data(), idProduct: item.id };
+          })
+        );
+      });
+    };
+
     cekAuth();
+    cekProduk();
   }, []);
 
   const onCartOpen = () => {
@@ -130,7 +147,9 @@ export default function Home() {
   const maxInputHandler = (e) => setMaxInput(e);
 
   const customClass = "fill-grn-400 w-20 h-20";
-  userProfile && hideLoading();
+  
+  userProfile && dataProduct && hideLoading();
+
   return (
     <>
       {isLoading ? (
@@ -179,6 +198,7 @@ export default function Home() {
               {/* PRODUCT CATALOGUE */}
 
               <ProductCatalogue
+                dataProduct={dataProduct}
                 userProfile={userProfile}
                 onProductCardHandler={onProductCardHandler}
                 onKeranjangHandler={onKeranjangHandler}

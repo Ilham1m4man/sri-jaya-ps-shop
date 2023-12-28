@@ -1,7 +1,7 @@
 import { useState, useReducer } from "react";
 import DropZone from "./DropZone";
 
-export default function MainImgInput({ setMainImage }) {
+export default function MainImgInput({ isDisabled, setMainImage }) {
   const [imagePreviews, setImagePreviews] = useState();
 
   // reducer function to handle state changes
@@ -38,7 +38,7 @@ export default function MainImgInput({ setMainImage }) {
     }
   });
 
-  const customClassDPUtama = "max-h-[165px] w-full h-[50vh]";
+  const customClassDPUtama = "w-full h-[90vh]";
 
   return (
     <div className="relative w-full rounded-[15px] overflow-hidden">
@@ -46,12 +46,13 @@ export default function MainImgInput({ setMainImage }) {
         <img
           className={`${
             !imagePreviews ? "hidden" : "block"
-          } object-cover object-center rounded-[15px]`}
+          } object-cover max-w-[300px] mx-auto object-center rounded-[15px]`}
           src={imagePreviews}
           alt={`Preview`}
         />
       </div>
       <DropZone
+      isDisabled={isDisabled}
         roleInput={"Main"}
         isRequired={true}
         data={data}

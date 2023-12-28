@@ -2,6 +2,7 @@ import React from "react";
 import { RiImageAddLine } from "react-icons/ri";
 
 export default function DropZone({
+  isDisabled,
   roleInput,
   isRequired,
   data,
@@ -87,10 +88,10 @@ export default function DropZone({
       } group justify-center cursor-pointer items-center border-gray-300 border-[3px] border-dashed rounded-[15px] ${
         customClass && customClass
       } hover:opacity-70 hover:backdrop-blur-0 hover:bg-gray-600 transition-all`}
-      onDrop={(e) => handleDrop(e)}
-      onDragOver={(e) => handleDragOver(e)}
-      onDragEnter={(e) => handleDragEnter(e)}
-      onDragLeave={(e) => handleDragLeave(e)}
+      onDrop={(e) => !isDisabled && handleDrop(e)}
+      onDragOver={(e) => !isDisabled && handleDragOver(e)}
+      onDragEnter={(e) => !isDisabled && handleDragEnter(e)}
+      onDragLeave={(e) => !isDisabled && handleDragLeave(e)}
     >
       <RiImageAddLine
         className={`h-[25px] w-[25px] sm:h-[50px] sm:w-[50px] aspect-square group-hover:text-ble-50 group-hover:text-opacity-100 ${
@@ -99,7 +100,8 @@ export default function DropZone({
       />
 
       <input
-      required={isRequired}
+        disabled={isDisabled}
+        required={isRequired}
         id={roleInput}
         type="file"
         multiple={false}
@@ -117,8 +119,8 @@ export default function DropZone({
           data.inDropZone ? "text-ble-50 text-opacity-100" : "text-ble-950"
         }`}
       >
-        <span className="font-bold">Pilih gambar</span> atau seret &amp; letakkan
-        gambar di sini
+        <span className="font-bold">Pilih gambar</span> atau seret &amp;
+        letakkan gambar di sini
       </h3>
     </div>
   );

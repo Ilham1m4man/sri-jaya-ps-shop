@@ -1,13 +1,17 @@
-export default function MoreInfoInput({ onChange }) {
+export default function MoreInfoInput({ isDisabled, onChange }) {
   return (
     <>
       <div className="bg-white rounded-3xl shadow-xl p-4 grow">
-        <label htmlFor="desc" className="font-bold text-sm sm:text-lg">
+        <label
+          htmlFor="desc"
+          className="font-bold text-base sm:text-xl text-grn-950"
+        >
           Keterangan
         </label>
         <textarea
+          disabled={isDisabled}
           required
-          rows={7}
+          rows={10}
           name="desc"
           /* value={state.address}
                       defaultValue={userProfile && cekAlamat()} */
@@ -16,12 +20,16 @@ export default function MoreInfoInput({ onChange }) {
         />
       </div>
       <div className="bg-white rounded-3xl shadow-xl p-4 grow">
-        <label htmlFor="userGuide" className="font-bold text-sm sm:text-lg">
+        <label
+          htmlFor="userGuide"
+          className="font-bold text-base sm:text-xl text-grn-950"
+        >
           Petunjuk Pemakaian
         </label>
         <textarea
+          disabled={isDisabled}
           required
-          rows={7}
+          rows={10}
           name="userGuide"
           /* value={state.address}
                       defaultValue={userProfile && cekAlamat()} */

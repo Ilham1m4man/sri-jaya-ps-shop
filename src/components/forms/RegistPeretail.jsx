@@ -2,8 +2,10 @@ import { useState } from "react";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import PeekBtn from "../buttons/PeekBtn";
+import Spinner from "../loaders/Spinner";
 
 export default function RegistPeretail({
+  isLoading,
   inputHandler,
   setPW,
   setConfPW,
@@ -12,6 +14,8 @@ export default function RegistPeretail({
 }) {
   const [isPasswordHidden, setPasswordHidden] = useState(true);
   const [isConfirmPasswordHidden, setConfirmPasswordHidden] = useState(true);
+
+  const customClass = "fill-ble-400 w-12 h-6";
 
   return (
     <form
@@ -140,7 +144,7 @@ export default function RegistPeretail({
         type="submit"
         className="col-span-2 max-w-[176px] hover:opacity-90 active:scale-95 transition-all bg-footer_fontClr text-base md:text-xl font-normal text-ble-50 rounded-[10px] px-[30px] py-[10px] place-self-center"
       >
-        Daftar
+        {isLoading ? <Spinner customClass={customClass} /> : "Daftar"}
       </button>
     </form>
   );

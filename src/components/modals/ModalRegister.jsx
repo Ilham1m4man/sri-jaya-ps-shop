@@ -18,7 +18,7 @@ export default function ModalRegister({
   onLogin,
   isModalRegisterOpen,
 }) {
-  const [isLoading, setIsloading] = useState();
+  const [isLoading, setIsLoading] = useState();
   const [role, setRole] = useState("Konsumer");
   const [password, setPassword] = useState();
   const [confirmPassword, setConfirmPassword] = useState();
@@ -27,7 +27,7 @@ export default function ModalRegister({
 
   const register = async (e) => {
     e.preventDefault();
-    setIsloading(true);
+    setIsLoading(true);
 
     let dataInput;
 
@@ -55,7 +55,7 @@ export default function ModalRegister({
       );
     }
 
-    if (dataInput.password === dataInput.confirmPassword) {
+    /* if (dataInput.password === dataInput.confirmPassword) {
       try {
         await registrasi(dataInput)
           .then((response) => {
@@ -88,11 +88,14 @@ export default function ModalRegister({
       }
     } else {
       window.alert("Password tidak sesuai!");
-    }
-    setIsloading(false);
+    } */
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 5000)
+    /* setIsloading(false); */
   };
 
-  const customClass = (role === "Konsumer" ? "fill-grn-400" : "fill-ble-400");
+  const customClass = role === "Konsumer" ? "fill-grn-400" : "fill-ble-400";
 
   return (
     <Transition appear show={isModalRegisterOpen} as={Fragment}>
@@ -156,12 +159,14 @@ export default function ModalRegister({
                   <Spinner customClass={customClass} />
                 ) : role === "Konsumer" ? (
                   <RegistKonsumer
+                    isLoading={isLoading}
                     inputHandler={register}
                     setPW={setPassword}
                     setConfPW={setConfirmPassword}
                   />
                 ) : (
                   <RegistPeretail
+                    isLoading={isLoading}
                     inputHandler={register}
                     setPW={setPassword}
                     setConfPW={setConfirmPassword}

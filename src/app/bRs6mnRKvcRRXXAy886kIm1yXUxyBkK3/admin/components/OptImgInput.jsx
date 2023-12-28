@@ -3,9 +3,8 @@ import DropZone from "./DropZone";
 import { FaMinusCircle } from "react-icons/fa";
 
 export default function OptImgInput({
-  optImage1,
+  isDisabled,
   setOptImage1,
-  optImage2,
   setOptImage2,
 }) {
   const [imagePreviews, setImagePreviews] = useState();
@@ -58,30 +57,30 @@ export default function OptImgInput({
     }
   };
 
-  const customClassDPOpsional =
-    "w-full max-h-[165px] h-[50vh]";
+  const customClassDPOpsional = "w-full h-[90vh]";
 
   return (
     <div className="relative w-full rounded-[15px]">
       {imagePreviews && (
-          <button
-            onClick={hapusHandler}
-            className="z-20 bg-transparent border-none rounded-full absolute -right-3 -top-3 group hover:scale-95 active:scale-90 transition-all"
-          >
-            <FaMinusCircle className="fill-red-500 bg-white rounded-full w-7 h-7 group-hover:fill-red-600 group-active:fill-red-700 transition-all" />
-          </button>
-        )}
+        <button
+          onClick={hapusHandler}
+          className="z-20 bg-transparent border-none rounded-full absolute -right-3 -top-3 group hover:scale-95 active:scale-90 transition-all"
+        >
+          <FaMinusCircle className="fill-red-500 bg-white rounded-full w-7 h-7 group-hover:fill-red-600 group-active:fill-red-700 transition-all" />
+        </button>
+      )}
       <div className="relative w-full h-full rounded-[15px] top-0 -translate-y-0 xs:top-1/2 xs:-translate-y-1/2 overflow-hidden">
         <div className="absolute w-full top-1/2 -translate-y-1/2">
           <img
             className={`${
               !imagePreviews ? "hidden" : "block"
-            } object-cover object-center rounded-[15px]`}
+            } object-cover max-w-[300px] mx-auto object-center rounded-[15px]`}
             src={imagePreviews}
             alt={`Preview`}
           />
         </div>
         <DropZone
+          isDisabled={isDisabled}
           roleInput={typeof setOptImage1 === "function" ? "Opt1" : "Opt2"}
           isRequired={false}
           data={dataOpt}
