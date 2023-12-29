@@ -1,4 +1,4 @@
-import { useAppContext } from "@/app/context/AppWrapper";
+import { useAppContext } from "@/app/(context)/AppWrapper";
 import Link from "next/link";
 
 export default function AddProductCard() {

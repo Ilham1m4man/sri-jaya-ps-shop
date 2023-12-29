@@ -1,4 +1,4 @@
-export default function MoreInfoInput({ isDisabled, onChange }) {
+export default function MoreInfoInput({ dataFromServer, isDisabled, onChange }) {
   return (
     <>
       <div className="bg-white rounded-3xl shadow-xl p-4 grow">
@@ -13,8 +13,7 @@ export default function MoreInfoInput({ isDisabled, onChange }) {
           required
           rows={10}
           name="desc"
-          /* value={state.address}
-                      defaultValue={userProfile && cekAlamat()} */
+          defaultValue={dataFromServer && dataFromServer.desc}
           onChange={onChange}
           className="w-full resize-none mt-4 rounded-xl text-grn-950 font-normal text-base border-[1px] border-grn-950 p-[10px] outline-none"
         />
@@ -31,8 +30,7 @@ export default function MoreInfoInput({ isDisabled, onChange }) {
           required
           rows={10}
           name="userGuide"
-          /* value={state.address}
-                      defaultValue={userProfile && cekAlamat()} */
+          defaultValue={dataFromServer && dataFromServer.userGuide}
           onChange={onChange}
           className="w-full resize-none mt-4 rounded-xl text-grn-950 font-normal text-base border-[1px] border-grn-950 p-[10px] outline-none"
         />

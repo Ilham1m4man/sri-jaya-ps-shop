@@ -4,12 +4,12 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendPasswordResetEmail, signOut } from "firebase/auth";
-import { auth, storage } from "@/app/firebase/firebase.config";
+import { auth, storage } from "@/app/(firebase)/firebase.config";
 import BackBtn from "../buttons/BackBtn";
 import LogoutBtn from "../buttons/LogoutBtn";
 import ProfileForm from "../forms/ProfileForm";
 import UploadFotoProfile from "../UploadFotoProfile";
-import editProfile from "@/app/services/editProfile";
+import editProfile from "@/app/(services)/editProfile";
 
 export default function ModalProfile({
   userProfile,
@@ -99,7 +99,6 @@ export default function ModalProfile({
   /* ================================================= REDUCER FOR STATE ================================================= */
   const [state, dispatchState] = useReducer(reducerState, {});
   const { uid, name, email, phone, address, photo } = state;
-  /* console.log(state); */
 
   /* ================================================= PREVIEW IMG AND SETIMAGE ================================================= */
   data.fileList.map((item) => {

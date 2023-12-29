@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "../firebase/firebase.admin.config";
+import { auth } from "../(firebase)/firebase.admin.config";
 
 const registrasi = async ({ name, businessName, phone, email, password, role }) => {
   if (role === "Konsumer") {

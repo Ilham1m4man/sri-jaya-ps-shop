@@ -1,7 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/app/firebase/firebase.config";
+import { auth } from "@/app/(firebase)/firebase.config";
 import {
   signInWithCustomToken,
   sendEmailVerification,
@@ -9,7 +9,7 @@ import {
 } from "firebase/auth";
 import BackBtn from "../buttons/BackBtn";
 import RegistKonsumer from "../forms/RegistKonsumer";
-import registrasi from "@/app/services/registrasi";
+import registrasi from "@/app/(services)/registrasi";
 import RegistPeretail from "../forms/RegistPeretail";
 import Spinner from "../loaders/Spinner";
 

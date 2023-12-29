@@ -1,14 +1,15 @@
-import AddProductCard from "@/app/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin/components/AddProductCard";
+import AddProductCard from "@/app/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin/(components)/AddProductCard";
 import CardProduct from "./CardProduct";
 
 export default function ProductCatalogue({
+  currentRole,
   dataProduct,
   userProfile,
   onProductCardHandler,
   onKeranjangHandler,
   filterStat,
 }) {
-  const role = userProfile && userProfile.customClaims.role;
+  const role = currentRole ? currentRole : userProfile && userProfile.customClaims.role;
 
   return (
     <section

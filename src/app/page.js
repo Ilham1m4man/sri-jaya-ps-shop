@@ -3,12 +3,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation';
-import { auth } from './firebase/firebase.config';
+import { auth } from './(firebase)/firebase.config';
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { useAppContext } from './context/AppWrapper';
+import { useAppContext } from './(context)/AppWrapper';
 import { useState, useEffect } from 'react'
 import { collection, getDocs, onSnapshot } from "firebase/firestore";
-import { firestore } from './firebase/firebase.config';
+import { firestore } from './(firebase)/firebase.config';
 import Navbar from '@/components/Navbar'
 import ModalCart from '@/components/modals/ModalCart'
 import ModalProfile from '@/components/modals/ModalProfile'
@@ -21,7 +21,7 @@ import Spinner from '@/components/loaders/Spinner';
 import Footer from '@/components/Footer'
 import Filters from '@/components/Filters'
 import ModalRegister from '@/components/modals/ModalRegister'
-import getUserData from './services/getUserData';
+import getUserData from './(services)/getUserData';
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -192,7 +192,7 @@ export default function Home() {
               {/* MAIN CONTENT */}
               {/* PRODUCT CATALOGUE */}
 
-              <ProductCatalogue dataProduct={dataProduct} onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler} filterStat={filter} />
+              <ProductCatalogue currentRole={userRole} dataProduct={dataProduct} onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler} filterStat={filter} />
             </div>
           </main>
           <Footer />

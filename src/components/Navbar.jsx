@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { useAppContext } from "@/app/context/AppWrapper";
+import { useAppContext } from "@/app/(context)/AppWrapper";
 
 export default function Navbar({
   userProfile,

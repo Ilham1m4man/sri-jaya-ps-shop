@@ -1,10 +1,9 @@
 "use server"
 
-import { auth } from "../firebase/firebase.admin.config";
+import { auth } from "../(firebase)/firebase.admin.config";
 
 const editProfile = async (state) => {
   const { uid, name, phone, email, address, photo, businessName, role } = state
-  console.log(state)
 
   const dataInputProfile = () => {
     if (photo) {
@@ -35,7 +34,7 @@ const editProfile = async (state) => {
 
   try {
       const updatedUser = await auth.updateUser(uid, dataInputProfile())
-      const coba = await auth.setCustomUserClaims(uid, dataInputClaims())
+      await auth.setCustomUserClaims(uid, dataInputClaims())
 
       return updatedUser.toJSON()
   } catch (err) {

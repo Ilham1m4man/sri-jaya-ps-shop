@@ -1,8 +1,14 @@
 import { useState, useReducer } from "react";
 import DropZone from "./DropZone";
 
-export default function MainImgInput({ isDisabled, setMainImage }) {
+export default function MainImgInput({
+  dataFromServer,
+  isDisabled,
+  setMainImage,
+}) {
   const [imagePreviews, setImagePreviews] = useState();
+  const previewsFromServer =
+    dataFromServer && dataFromServer.productImgURLs.mainImgURL;
 
   // reducer function to handle state changes
   const reducer = (state, action) => {
@@ -42,21 +48,42 @@ export default function MainImgInput({ isDisabled, setMainImage }) {
 
   return (
     <div className="relative w-full rounded-[15px] overflow-hidden">
-      <div className="absolute w-full top-1/2 -translate-y-1/2">
-        <img
-          className={`${
-            !imagePreviews ? "hidden" : "block"
-          } object-cover max-w-[300px] mx-auto object-center rounded-[15px]`}
-          src={imagePreviews}
-          alt={`Preview`}
-        />
-      </div>
+      {dataFromServer ? (
+        <div className="absolute w-full top-1/2 -translate-y-1/2">
+          <img
+            priority
+            className={`${
+              imagePreviews ? "hidden" : "block"
+            } object-cover object-center max-w-[300px] mx-auto rounded-[15px]`}
+            src={previewsFromServer}
+            alt={`Preview`}
+          />
+          <img
+            className={`${
+              !imagePreviews ? "hidden" : "block"
+            } object-cover object-center max-w-[300px] mx-auto rounded-[15px]`}
+            src={imagePreviews}
+            alt={`Preview`}
+          />
+        </div>
+      ) : (
+        <div className="absolute w-full top-1/2 -translate-y-1/2">
+          <img
+            className={`${
+              !imagePreviews ? "hidden" : "block"
+            } object-cover rounded-[15px]`}
+            src={imagePreviews}
+            alt={`Preview`}
+          />
+        </div>
+      )}
       <DropZone
-      isDisabled={isDisabled}
+        isDisabled={isDisabled}
         roleInput={"Main"}
         isRequired={true}
         data={data}
         dispatch={dispatch}
+        previewsFromServer={previewsFromServer}
         imagePreviews={imagePreviews}
         customClass={customClassDPUtama}
       />

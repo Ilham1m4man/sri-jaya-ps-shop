@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import { auth } from "@/app/firebase/firebase.config";
+import { auth } from "@/app/(firebase)/firebase.config";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import BackBtn from "../buttons/BackBtn";
 import LoginForm from "../forms/LoginForm";

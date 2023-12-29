@@ -7,20 +7,29 @@ import { FaChevronLeft } from "react-icons/fa6";
 import { useAppContext } from "@/app/(context)/AppWrapper";
 import { useEffect, useReducer, useState } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "@/app/(firebase)/firebase.config";
-import MainImgInput from "../(components)/MainImgInput";
-import OptImgInput from "../(components)/OptImgInput";
-import BasicInfoInput from "../(components)/BasicInfoInput";
-import MoreInfoInput from "../(components)/MoreInfoInput";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  documentId,
+  updateDoc,
+} from "firebase/firestore";
+import { firestore, storage } from "@/app/(firebase)/firebase.config";
+import MainImgInput from "../../(components)/MainImgInput";
+import OptImgInput from "../../(components)/OptImgInput";
+import BasicInfoInput from "../../(components)/BasicInfoInput";
+import MoreInfoInput from "../../(components)/MoreInfoInput";
 import storeProduk from "@/app/(services)/storeProduk";
 
-export default function TambahProduk() {
+export default function EditProduk({ params }) {
   const { isLoading, hideLoading, showLoading } = useAppContext();
   const [isDisabled, setIsDisabled] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [mainImage, setMainImage] = useState();
   const [optImage1, setOptImage1] = useState();
   const [optImage2, setOptImage2] = useState();
+  const [dataFromServer, setDataFromServer] = useState();
   const router = useRouter();
   const homeAdminURL = "/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin";
 
@@ -28,13 +37,14 @@ export default function TambahProduk() {
     switch (action.type) {
       case "RESET":
         return null;
-      case "CEK_MAIN_IMG":
-        if (mainImage === undefined || mainImage === null) {
-          setIsDisabled(true);
-          return state;
-        }
-        setIsDisabled(false);
-        return state;
+      case "SET_INITIAL_DATA":
+        return action.value;
+      case "SET_PRICE_ECER":
+        const resultPriceEcer = { ...state, price: { ...state.price, priceEcer: action.value }};
+        return resultPriceEcer;
+      case "SET_PRICE_BAKUL":
+        const resultPriceBakul = { ...state, price: { ...state.price, priceBakul: action.value }};
+        return resultPriceBakul;
       default:
         const result = { ...state };
         result[action.type] = action.value;
@@ -46,7 +56,13 @@ export default function TambahProduk() {
 
   const onChange = (e) => {
     const { name, value } = e.target;
-    dispatchProduct({ type: name, value });
+    if (name === "priceEcer") {
+      dispatchProduct({ type: "SET_PRICE_ECER", name, value });
+    } else if (name === "priceBakul") {
+      dispatchProduct({ type: "SET_PRICE_BAKUL", name, value });
+    } else {
+      dispatchProduct({ type: name, value });
+    }
   };
 
   const batalHandler = () => {
@@ -65,18 +81,40 @@ export default function TambahProduk() {
       optImage2 &&
       ref(storage, `images/product/${product.name}/${optImage2.name}`);
 
-    await uploadBytes(imgRef, mainImage);
-    const mainImgURL = await getDownloadURL(imgRef);
-
+    let mainImgURL = "";
     let optImg1URL = "";
     let optImg2URL = "";
 
-    if (optImage1 && optImage2) {
+    if (mainImage && optImage1 && optImage2) {
+      await uploadBytes(imgRef, mainImage);
+      mainImgURL = await getDownloadURL(imgRef);
+
       await uploadBytes(imgRefOpt1, optImage1);
       optImg1URL = await getDownloadURL(imgRefOpt1);
 
       await uploadBytes(imgRefOpt2, optImage2);
       optImg2URL = await getDownloadURL(imgRefOpt2);
+    } else if (mainImage && optImage1) {
+      await uploadBytes(imgRef, mainImage);
+      mainImgURL = await getDownloadURL(imgRef);
+
+      await uploadBytes(imgRefOpt1, optImage1);
+      optImg1URL = await getDownloadURL(imgRefOpt1);
+    } else if (mainImage && optImage2) {
+      await uploadBytes(imgRef, mainImage);
+      mainImgURL = await getDownloadURL(imgRef);
+
+      await uploadBytes(imgRefOpt2, optImage2);
+      optImg2URL = await getDownloadURL(imgRefOpt2);
+    } else if (optImage1 && optImage2) {
+      await uploadBytes(imgRefOpt1, optImage1);
+      optImg1URL = await getDownloadURL(imgRefOpt1);
+
+      await uploadBytes(imgRefOpt2, optImage2);
+      optImg2URL = await getDownloadURL(imgRefOpt2);
+    } else if (mainImage) {
+      await uploadBytes(imgRef, mainImage);
+      mainImgURL = await getDownloadURL(imgRef);
     } else if (optImage1) {
       await uploadBytes(imgRefOpt1, optImage1);
       optImg1URL = await getDownloadURL(imgRefOpt1);
@@ -87,23 +125,73 @@ export default function TambahProduk() {
     return { mainImgURL, optImg1URL, optImg2URL };
   };
 
-  const uploadProduk = async (e) => {
+  const updateProduk = async (e) => {
     e.preventDefault();
     setIsUploading(true);
+    const { name, price, category, desc, userGuide, productImgURLs } =
+      dataFromServer;
 
-    const imgURLs = await uploadProductImg();
+    console.log(product);
+    console.log(mainImage);
+    console.log(optImage1);
+    console.log(optImage2);
+
+    /* if (mainImage || optImage1 || optImage2) {
+      console.log("harusnya gk jalan");
+      const imgURLs = await uploadProductImg();
+      const { mainImgURL, optImg1URL, optImg2URL } = imgURLs
+      if (mainImgURL === "") {
+        await storeProduk({ ...product, productImgURLs: { ...product.productImgURLs, mainImgURL: productImgURLs.mainImgURL } });
+      } else if (optImg1URL === "") {
+        await storeProduk({ ...product, productImgURLs: { ...product.productImgURLs, optImg1URL: productImgURLs.optImg1URL } });
+      } else if (optImg2URL === "") {
+        await storeProduk({ ...product, productImgURLs: { ...product.productImgURLs, optImg2URL: productImgURLs.optImg2URL } });
+      } else if (optImg1URL === "" && optImg2URL === "") {
+        await storeProduk({ ...product, productImgURLs: { ...product.productImgURLs, optImg1URL: productImgURLs.optImg1URL, optImg2URL: productImgURLs.optImg2URL  } });
+      } else if (optImg1URL === "" && mainImgURL === "") {
+        await storeProduk({ ...product, productImgURLs: { ...product.productImgURLs, optImg1URL: productImgURLs.optImg1URL, mainImgURL: productImgURLs.mainImgURL  } });
+      } else if (mainImgURL === "" && optImg2URL === "") {
+        await storeProduk({ ...product, productImgURLs: { ...product.productImgURLs, mainImgURL: productImgURLs.mainImgURL, optImg2URL: productImgURLs.optImg2URL  } });
+      } else if (optImg1URL === "" && optImg2URL === "" && mainImgURL === "") {
+        await storeProduk({ ...product, productImgURLs: productImgURLs});
+      }
+    } */
+    console.log("harusnya jalan");
+
+    /* const imgURLs = await uploadProductImg();
     await storeProduk({ ...product, productImgURLs: imgURLs });
-    
-    router.push(homeAdminURL);
+
+    router.push(homeAdminURL); */
     setIsUploading(false);
   };
 
-  useEffect(() => {
+  /*   useEffect(() => {
     dispatchProduct({ type: "CEK_MAIN_IMG" });
-  }, [mainImage]);
+  }, [mainImage]); */
+
+  useEffect(() => {
+    const cekProduk = async () => {
+      showLoading();
+      const colRef = collection(firestore, "products");
+      const q = query(colRef, where(documentId(), "==", params.idProduct));
+
+      onSnapshot(q, (doc) => {
+        doc.docs.map((item) => {
+          setDataFromServer({ ...item.data(), idProduct: item.id });
+          return dispatchProduct({
+            type: "SET_INITIAL_DATA",
+            value: { ...item.data(), idProduct: item.id },
+          });
+        });
+      });
+    };
+
+    cekProduk();
+  }, []);
 
   const customClassSpinner = "fill-grn-400 w-20 h-20";
   const customClassMiniSpinner = "fill-grn-600 w-12 h-6";
+
   hideLoading();
 
   return (
@@ -124,30 +212,36 @@ export default function TambahProduk() {
                 <FaChevronLeft className="w-4 h-4 md:w-7 md:h-7 fill-ble-950 text-ble-950" />
               </Link>
               <h1 className="text-ble-900 text-lg md:text-3xl font-bold">
-                Tambah Produk
+                Edit Produk {dataFromServer && dataFromServer.name}
               </h1>
             </div>
             <div className="container  mx-auto mb-4 px-4">
-              <form onSubmit={uploadProduk} className="grid gap-4">
+              <form onSubmit={updateProduk} className="grid gap-4">
                 <section className="flex flex-wrap gap-4 w-full justify-around text-green-950">
                   {/* SECTION UNTUK INPUT NAMA, HARGA, KATEGORI, dan GAMBAR PRODUK */}
                   <BasicInfoInput
+                    dataFromServer={dataFromServer}
                     isDisabled={isUploading}
                     onChange={onChange}
                   />
-                  <MoreInfoInput isDisabled={isUploading} onChange={onChange} />
+                  <MoreInfoInput
+                    dataFromServer={dataFromServer}
+                    isDisabled={isUploading}
+                    onChange={onChange}
+                  />
                   {/* SECTION PETUNJUK PEMAKAIAN DAN KETERANGAN */}
-
                   <div className="bg-white flex flex-col gap-4 rounded-3xl shadow-xl p-4 grow">
                     <h3 className="font-bold text-base sm:text-xl">
                       Gambar Opsional Produk
                     </h3>
                     <div className="flex flex-col sm:flex-row gap-4 h-full">
                       <OptImgInput
+                        dataFromServer={dataFromServer}
                         isDisabled={isUploading}
                         setOptImage1={setOptImage1}
                       />
                       <OptImgInput
+                        dataFromServer={dataFromServer}
                         isDisabled={isUploading}
                         setOptImage2={setOptImage2}
                       />
@@ -158,6 +252,7 @@ export default function TambahProduk() {
                       Gambar Utama Produk
                     </h3>
                     <MainImgInput
+                      dataFromServer={dataFromServer}
                       isDisabled={isUploading}
                       mainImage={mainImage}
                       setMainImage={setMainImage}
@@ -179,7 +274,7 @@ export default function TambahProduk() {
                       disabled={isDisabled}
                       className={`shadow-xl bg-white hover:bg-gray-100 active:scale-95 disabled:opacity-80 disabled:cursor-not-allowed disabled:active:scale-100 disabled:hover:bg-white transition-all text-base px-4 py-2 rounded-lg`}
                       type="submit"
-                      onClick={uploadProduk}
+                      onClick={updateProduk}
                     >
                       {isUploading ? (
                         <Spinner customClass={customClassMiniSpinner} />

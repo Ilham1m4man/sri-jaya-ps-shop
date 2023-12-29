@@ -1,4 +1,5 @@
 import { FaMinusCircle } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export default function CardProduct({
   dataProduct,
@@ -7,16 +8,32 @@ export default function CardProduct({
   onKeranjangHandler,
 }) {
   const { idProduct, name, price, productImgURLs } = dataProduct;
+  const router = useRouter()
 
   function numberWithCommas(x) {
+    /* let priceType = "";
+    if (role === "Konsumer") {
+      priceType = x.priceEcer;
+    } else {
+      priceType = x.priceBakul;
+    }
+    console.log(x) */
     const parts = x.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     return parts.join(",");
   }
 
-  const hapusHandler = () => {
-    console.log(idProduct + " telah dihapus")
+  const editProduk = () => {
+    if (role === "Admin") {
+      router.push(`/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin/edit-produk/${idProduct}`)
+    } else {
+      onProductCardHandler()
+    }
   }
+
+  const hapusHandler = () => {
+    console.log(idProduct + " telah dihapus");
+  };
 
   return (
     <div
@@ -32,7 +49,7 @@ export default function CardProduct({
         </button>
       )}
       <button
-        onClick={onProductCardHandler}
+        onClick={editProduk}
         className="w-full h-full bg-white rounded-[15px] hover:opacity-90 transition-all"
       >
         <div className="flex justify-center">
@@ -42,8 +59,10 @@ export default function CardProduct({
             alt="Photo of A594K 1kg"
           />
         </div>
-        <div className=" mt-2 text-left px-[25px] mb-20">
-          <p className={`m-0 text-grn-950 font-medium max-w-[30ch] text-lg`}>
+        <div className={`${role === "Admin" ? "mb-5" : "mb-20" } mt-2 text-left px-[25px]`}>
+          <p
+            className={`m-0 text-grn-950 font-medium text-lg line-clamp-1`}
+          >
             {name}
           </p>
           <h2 className={`text-lg text-grn-950 font-bold mt-[15px]`}>
@@ -51,10 +70,14 @@ export default function CardProduct({
           </h2>
         </div>
       </button>
-      <div className="absolute w-full flex justify-center bottom-5 left-0">
+      <div className={`${role === "Admin" && "hidden"} absolute w-full flex justify-center bottom-5 left-0`}>
         <button
           onClick={onKeranjangHandler}
-          className="text-grn-950 bg-green_cardClr rounded-lg px-3 py-2"
+          className={`${
+            role === "Konsumer"
+              ? "text-grn-950 bg-green_cardClr"
+              : "text-ble-950 bg-ble-200"
+          } rounded-lg px-3 py-2`}
         >
           + Keranjang
         </button>
