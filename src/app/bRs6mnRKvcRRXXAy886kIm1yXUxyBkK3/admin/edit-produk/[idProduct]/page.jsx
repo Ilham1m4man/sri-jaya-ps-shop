@@ -6,7 +6,12 @@ import { useRouter } from "next/navigation";
 import { FaChevronLeft } from "react-icons/fa6";
 import { useAppContext } from "@/app/(context)/AppWrapper";
 import { useEffect, useReducer, useState } from "react";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import {
   collection,
   query,
@@ -20,7 +25,7 @@ import MainImgInput from "../../(components)/MainImgInput";
 import OptImgInput from "../../(components)/OptImgInput";
 import BasicInfoInput from "../../(components)/BasicInfoInput";
 import MoreInfoInput from "../../(components)/MoreInfoInput";
-import storeProduk from "@/app/(services)/storeProduk";
+import updateProduk from "@/app/(services)/updateProduk";
 
 export default function EditProduk({ params }) {
   const { isLoading, hideLoading, showLoading } = useAppContext();
@@ -32,142 +37,6 @@ export default function EditProduk({ params }) {
   const [dataFromServer, setDataFromServer] = useState();
   const router = useRouter();
   const homeAdminURL = "/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin";
-
-  const reducerProduct = (state, action) => {
-    switch (action.type) {
-      case "RESET":
-        return null;
-      case "SET_INITIAL_DATA":
-        return action.value;
-      case "SET_PRICE_ECER":
-        const resultPriceEcer = { ...state, price: { ...state.price, priceEcer: action.value }};
-        return resultPriceEcer;
-      case "SET_PRICE_BAKUL":
-        const resultPriceBakul = { ...state, price: { ...state.price, priceBakul: action.value }};
-        return resultPriceBakul;
-      default:
-        const result = { ...state };
-        result[action.type] = action.value;
-        return result;
-    }
-  };
-
-  const [product, dispatchProduct] = useReducer(reducerProduct, {});
-
-  const onChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "priceEcer") {
-      dispatchProduct({ type: "SET_PRICE_ECER", name, value });
-    } else if (name === "priceBakul") {
-      dispatchProduct({ type: "SET_PRICE_BAKUL", name, value });
-    } else {
-      dispatchProduct({ type: name, value });
-    }
-  };
-
-  const batalHandler = () => {
-    router.push(homeAdminURL);
-  };
-
-  const uploadProductImg = async () => {
-    const imgRef = ref(
-      storage,
-      `images/product/${product.name}/${mainImage.name}`
-    );
-    const imgRefOpt1 =
-      optImage1 &&
-      ref(storage, `images/product/${product.name}/${optImage1.name}`);
-    const imgRefOpt2 =
-      optImage2 &&
-      ref(storage, `images/product/${product.name}/${optImage2.name}`);
-
-    let mainImgURL = "";
-    let optImg1URL = "";
-    let optImg2URL = "";
-
-    if (mainImage && optImage1 && optImage2) {
-      await uploadBytes(imgRef, mainImage);
-      mainImgURL = await getDownloadURL(imgRef);
-
-      await uploadBytes(imgRefOpt1, optImage1);
-      optImg1URL = await getDownloadURL(imgRefOpt1);
-
-      await uploadBytes(imgRefOpt2, optImage2);
-      optImg2URL = await getDownloadURL(imgRefOpt2);
-    } else if (mainImage && optImage1) {
-      await uploadBytes(imgRef, mainImage);
-      mainImgURL = await getDownloadURL(imgRef);
-
-      await uploadBytes(imgRefOpt1, optImage1);
-      optImg1URL = await getDownloadURL(imgRefOpt1);
-    } else if (mainImage && optImage2) {
-      await uploadBytes(imgRef, mainImage);
-      mainImgURL = await getDownloadURL(imgRef);
-
-      await uploadBytes(imgRefOpt2, optImage2);
-      optImg2URL = await getDownloadURL(imgRefOpt2);
-    } else if (optImage1 && optImage2) {
-      await uploadBytes(imgRefOpt1, optImage1);
-      optImg1URL = await getDownloadURL(imgRefOpt1);
-
-      await uploadBytes(imgRefOpt2, optImage2);
-      optImg2URL = await getDownloadURL(imgRefOpt2);
-    } else if (mainImage) {
-      await uploadBytes(imgRef, mainImage);
-      mainImgURL = await getDownloadURL(imgRef);
-    } else if (optImage1) {
-      await uploadBytes(imgRefOpt1, optImage1);
-      optImg1URL = await getDownloadURL(imgRefOpt1);
-    } else if (optImage2) {
-      await uploadBytes(imgRefOpt2, optImage2);
-      optImg2URL = await getDownloadURL(imgRefOpt2);
-    }
-    return { mainImgURL, optImg1URL, optImg2URL };
-  };
-
-  const updateProduk = async (e) => {
-    e.preventDefault();
-    setIsUploading(true);
-    const { name, price, category, desc, userGuide, productImgURLs } =
-      dataFromServer;
-
-    console.log(product);
-    console.log(mainImage);
-    console.log(optImage1);
-    console.log(optImage2);
-
-    /* if (mainImage || optImage1 || optImage2) {
-      console.log("harusnya gk jalan");
-      const imgURLs = await uploadProductImg();
-      const { mainImgURL, optImg1URL, optImg2URL } = imgURLs
-      if (mainImgURL === "") {
-        await storeProduk({ ...product, productImgURLs: { ...product.productImgURLs, mainImgURL: productImgURLs.mainImgURL } });
-      } else if (optImg1URL === "") {
-        await storeProduk({ ...product, productImgURLs: { ...product.productImgURLs, optImg1URL: productImgURLs.optImg1URL } });
-      } else if (optImg2URL === "") {
-        await storeProduk({ ...product, productImgURLs: { ...product.productImgURLs, optImg2URL: productImgURLs.optImg2URL } });
-      } else if (optImg1URL === "" && optImg2URL === "") {
-        await storeProduk({ ...product, productImgURLs: { ...product.productImgURLs, optImg1URL: productImgURLs.optImg1URL, optImg2URL: productImgURLs.optImg2URL  } });
-      } else if (optImg1URL === "" && mainImgURL === "") {
-        await storeProduk({ ...product, productImgURLs: { ...product.productImgURLs, optImg1URL: productImgURLs.optImg1URL, mainImgURL: productImgURLs.mainImgURL  } });
-      } else if (mainImgURL === "" && optImg2URL === "") {
-        await storeProduk({ ...product, productImgURLs: { ...product.productImgURLs, mainImgURL: productImgURLs.mainImgURL, optImg2URL: productImgURLs.optImg2URL  } });
-      } else if (optImg1URL === "" && optImg2URL === "" && mainImgURL === "") {
-        await storeProduk({ ...product, productImgURLs: productImgURLs});
-      }
-    } */
-    console.log("harusnya jalan");
-
-    /* const imgURLs = await uploadProductImg();
-    await storeProduk({ ...product, productImgURLs: imgURLs });
-
-    router.push(homeAdminURL); */
-    setIsUploading(false);
-  };
-
-  /*   useEffect(() => {
-    dispatchProduct({ type: "CEK_MAIN_IMG" });
-  }, [mainImage]); */
 
   useEffect(() => {
     const cekProduk = async () => {
@@ -188,6 +57,336 @@ export default function EditProduk({ params }) {
 
     cekProduk();
   }, []);
+
+  const reducerProduct = (state, action) => {
+    switch (action.type) {
+      case "RESET":
+        return null;
+      case "SET_INITIAL_DATA":
+        return action.value;
+      case "CEK_EDIT":
+        if (dataFromServer) {
+          const { name, price, category, desc, userGuide, productImg } =
+            dataFromServer;
+          const { priceBakul, priceEcer } = price;
+          const { mainImg, optImg1, optImg2 } = productImg;
+
+          if (
+            state?.name == name &&
+            state?.price?.priceEcer == priceEcer &&
+            state?.price?.priceBakul == priceBakul &&
+            state?.category == category &&
+            state?.desc == desc &&
+            state?.userGuide == userGuide &&
+            mainImage == mainImg.URL &&
+            optImage1 == optImg1.URL &&
+            optImage2 == optImg2.URL
+          ) {
+            setIsDisabled(true);
+            return state;
+          }
+          setIsDisabled(false);
+          return state;
+        }
+      case "SET_PRICE_ECER":
+        const resultPriceEcer = {
+          ...state,
+          price: { ...state.price, priceEcer: action.value },
+        };
+        return resultPriceEcer;
+      case "SET_PRICE_BAKUL":
+        const resultPriceBakul = {
+          ...state,
+          price: { ...state.price, priceBakul: action.value },
+        };
+        return resultPriceBakul;
+      default:
+        const result = { ...state };
+        result[action.type] = action.value;
+        return result;
+    }
+  };
+
+  const [product, dispatchProduct] = useReducer(reducerProduct, {});
+  const { name, price, category, desc, userGuide } = product;
+  let priceBakul;
+  let priceEcer;
+  price && (priceEcer = price.priceEcer);
+  price && (priceBakul = price.priceBakul);
+
+  useEffect(() => {
+    dispatchProduct({ type: "CEK_EDIT" });
+  }, [
+    name,
+    priceBakul,
+    priceEcer,
+    category,
+    desc,
+    userGuide,
+    mainImage,
+    optImage1,
+    optImage2,
+  ]);
+
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "priceEcer") {
+      dispatchProduct({ type: "SET_PRICE_ECER", value });
+    } else if (name === "priceBakul") {
+      dispatchProduct({ type: "SET_PRICE_BAKUL", value });
+    } else {
+      dispatchProduct({ type: name, value });
+    }
+  };
+
+  const batalHandler = () => {
+    router.push(homeAdminURL);
+  };
+
+  const uploadImage = async (dataImg) => {
+    const imgRef = ref(
+      storage,
+      `images/product/${product.name}/${dataImg.name}`
+    );
+    await uploadBytes(imgRef, dataImg);
+    const imgURL = await getDownloadURL(imgRef);
+    return imgURL;
+  };
+
+  const deleteImg = async (imgName) => {
+    const imgRef = ref(storage, `images/product/${product.name}/${imgName}`);
+
+    await deleteObject(imgRef)
+      .then(() => {})
+      .catch((error) => {
+        window.alert(
+          `Terjadi kesalahan, mohon coba lagi \n \n Error: ${error}`
+        );
+      });
+  };
+
+  const updateProduks = async (e) => {
+    e.preventDefault();
+    setIsUploading(true);
+    const { productImg } = dataFromServer;
+
+    if (optImage1 !== productImg.optImg1.URL && optImage1 === "") {
+      console.log("ini 1");
+      await deleteImg(product.productImg.optImg1.name);
+      await updateProduk({
+        ...product,
+        productImg: {
+          ...product.productImg,
+          optImg1: {
+            ...product.productImg.optImg1,
+            name: "",
+            URL: "",
+          },
+        },
+      });
+    } else if (optImage2 !== productImg.optImg2.URL && optImage2 === "") {
+      console.log("ini 2");
+      await deleteImg(product.productImg.optImg2.name);
+      await updateProduk({
+        ...product,
+        productImg: {
+          ...product.productImg,
+          optImg2: {
+            ...product.productImg.optImg2,
+            name: "",
+            URL: "",
+          },
+        },
+      });
+    } else if (
+      optImage1 !== productImg.optImg1.URL &&
+      optImage1 === "" &&
+      optImage2 !== productImg.optImg2.URL &&
+      optImage2 === ""
+    ) {
+      console.log("ini 3");
+      await deleteImg(product.productImg.optImg1.name);
+      await deleteImg(product.productImg.optImg2.name);
+      await updateProduk({
+        ...product,
+        productImg: {
+          ...product.productImg,
+          optImg1: {
+            ...product.productImg.optImg1,
+            name: "",
+            URL: "",
+          },
+          optImg2: {
+            ...product.productImg.optImg2,
+            name: "",
+            URL: "",
+          },
+        },
+      });
+    }
+
+    if (typeof mainImage === "object") {
+      console.log("ini 4");
+        await deleteImg(product.productImg.mainImg.name);
+      const mainImgURL = await uploadImage(mainImage);
+      await updateProduk({
+        ...product,
+        productImg: {
+          ...product.productImg,
+          mainImg: {
+            ...product.productImg.mainImg,
+            name: mainImage.name,
+            URL: mainImgURL,
+          },
+        },
+      });
+    } else if (typeof optImage1 === "object") {
+      console.log("ini 5");
+      if (productImg.optImg1.URL !== "") {
+        await deleteImg(product.productImg.optImg1.name);
+      }
+      const optImgURL1 = await uploadImage(optImage1);
+      await updateProduk({
+        ...product,
+        productImg: {
+          ...product.productImg,
+          optImg1: {
+            ...product.productImg.optImg1,
+            name: optImage1.name,
+            URL: optImgURL1,
+          },
+        },
+      });
+    } else if (typeof optImage2 === "object") {
+      console.log("ini 6");
+      if (productImg.optImg2.URL !== "") {
+        await deleteImg(product.productImg.optImg2.name);
+      }
+      const optImgURL2 = await uploadImage(optImage2);
+      await updateProduk({
+        ...product,
+        productImg: {
+          ...product.productImg,
+          optImg2: {
+            ...product.productImg.optImg2,
+            name: optImage2.name,
+            URL: optImgURL2,
+          },
+        },
+      });
+    } else if (typeof optImage2 === "object" && typeof optImage1 === "object") {
+      console.log("ini 7");
+      if (productImg.optImg1.URL !== "" && productImg.optImg2.URL !== "") {
+        await deleteImg(product.productImg.optImg1.name);
+        await deleteImg(product.productImg.optImg2.name);
+      }
+      const optImgURL1 = await uploadImage(optImage1);
+      const optImgURL2 = await uploadImage(optImage2);
+      await updateProduk({
+        ...product,
+        productImg: {
+          ...product.productImg,
+          optImg1: {
+            ...product.productImg.optImg1,
+            name: optImage1.name,
+            URL: optImgURL1,
+          },
+          optImg2: {
+            ...product.productImg.optImg2,
+            name: optImage2.name,
+            URL: optImgURL2,
+          },
+        },
+      });
+    } else if (typeof optImage2 === "object" && typeof mainImage === "object") {
+      console.log("ini 8");
+      await deleteImg(product.productImg.mainImg.name);
+      if (productImg.optImg2.URL !== "") {
+        await deleteImg(product.productImg.optImg2.name);
+      }
+      const maimImgURL = await uploadImage(mainImage);
+      const optImgURL2 = await uploadImage(optImage2);
+      await updateProduk({
+        ...product,
+        productImg: {
+          ...product.productImg,
+          mainImg: {
+            ...product.productImg.mainImg,
+            name: mainImage.name,
+            URL: maimImgURL,
+          },
+          optImg2: {
+            ...product.productImg.optImg2,
+            name: optImage2.name,
+            URL: optImgURL2,
+          },
+        },
+      });
+    } else if (typeof optImage1 === "object" && typeof mainImage === "object") {
+      console.log("ini 9");
+      await deleteImg(product.productImg.mainImg.name);
+      if (productImg.optImg1.URL !== "") {
+        await deleteImg(product.productImg.optImg1.name);
+      }
+      const maimImgURL = await uploadImage(mainImage);
+      const optImgURL1 = await uploadImage(optImage1);
+      await updateProduk({
+        ...product,
+        productImg: {
+          ...product.productImg,
+          mainImg: {
+            ...product.productImg.mainImg,
+            name: mainImage.name,
+            URL: maimImgURL,
+          },
+          optImg1: {
+            ...product.productImg.optImg1,
+            name: optImage1.name,
+            URL: optImgURL1,
+          },
+        },
+      });
+    } else if (
+      typeof optImage2 === "object" &&
+      typeof optImage1 === "object" &&
+      typeof mainImage === "object"
+    ) {
+      console.log("ini 10");
+      await deleteImg(product.productImg.mainImg.name);
+      if (productImg.optImg1.URL !== "" && productImg.optImg2.URL === "") {
+        await deleteImg(product.productImg.optImg1.name);
+        await deleteImg(product.productImg.optImg2.name);
+      }
+      const maimImgURL = await uploadImage(mainImage);
+      const optImgURL1 = await uploadImage(optImage1);
+      const optImgURL2 = await uploadImage(optImage2);
+      await updateProduk({
+        ...product,
+        productImg: {
+          ...product.productImg,
+          mainImg: {
+            ...product.productImg.mainImg,
+            name: mainImage.name,
+            URL: maimImgURL,
+          },
+          optImg1: {
+            ...product.productImg.optImg1,
+            name: optImage1.name,
+            URL: optImgURL1,
+          },
+          optImg2: {
+            ...product.productImg.optImg2,
+            name: optImage2.name,
+            URL: optImgURL2,
+          },
+        },
+      });
+    }
+    
+    window.alert(`Data produk ${product.name} berhasil diupdate`)
+    router.push(homeAdminURL);
+    setIsUploading(false);
+  };
 
   const customClassSpinner = "fill-grn-400 w-20 h-20";
   const customClassMiniSpinner = "fill-grn-600 w-12 h-6";
@@ -216,7 +415,7 @@ export default function EditProduk({ params }) {
               </h1>
             </div>
             <div className="container  mx-auto mb-4 px-4">
-              <form onSubmit={updateProduk} className="grid gap-4">
+              <form onSubmit={updateProduks} className="grid gap-4">
                 <section className="flex flex-wrap gap-4 w-full justify-around text-green-950">
                   {/* SECTION UNTUK INPUT NAMA, HARGA, KATEGORI, dan GAMBAR PRODUK */}
                   <BasicInfoInput
@@ -225,6 +424,7 @@ export default function EditProduk({ params }) {
                     onChange={onChange}
                   />
                   <MoreInfoInput
+                    mainImage={mainImage}
                     dataFromServer={dataFromServer}
                     isDisabled={isUploading}
                     onChange={onChange}
@@ -236,11 +436,13 @@ export default function EditProduk({ params }) {
                     </h3>
                     <div className="flex flex-col sm:flex-row gap-4 h-full">
                       <OptImgInput
+                        optImage1={optImage1}
                         dataFromServer={dataFromServer}
                         isDisabled={isUploading}
                         setOptImage1={setOptImage1}
                       />
                       <OptImgInput
+                        optImage2={optImage2}
                         dataFromServer={dataFromServer}
                         isDisabled={isUploading}
                         setOptImage2={setOptImage2}
@@ -274,7 +476,7 @@ export default function EditProduk({ params }) {
                       disabled={isDisabled}
                       className={`shadow-xl bg-white hover:bg-gray-100 active:scale-95 disabled:opacity-80 disabled:cursor-not-allowed disabled:active:scale-100 disabled:hover:bg-white transition-all text-base px-4 py-2 rounded-lg`}
                       type="submit"
-                      onClick={updateProduk}
+                      onClick={updateProduks}
                     >
                       {isUploading ? (
                         <Spinner customClass={customClassMiniSpinner} />

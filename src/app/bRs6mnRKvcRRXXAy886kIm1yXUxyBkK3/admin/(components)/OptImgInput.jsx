@@ -5,25 +5,27 @@ import { FaMinusCircle } from "react-icons/fa";
 export default function OptImgInput({
   dataFromServer,
   isDisabled,
+  optImage1,
+  optImage2,
   setOptImage1,
   setOptImage2,
 }) {
   const [imagePreviews, setImagePreviews] = useState();
-  const previewsFromServer = dataFromServer && dataFromServer.productImgURLs;
-  const [previewsFromServer1, setPreviewsFromServer1] = useState();
-  const [previewsFromServer2, setPreviewsFromServer2] = useState();
+  const previewsFromServer = dataFromServer && dataFromServer.productImg;
 
   useEffect(() => {
-    setPreviewsFromServer1(
-      dataFromServer &&
-        previewsFromServer.optImg1URL !== "" &&
-        previewsFromServer.optImg1URL
-    );
-    setPreviewsFromServer2(
-      dataFromServer &&
-        previewsFromServer.optImg2URL !== "" &&
-        previewsFromServer.optImg2URL
-    );
+    typeof setOptImage1 === "function" &&
+      setOptImage1(
+        dataFromServer && previewsFromServer.optImg1.URL !== ""
+          ? previewsFromServer.optImg1.URL
+          : ""
+      );
+    typeof setOptImage2 === "function" &&
+      setOptImage2(
+        dataFromServer && previewsFromServer.optImg2.URL !== ""
+          ? previewsFromServer.optImg2.URL
+          : ""
+      );
   }, [dataFromServer]);
 
   // reducer function to handle state changes
@@ -66,13 +68,11 @@ export default function OptImgInput({
 
   const hapusHandler = () => {
     dataOpt.fileList = [];
-    setImagePreviews(undefined);
+    setImagePreviews("");
     if (typeof setOptImage1 === "function") {
-      setPreviewsFromServer1(undefined);
-      setOptImage1(undefined);
+      setOptImage1("");
     } else if (typeof setOptImage2 === "function") {
-      setPreviewsFromServer2(undefined);
-      setOptImage2(undefined);
+      setOptImage2("");
     }
   };
 
@@ -89,9 +89,9 @@ export default function OptImgInput({
 
     if (imagePreviews) {
       return hapusBtn;
-    } else if (typeof setOptImage1 === "function" && previewsFromServer1) {
+    } else if (typeof setOptImage1 === "function" && optImage1) {
       return hapusBtn;
-    } else if (typeof setOptImage2 === "function" && previewsFromServer2) {
+    } else if (typeof setOptImage2 === "function" && optImage2) {
       return hapusBtn;
     }
   };
@@ -103,18 +103,14 @@ export default function OptImgInput({
         className={`${
           imagePreviews ? "hidden" : "block"
         } object-cover object-center max-w-[300px] mx-auto rounded-[15px]`}
-        src={
-          typeof setOptImage1 === "function"
-            ? previewsFromServer1
-            : previewsFromServer2
-        }
+        src={typeof setOptImage1 === "function" ? optImage1 : optImage2}
         alt={`Preview`}
       />
     );
 
-    if (typeof setOptImage1 === "function" && previewsFromServer1) {
+    if (typeof setOptImage1 === "function" && optImage1) {
       return imgElm;
-    } else if (typeof setOptImage2 === "function" && previewsFromServer2) {
+    } else if (typeof setOptImage2 === "function" && optImage2) {
       return imgElm;
     }
   };
@@ -154,9 +150,7 @@ export default function OptImgInput({
           data={dataOpt}
           dispatch={dispatchOpt}
           previewsFromServer={
-            typeof setOptImage1 === "function"
-              ? previewsFromServer1
-              : previewsFromServer2
+            typeof setOptImage1 === "function" ? optImage1 : optImage2
           }
           imagePreviews={imagePreviews}
           customClass={customClassDPOpsional}

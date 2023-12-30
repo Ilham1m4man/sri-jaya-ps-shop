@@ -2,6 +2,7 @@ import AddProductCard from "@/app/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin/(compon
 import CardProduct from "./CardProduct";
 
 export default function ProductCatalogue({
+  hapusHandler,
   currentRole,
   dataProduct,
   userProfile,
@@ -22,6 +23,7 @@ export default function ProductCatalogue({
         return (
           <CardProduct
             key={index}
+            hapusHandler={hapusHandler}
             dataProduct={item}
             role={role}
             onProductCardHandler={onProductCardHandler}

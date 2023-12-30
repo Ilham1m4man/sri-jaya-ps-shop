@@ -11,7 +11,6 @@ import BackBtn from "../buttons/BackBtn";
 import RegistKonsumer from "../forms/RegistKonsumer";
 import registrasi from "@/app/(services)/registrasi";
 import RegistPeretail from "../forms/RegistPeretail";
-import Spinner from "../loaders/Spinner";
 
 export default function ModalRegister({
   modal_register,
@@ -55,7 +54,7 @@ export default function ModalRegister({
       );
     }
 
-    /* if (dataInput.password === dataInput.confirmPassword) {
+    if (dataInput.password === dataInput.confirmPassword) {
       try {
         await registrasi(dataInput)
           .then((response) => {
@@ -88,11 +87,8 @@ export default function ModalRegister({
       }
     } else {
       window.alert("Password tidak sesuai!");
-    } */
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 5000)
-    /* setIsloading(false); */
+    }
+    setIsLoading(false);
   };
 
   const customClass = role === "Konsumer" ? "fill-grn-400" : "fill-ble-400";
@@ -124,19 +120,29 @@ export default function ModalRegister({
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="w-full sm:w-[70%] lg:w-[50%] transform overflow-hidden rounded-[20px] bg-white p-8 text-left flex flex-col gap-[15px] md:gap-[40px] items-center shadow-xl transition-all">
-                <div className="flex justify-end w-full relative items-center">
+                <div
+                  className={`${
+                    isLoading && "opacity-60 text-opacity-60"
+                  } flex justify-end w-full relative items-center`}
+                >
                   <Dialog.Title
                     as="h3"
-                    className="text-grn-950 text-2xl md:text-[2.3rem] rounded-[10px] mx-auto font-bold"
+                    className={`${
+                      isLoading && "opacity-60 text-opacity-60"
+                    } text-grn-950 text-2xl md:text-[2.3rem] rounded-[10px] mx-auto font-bold`}
                   >
                     Daftar
                   </Dialog.Title>
                   <BackBtn backFrom={modal_register} />
                 </div>
-                <div className="flex items-center max-w-[228px] max-h-[45px] rounded-[10px] overflow-hidden bg-footer_fontClr border-2 border-black">
+                <div className={`${
+                    isLoading && "opacity-60 text-opacity-60"
+                  } flex items-center max-w-[228px] max-h-[45px] rounded-[10px] overflow-hidden bg-footer_fontClr border-2 border-black`}>
                   <button
                     onClick={() => setRole("Konsumer")}
-                    className={`rounded-[10px] text-base md:text-xl font-normal p-[10px] ${
+                    className={`${
+                      isLoading && "opacity-60 text-opacity-60"
+                    } rounded-[10px] text-base md:text-xl font-normal p-[10px] ${
                       role === "Konsumer"
                         ? "bg-grn-300 text-grn-950 "
                         : "bg-transparent text-grn-50 hover:bg-grn-950"
@@ -146,7 +152,9 @@ export default function ModalRegister({
                   </button>
                   <button
                     onClick={() => setRole("Peretail")}
-                    className={`rounded-[10px] text-base md:text-xl font-normal py-[10px] px-[19px] ${
+                    className={`${
+                      isLoading && "opacity-60 text-opacity-60"
+                    } rounded-[10px] text-base md:text-xl font-normal py-[10px] px-[19px] ${
                       role === "Peretail"
                         ? "bg-ble-300 text-ble-950"
                         : "bg-transparent text-ble-50 hover:bg-ble-950"
@@ -155,9 +163,7 @@ export default function ModalRegister({
                     Peretail
                   </button>
                 </div>
-                {isLoading ? (
-                  <Spinner customClass={customClass} />
-                ) : role === "Konsumer" ? (
+                {role === "Konsumer" ? (
                   <RegistKonsumer
                     isLoading={isLoading}
                     inputHandler={register}
@@ -174,7 +180,9 @@ export default function ModalRegister({
                     setPhoneValue={setPhone}
                   />
                 )}
-                <p className="text-grn-950 font-normal text-base">
+                <p className={`${
+                    isLoading && "opacity-60 text-opacity-60"
+                  } text-grn-950 font-normal text-base`}>
                   Sudah punya akun?{" "}
                   <button onClick={onLogin} className="buat-akun ml-[20px]">
                     Masuk

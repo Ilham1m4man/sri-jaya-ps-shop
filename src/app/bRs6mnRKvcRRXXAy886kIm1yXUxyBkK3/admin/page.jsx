@@ -18,6 +18,7 @@ import Footer from "@/components/Footer";
 import Filters from "@/components/Filters";
 import getUserData from "../../(services)/getUserData";
 import Spinner from "@/components/loaders/Spinner";
+import deleteProduk from "@/app/(services)/deleteProduk";
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -34,14 +35,7 @@ export default function Home() {
   const [keyword, setKeyword] = useState("");
   const [dataProduct, setDataProduct] = useState();
   const router = useRouter();
-  const {
-    isLoading,
-    hideLoading,
-    showLoading,
-    isFetching,
-    showFetching,
-    hideFetching,
-  } = useAppContext();
+  const { isLoading, hideLoading, showLoading } = useAppContext();
 
   useEffect(() => {
     const cekAuth = () => {
@@ -98,6 +92,15 @@ export default function Home() {
         window.alert(err);
       });
     return setModalProfileOpen(!modalProfileOpen);
+  };
+
+  const hapusHandler = (idProduct) => {
+    dataProduct.find((product) => {
+      if (product.idProduct === idProduct) {
+        window.confirm(`Apakah anda yakin ingin menghapus ${product.name}?`) &&
+          deleteProduk(product);
+      }
+    });
   };
 
   const onRegisterHandler = () => {
@@ -198,6 +201,7 @@ export default function Home() {
               {/* PRODUCT CATALOGUE */}
 
               <ProductCatalogue
+                hapusHandler={hapusHandler}
                 currentRole={userRole}
                 dataProduct={dataProduct}
                 userProfile={userProfile}

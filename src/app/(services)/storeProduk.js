@@ -1,7 +1,7 @@
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { firestore } from "../(firebase)/firebase.config";
 
-const storeProduk = async ({ name, priceEcer, priceBakul, category, desc, userGuide, productImgURLs }) => {
+const storeProduk = async ({ name, priceEcer, priceBakul, category, desc, userGuide, productImg }) => {
   const price = { priceEcer, priceBakul }
 
   const ref = collection(firestore, "products");
@@ -11,7 +11,7 @@ const storeProduk = async ({ name, priceEcer, priceBakul, category, desc, userGu
     category,
     desc,
     userGuide,
-    productImgURLs,
+    productImg,
     sentAt: Timestamp.now().toDate(),
   }).then((response) => {
     window.alert(`${name} berhasil ditambahkan`)

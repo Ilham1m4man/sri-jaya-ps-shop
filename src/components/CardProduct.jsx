@@ -2,23 +2,30 @@ import { FaMinusCircle } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 export default function CardProduct({
+  hapusHandler,
   dataProduct,
   role,
   onProductCardHandler,
   onKeranjangHandler,
 }) {
-  const { idProduct, name, price, productImgURLs } = dataProduct;
+  const { idProduct, name, price, productImg } = dataProduct;
   const router = useRouter()
 
   function numberWithCommas(x) {
-    /* let priceType = "";
+    let priceType = "";
     if (role === "Konsumer") {
       priceType = x.priceEcer;
-    } else {
+    } else if(role === "Peretail") {
       priceType = x.priceBakul;
+    } else if(role === "Admin") {
+      const ecer = x.priceEcer.toString().split(".");
+      ecer[0] = ecer[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      const bakul = x.priceBakul.toString().split(".");
+      bakul[0] = bakul[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      return (`${bakul.join(",")} (bakul) - ${ecer.join(",")} (ecer)`);  
     }
-    console.log(x) */
-    const parts = x.toString().split(".");
+
+    const parts = priceType.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     return parts.join(",");
   }
@@ -31,10 +38,6 @@ export default function CardProduct({
     }
   }
 
-  const hapusHandler = () => {
-    console.log(idProduct + " telah dihapus");
-  };
-
   return (
     <div
       id="card-product"
@@ -42,7 +45,7 @@ export default function CardProduct({
     >
       {role === "Admin" && (
         <button
-          onClick={hapusHandler}
+          onClick={() => hapusHandler(idProduct)}
           className="z-20 bg-transparent border-none rounded-full absolute -right-4 top-3 group hover:scale-95 active:scale-90 transition-all"
         >
           <FaMinusCircle className="fill-red-500 bg-white rounded-full w-7 h-7 group-hover:fill-red-600 group-active:fill-red-700 transition-all" />
@@ -54,8 +57,8 @@ export default function CardProduct({
       >
         <div className="flex justify-center">
           <img
-            className="max-h-[165px] w-8/12 object-cover object-bottom"
-            src={productImgURLs.mainImgURL}
+            className="max-h-[165px] w-8/12 object-cover object-center"
+            src={productImg.mainImg.URL}
             alt="Photo of A594K 1kg"
           />
         </div>

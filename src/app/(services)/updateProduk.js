@@ -1,21 +1,20 @@
-import { updateDoc, collection, Timestamp, query, where, documentId } from "firebase/firestore";
+import { updateDoc, doc, Timestamp } from "firebase/firestore";
 import { firestore } from "../(firebase)/firebase.config";
 
-const updateProduk = async ({ idProduct, name, price, category, desc, userGuide, productImgURLs }) => {
-  const ref = collection(firestore, "products");
-  const q = query(ref, where(documentId(), "==", idProduct));
-  await updateDoc(q, {
+const updateProduk = async ({ idProduct, name, price, category, desc, userGuide, productImg }) => {
+  const ref = doc(firestore, "products", idProduct);
+  updateDoc(ref, {
     name,
     price,
     category,
     desc,
     userGuide,
-    productImgURLs,
+    productImg,
     sentAt: Timestamp.now().toDate(),
-  }).then((response) => {
-    return response
+  }).then(() => {
+    return {berhasil: "Berhasil diupdate"}
   }).catch((err) => {
-    return err
+    return {gagal: "Gagal diupdate", err}
   });
 }
 

@@ -2,7 +2,12 @@ import { useState } from "react";
 import PeekBtn from "../buttons/PeekBtn";
 import Spinner from "../loaders/Spinner";
 
-export default function RegistKonsumer({ isLoading, inputHandler, setPW, setConfPW }) {
+export default function RegistKonsumer({
+  isLoading,
+  inputHandler,
+  setPW,
+  setConfPW,
+}) {
   const [isPasswordHidden, setPasswordHidden] = useState(true);
   const [isConfirmPasswordHidden, setConfirmPasswordHidden] = useState(true);
 
@@ -11,7 +16,9 @@ export default function RegistKonsumer({ isLoading, inputHandler, setPW, setConf
   return (
     <form
       onSubmit={inputHandler}
-      className="flex flex-col gap-[30px] w-[85%] md:w-[70%]"
+      className={`${
+        isLoading && "opacity-60 text-opacity-60"
+      } flex flex-col gap-[30px] w-[85%] md:w-[70%]`}
     >
       <div className="grid">
         <label

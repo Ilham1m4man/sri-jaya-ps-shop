@@ -84,16 +84,20 @@ export default function TambahProduk() {
       await uploadBytes(imgRefOpt2, optImage2);
       optImg2URL = await getDownloadURL(imgRefOpt2);
     }
-    return { mainImgURL, optImg1URL, optImg2URL };
+    return {
+      mainImg: { name: mainImage.name, URL: mainImgURL },
+      optImg1: { name: optImage1 ? optImage1.name : "", URL: optImg1URL },
+      optImg2: { name: optImage2 ? optImage2.name : "", URL: optImg2URL },
+    };
   };
 
   const uploadProduk = async (e) => {
     e.preventDefault();
     setIsUploading(true);
 
-    const imgURLs = await uploadProductImg();
-    await storeProduk({ ...product, productImgURLs: imgURLs });
-    
+    const imgData = await uploadProductImg();
+    await storeProduk({ ...product, productImg: imgData });
+
     router.push(homeAdminURL);
     setIsUploading(false);
   };

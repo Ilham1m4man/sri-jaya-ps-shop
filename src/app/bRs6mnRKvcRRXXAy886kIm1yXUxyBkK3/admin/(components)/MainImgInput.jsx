@@ -1,14 +1,19 @@
-import { useState, useReducer } from "react";
+import { useState, useReducer, useEffect } from "react";
 import DropZone from "./DropZone";
 
 export default function MainImgInput({
   dataFromServer,
   isDisabled,
+  mainImage,
   setMainImage,
 }) {
   const [imagePreviews, setImagePreviews] = useState();
   const previewsFromServer =
-    dataFromServer && dataFromServer.productImgURLs.mainImgURL;
+    dataFromServer && dataFromServer.productImg.mainImg.URL;
+
+  useEffect(() => {
+    setMainImage(previewsFromServer);
+  }, [dataFromServer]);
 
   // reducer function to handle state changes
   const reducer = (state, action) => {
@@ -55,7 +60,7 @@ export default function MainImgInput({
             className={`${
               imagePreviews ? "hidden" : "block"
             } object-cover object-center max-w-[300px] mx-auto rounded-[15px]`}
-            src={previewsFromServer}
+            src={mainImage}
             alt={`Preview`}
           />
           <img
@@ -83,7 +88,7 @@ export default function MainImgInput({
         isRequired={true}
         data={data}
         dispatch={dispatch}
-        previewsFromServer={previewsFromServer}
+        previewsFromServer={mainImage}
         imagePreviews={imagePreviews}
         customClass={customClassDPUtama}
       />
