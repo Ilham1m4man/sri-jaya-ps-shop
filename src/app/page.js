@@ -181,18 +181,18 @@ export default function Home() {
           {modalProductOpen ? <ModalProduct modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} changeRole={onChangeRoleHandler} /> : null}
           <header className="z-10 sticky top-0">
             <Navbar userProfile={userProfile} currentRole={userRole} modal_cart={onCartOpen} statusCart={modalCartOpen} modal_profile={onProfileOpen} modal_login={onLoginOpen} modal_register={onRegisterOpen} statusProfile={modalProfileOpen} statusLoggedIn={loggedIn} />
-            <section className="max-w-screen flex gap-[55px] justify-between px-20 pb-[50px] bg-mainBg_clr">
+            <section className="max-w-screen flex gap-4 md:gap-[30px] lg:gap-[55px] justify-between px-4 md:px-10 lg:px-20 pb-[30px] md:pb-[50px] bg-mainBg_clr">
               <FilterBtn filterClicked={() => setFilter(!filter)} />
               <SearchBar keyword={keyword} keywordChange={onKeywordChangeHandler} />
             </section>
           </header>
-          <main className="relative flex bg-mainBg_clr min-h-screen gap-[55px] justify-between px-20">
+          <main className="relative flex bg-mainBg_clr min-h-screen gap-[55px] justify-between px-4 md:px-10 lg:px-20">
             {filter ? <Filters minInputValue={minInput} onMinInput={minInputHandler} maxInputValue={maxInput} onMaxInput={maxInputHandler} /> : null}
             <div className={`mb-[40px] ${filter ? "w-[73.85%]" : "w-full"}`}>
               {/* MAIN CONTENT */}
               {/* PRODUCT CATALOGUE */}
 
-              <ProductCatalogue currentRole={userRole} dataProduct={dataProduct} onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler} filterStat={filter} />
+              <ProductCatalogue searchKeyword={keyword} currentRole={userRole} dataProduct={dataProduct} onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler} filterStat={filter} />
             </div>
           </main>
           <Footer />

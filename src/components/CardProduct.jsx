@@ -41,7 +41,7 @@ export default function CardProduct({
   return (
     <div
       id="card-product"
-      className="relative max-w-[250px] max-h-[320px] z-0 rounded-[15px] bg-black"
+      className="relative min-w-[250px] max-w-[250px] max-h-[320px] z-0 rounded-[15px] bg-black"
     >
       {role === "Admin" && (
         <button
@@ -55,11 +55,11 @@ export default function CardProduct({
         onClick={editProduk}
         className="w-full h-full bg-white rounded-[15px] hover:opacity-90 transition-all"
       >
-        <div className="flex justify-center">
+        <div className="flex max-h-[165px] h-[50vh] justify-center">
           <img
-            className="max-h-[165px] w-8/12 object-cover object-center"
+            className="max-h-[165px] w-8/12 object-contain object-center"
             src={productImg.mainImg.URL}
-            alt="Photo of A594K 1kg"
+            alt={name}
           />
         </div>
         <div className={`${role === "Admin" ? "mb-5" : "mb-20" } mt-2 text-left px-[25px]`}>

@@ -18,7 +18,6 @@ import {
   where,
   onSnapshot,
   documentId,
-  updateDoc,
 } from "firebase/firestore";
 import { firestore, storage } from "@/app/(firebase)/firebase.config";
 import MainImgInput from "../../(components)/MainImgInput";
@@ -168,7 +167,11 @@ export default function EditProduk({ params }) {
   const updateProduks = async (e) => {
     e.preventDefault();
     setIsUploading(true);
-    const { productImg } = dataFromServer;
+    const { name, productImg } = dataFromServer;
+
+    if (product.name !== name) {
+      
+    }
 
     if (optImage1 !== productImg.optImg1.URL && optImage1 === "") {
       console.log("ini 1");

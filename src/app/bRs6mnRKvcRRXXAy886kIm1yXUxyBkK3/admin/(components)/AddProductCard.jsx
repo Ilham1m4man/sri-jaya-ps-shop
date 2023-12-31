@@ -7,7 +7,7 @@ export default function AddProductCard() {
   } = useAppContext()
 
   return (
-    <div id="card-product" className="produk-card-admin rounded-[15px] overflow-hidden group hover:scale-95 active:scale-90 transition-all">
+    <div id="card-product" className="produk-card-admin rounded-[15px] overflow-hidden group min-w-[250px] max-w-[250px] hover:scale-105 active:scale-100 transition-all">
       <Link
         onClick={() => showLoading()}
         className="grid place-items-center min-h-[234.09px] h-full  p-[3px]"

@@ -1,6 +1,6 @@
 export default function SearchBar({ keyword, keywordChange }) {
   return (
-    <div id="search-bar" className="flex items-center w-[80%] gap-4 px-5 rounded-[15px] bg-white">
+    <div id="search-bar" className="flex items-center w-[80%] gap-4 px-3 md:px-5 rounded-[10px] md:rounded-[15px] bg-white">
       <svg
         width="19"
         height="20"
@@ -17,7 +17,7 @@ export default function SearchBar({ keyword, keywordChange }) {
       </svg>
 
       <input
-        className="w-[100%] h-[55px] text-footer_fontClr text-xl font-normal outline-none"
+        className="w-[100%] h-[40px] md:h-[55px] text-footer_fontClr text-base md:text-xl font-normal outline-none"
         type="text"
         placeholder={"Cari"}
         value={keyword}
