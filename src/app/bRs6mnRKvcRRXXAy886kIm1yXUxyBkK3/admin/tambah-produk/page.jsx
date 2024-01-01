@@ -7,12 +7,20 @@ import { FaChevronLeft } from "react-icons/fa6";
 import { useAppContext } from "@/app/(context)/AppWrapper";
 import { useEffect, useReducer, useState } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "@/app/(firebase)/firebase.config";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  documentId,
+} from "firebase/firestore";
+import { storage, firestore } from "@/app/(firebase)/firebase.config";
 import MainImgInput from "../(components)/MainImgInput";
 import OptImgInput from "../(components)/OptImgInput";
 import BasicInfoInput from "../(components)/BasicInfoInput";
 import MoreInfoInput from "../(components)/MoreInfoInput";
 import storeProduk from "@/app/(services)/storeProduk";
+import updateProduk from "@/app/(services)/updateProduk";
 
 export default function TambahProduk() {
   const { isLoading, hideLoading, showLoading } = useAppContext();
@@ -53,17 +61,17 @@ export default function TambahProduk() {
     router.push(homeAdminURL);
   };
 
-  const uploadProductImg = async () => {
+  const uploadProductImg = async (idProduct) => {
     const imgRef = ref(
       storage,
-      `images/product/${product.name}/${mainImage.name}`
+      `images/product/${idProduct}/${mainImage.name}`
     );
     const imgRefOpt1 =
       optImage1 &&
-      ref(storage, `images/product/${product.name}/${optImage1.name}`);
+      ref(storage, `images/product/${idProduct}/${optImage1.name}`);
     const imgRefOpt2 =
       optImage2 &&
-      ref(storage, `images/product/${product.name}/${optImage2.name}`);
+      ref(storage, `images/product/${idProduct}/${optImage2.name}`);
 
     await uploadBytes(imgRef, mainImage);
     const mainImgURL = await getDownloadURL(imgRef);
@@ -95,9 +103,21 @@ export default function TambahProduk() {
     e.preventDefault();
     setIsUploading(true);
 
-    const imgData = await uploadProductImg();
-    await storeProduk({ ...product, productImg: imgData });
+    await storeProduk({
+      ...product,
+      productImg: {
+        mainImg: { name: "", URL: "" },
+        optImg1: { name: "", URL: "" },
+        optImg2: { name: "", URL: "" },
+      },
+      imgFile: {
+        mainImage,
+        optImage1,
+        optImage2,
+      },
+    });
 
+    window.alert(`${product.name} berhasil ditambahkan`)
     router.push(homeAdminURL);
     setIsUploading(false);
   };

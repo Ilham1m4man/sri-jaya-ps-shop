@@ -145,7 +145,7 @@ export default function EditProduk({ params }) {
   const uploadImage = async (dataImg) => {
     const imgRef = ref(
       storage,
-      `images/product/${product.name}/${dataImg.name}`
+      `images/product/${product.idProduct}/${dataImg.name}`
     );
     await uploadBytes(imgRef, dataImg);
     const imgURL = await getDownloadURL(imgRef);
@@ -153,7 +153,7 @@ export default function EditProduk({ params }) {
   };
 
   const deleteImg = async (imgName) => {
-    const imgRef = ref(storage, `images/product/${product.name}/${imgName}`);
+    const imgRef = ref(storage, `images/product/${product.idProduct}/${imgName}`);
 
     await deleteObject(imgRef)
       .then(() => {})
@@ -168,10 +168,6 @@ export default function EditProduk({ params }) {
     e.preventDefault();
     setIsUploading(true);
     const { name, productImg } = dataFromServer;
-
-    if (product.name !== name) {
-      
-    }
 
     if (optImage1 !== productImg.optImg1.URL && optImage1 === "") {
       console.log("ini 1");
@@ -228,10 +224,20 @@ export default function EditProduk({ params }) {
       });
     }
 
-    if (typeof mainImage === "object") {
+    if (
+      typeof optImage2 === "object" &&
+      typeof optImage1 === "object" &&
+      typeof mainImage === "object"
+    ) {
       console.log("ini 4");
-        await deleteImg(product.productImg.mainImg.name);
-      const mainImgURL = await uploadImage(mainImage);
+      await deleteImg(product.productImg.mainImg.name);
+      if (productImg.optImg1.URL !== "" && productImg.optImg2.URL === "") {
+        await deleteImg(product.productImg.optImg1.name);
+        await deleteImg(product.productImg.optImg2.name);
+      }
+      const maimImgURL = await uploadImage(mainImage);
+      const optImgURL1 = await uploadImage(optImage1);
+      const optImgURL2 = await uploadImage(optImage2);
       await updateProduk({
         ...product,
         productImg: {
@@ -239,20 +245,37 @@ export default function EditProduk({ params }) {
           mainImg: {
             ...product.productImg.mainImg,
             name: mainImage.name,
-            URL: mainImgURL,
+            URL: maimImgURL,
+          },
+          optImg1: {
+            ...product.productImg.optImg1,
+            name: optImage1.name,
+            URL: optImgURL1,
+          },
+          optImg2: {
+            ...product.productImg.optImg2,
+            name: optImage2.name,
+            URL: optImgURL2,
           },
         },
       });
-    } else if (typeof optImage1 === "object") {
+    } else if (typeof optImage1 === "object" && typeof mainImage === "object") {
       console.log("ini 5");
+      await deleteImg(product.productImg.mainImg.name);
       if (productImg.optImg1.URL !== "") {
         await deleteImg(product.productImg.optImg1.name);
       }
+      const maimImgURL = await uploadImage(mainImage);
       const optImgURL1 = await uploadImage(optImage1);
       await updateProduk({
         ...product,
         productImg: {
           ...product.productImg,
+          mainImg: {
+            ...product.productImg.mainImg,
+            name: mainImage.name,
+            URL: maimImgURL,
+          },
           optImg1: {
             ...product.productImg.optImg1,
             name: optImage1.name,
@@ -260,16 +283,23 @@ export default function EditProduk({ params }) {
           },
         },
       });
-    } else if (typeof optImage2 === "object") {
+    } else if (typeof optImage2 === "object" && typeof mainImage === "object") {
       console.log("ini 6");
+      await deleteImg(product.productImg.mainImg.name);
       if (productImg.optImg2.URL !== "") {
         await deleteImg(product.productImg.optImg2.name);
       }
+      const maimImgURL = await uploadImage(mainImage);
       const optImgURL2 = await uploadImage(optImage2);
       await updateProduk({
         ...product,
         productImg: {
           ...product.productImg,
+          mainImg: {
+            ...product.productImg.mainImg,
+            name: mainImage.name,
+            URL: maimImgURL,
+          },
           optImg2: {
             ...product.productImg.optImg2,
             name: optImage2.name,
@@ -301,14 +331,12 @@ export default function EditProduk({ params }) {
           },
         },
       });
-    } else if (typeof optImage2 === "object" && typeof mainImage === "object") {
+    } else if (typeof mainImage === "object") {
       console.log("ini 8");
-      await deleteImg(product.productImg.mainImg.name);
-      if (productImg.optImg2.URL !== "") {
-        await deleteImg(product.productImg.optImg2.name);
+      if (productImg.mainImg.URL !== "") {
+        await deleteImg(product.productImg.mainImg.name);
       }
-      const maimImgURL = await uploadImage(mainImage);
-      const optImgURL2 = await uploadImage(optImage2);
+      const mainImgURL = await uploadImage(mainImage);
       await updateProduk({
         ...product,
         productImg: {
@@ -316,32 +344,20 @@ export default function EditProduk({ params }) {
           mainImg: {
             ...product.productImg.mainImg,
             name: mainImage.name,
-            URL: maimImgURL,
-          },
-          optImg2: {
-            ...product.productImg.optImg2,
-            name: optImage2.name,
-            URL: optImgURL2,
+            URL: mainImgURL,
           },
         },
       });
-    } else if (typeof optImage1 === "object" && typeof mainImage === "object") {
+    } else if (typeof optImage1 === "object") {
       console.log("ini 9");
-      await deleteImg(product.productImg.mainImg.name);
       if (productImg.optImg1.URL !== "") {
         await deleteImg(product.productImg.optImg1.name);
       }
-      const maimImgURL = await uploadImage(mainImage);
       const optImgURL1 = await uploadImage(optImage1);
       await updateProduk({
         ...product,
         productImg: {
           ...product.productImg,
-          mainImg: {
-            ...product.productImg.mainImg,
-            name: mainImage.name,
-            URL: maimImgURL,
-          },
           optImg1: {
             ...product.productImg.optImg1,
             name: optImage1.name,
@@ -349,34 +365,16 @@ export default function EditProduk({ params }) {
           },
         },
       });
-    } else if (
-      typeof optImage2 === "object" &&
-      typeof optImage1 === "object" &&
-      typeof mainImage === "object"
-    ) {
+    } else if (typeof optImage2 === "object") {
       console.log("ini 10");
-      await deleteImg(product.productImg.mainImg.name);
-      if (productImg.optImg1.URL !== "" && productImg.optImg2.URL === "") {
-        await deleteImg(product.productImg.optImg1.name);
+      if (productImg.optImg2.URL !== "") {
         await deleteImg(product.productImg.optImg2.name);
       }
-      const maimImgURL = await uploadImage(mainImage);
-      const optImgURL1 = await uploadImage(optImage1);
       const optImgURL2 = await uploadImage(optImage2);
       await updateProduk({
         ...product,
         productImg: {
           ...product.productImg,
-          mainImg: {
-            ...product.productImg.mainImg,
-            name: mainImage.name,
-            URL: maimImgURL,
-          },
-          optImg1: {
-            ...product.productImg.optImg1,
-            name: optImage1.name,
-            URL: optImgURL1,
-          },
           optImg2: {
             ...product.productImg.optImg2,
             name: optImage2.name,
@@ -385,8 +383,8 @@ export default function EditProduk({ params }) {
         },
       });
     }
-    
-    window.alert(`Data produk ${product.name} berhasil diupdate`)
+
+    window.alert(`Data produk ${product.name} berhasil diupdate`);
     router.push(homeAdminURL);
     setIsUploading(false);
   };

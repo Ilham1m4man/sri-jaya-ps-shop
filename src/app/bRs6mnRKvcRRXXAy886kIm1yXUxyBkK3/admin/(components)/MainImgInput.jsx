@@ -54,7 +54,7 @@ export default function MainImgInput({
   return (
     <div className="relative w-full rounded-[15px] overflow-hidden">
       {dataFromServer ? (
-        <div className="absolute w-full top-1/2 -translate-y-1/2">
+        <div className="absolute flex justify-center w-full top-1/2 -translate-y-1/2">
           <img
             priority
             className={`${

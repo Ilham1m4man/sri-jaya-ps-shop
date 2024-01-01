@@ -22,6 +22,7 @@ import Footer from '@/components/Footer'
 import Filters from '@/components/Filters'
 import ModalRegister from '@/components/modals/ModalRegister'
 import getUserData from './(services)/getUserData';
+import ModalProductNew from '@/components/modals/ModalProductNew';
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -37,6 +38,7 @@ export default function Home() {
   const [maxInput, setMaxInput] = useState();
   const [keyword, setKeyword] = useState("");
   const [dataProduct, setDataProduct] = useState();
+  const [clickedProduct, setClickedProduct] = useState();
   const router = useRouter()
   const {
     isLoading,
@@ -129,7 +131,14 @@ export default function Home() {
     return setModalRegisterOpen(!modalRegisterOpen)
   }
 
-  const onProductCardHandler = () => {
+  const onProductCardHandler = (idProduct) => {
+    if (typeof idProduct === "string") {
+      dataProduct.filter((item) => {
+        if (item.idProduct == idProduct) {
+          setClickedProduct(item)
+        }
+      })
+    }
     return setModalProductOpen(!modalProductOpen)
   }
 
@@ -178,7 +187,8 @@ export default function Home() {
           <ModalProfile userProfile={userProfile} modal_profile={onProfileOpen} onLogOut={onLogOutHandler} currentRole={userRole} isModalProfileOpen={modalProfileOpen} />
           <ModalLogin modal_login={onLoginOpen} onRegister={onRegisterHandler} isModalLoginOpen={modalLoginOpen} />
           <ModalRegister modal_register={onRegisterOpen} onLogin={onLoginHandler} isModalRegisterOpen={modalRegisterOpen} />
-          {modalProductOpen ? <ModalProduct modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} changeRole={onChangeRoleHandler} /> : null}
+          {clickedProduct && <ModalProductNew clickedProduct={clickedProduct} modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} changeRole={onChangeRoleHandler} />}
+
           <header className="z-10 sticky top-0">
             <Navbar userProfile={userProfile} currentRole={userRole} modal_cart={onCartOpen} statusCart={modalCartOpen} modal_profile={onProfileOpen} modal_login={onLoginOpen} modal_register={onRegisterOpen} statusProfile={modalProfileOpen} statusLoggedIn={loggedIn} />
             <section className="max-w-screen flex gap-4 md:gap-[30px] lg:gap-[55px] justify-between px-4 md:px-10 lg:px-20 pb-[30px] md:pb-[50px] bg-mainBg_clr">

@@ -6,7 +6,7 @@ const deleteProduk = async ({ idProduct, name, price, category, desc, userGuide,
   const { mainImg, optImg1, optImg2 } = productImg
   const firestoreRef = doc(firestore, "products", idProduct);
   const deleteImg = async (imgName) => {
-    const imgRef = ref(storage, `images/product/${name}/${imgName}`);
+    const imgRef = ref(storage, `images/product/${idProduct}/${imgName}`);
 
     await deleteObject(imgRef)
       .then(() => { })

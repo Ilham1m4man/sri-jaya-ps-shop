@@ -30,18 +30,18 @@ export default function CardProduct({
     return parts.join(",");
   }
 
-  const editProduk = () => {
+  const clickedProdukHandler = () => {
     if (role === "Admin") {
       router.push(`/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin/edit-produk/${idProduct}`)
     } else {
-      onProductCardHandler()
+      onProductCardHandler(idProduct)
     }
   }
 
   return (
     <div
       id="card-product"
-      className="relative min-w-[250px] max-w-[250px] max-h-[320px] z-0 rounded-[15px] bg-black"
+      className="relative min-w-[250px] max-w-[250px] max-h-[320px] z-0 rounded-[15px] active:scale-95 bg-black transition-all"
     >
       {role === "Admin" && (
         <button
@@ -52,7 +52,7 @@ export default function CardProduct({
         </button>
       )}
       <button
-        onClick={editProduk}
+        onClick={() => {clickedProdukHandler()}}
         className="w-full h-full bg-white rounded-[15px] hover:opacity-90 transition-all"
       >
         <div className="flex max-h-[165px] h-[50vh] justify-center">
