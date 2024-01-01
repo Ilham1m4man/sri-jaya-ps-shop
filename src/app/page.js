@@ -7,7 +7,7 @@ import { auth } from './(firebase)/firebase.config';
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useAppContext } from './(context)/AppWrapper';
 import { useState, useEffect } from 'react'
-import { collection, getDocs, onSnapshot } from "firebase/firestore";
+import { collection, onSnapshot, doc, setDoc, getDocs } from "firebase/firestore";
 import { firestore } from './(firebase)/firebase.config';
 import Navbar from '@/components/Navbar'
 import ModalCart from '@/components/modals/ModalCart'
@@ -32,12 +32,14 @@ export default function Home() {
   const [modalLoginOpen, setModalLoginOpen] = useState(false);
   const [modalRegisterOpen, setModalRegisterOpen] = useState(false);
   const [modalProductOpen, setModalProductOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [userRole, setUserRole] = useState("Konsumer");
   const [filter, setFilter] = useState(false);
   const [minInput, setMinInput] = useState();
   const [maxInput, setMaxInput] = useState();
   const [keyword, setKeyword] = useState("");
   const [dataProduct, setDataProduct] = useState();
+  const [dataCart, setDataCart] = useState();
   const [clickedProduct, setClickedProduct] = useState();
   const router = useRouter()
   const {
@@ -89,7 +91,14 @@ export default function Home() {
     cekProduk()
   }, [])
 
-  const onCartOpen = () => {
+  const onCartOpen = async () => {
+    const querySnapshot = await getDocs(collection(firestore, "carts", userProfile.uid, "products"));
+    const iniMap = querySnapshot.docs.map((item) => {
+      return (item.data())
+    })
+
+    setDataCart(iniMap)
+    console.log("ini map "+ iniMap)
     return setModalCartOpen(!modalCartOpen)
   }
 
@@ -142,8 +151,18 @@ export default function Home() {
     return setModalProductOpen(!modalProductOpen)
   }
 
-  const onKeranjangHandler = () => {
-    return console.log('Keranjang handler')
+  const tambahKeranjangHandler = async (idProduct, counter) => {
+    if (loggedIn && userRole !== "Admin") {
+      setIsUploading(true)
+      await setDoc(doc(firestore, "carts", userProfile.uid, "products", idProduct), {
+        amount: counter ? counter : 1,
+      });
+    } else {
+      window.alert("Anda belum login, silahkan login terlebih dahulu")
+    }
+    window.alert(`${counter ? counter : 1} ${idProduct} telah ditambahkan `)
+    setIsUploading(false)
+    return console.log(`${idProduct} ditambahkan sebanyak ${counter ? counter : 1}`)
   }
 
   const onFilterClickHandler = () => {
@@ -183,11 +202,11 @@ export default function Home() {
         </div>
       ) : (
         <>
-          {modalCartOpen ? <ModalCart modal_cart={onCartOpen} /> : null}
+          <ModalCart userProfile={userProfile} dataCart={dataCart} modal_cart={onCartOpen} isModalCartOpen={modalCartOpen} />
           <ModalProfile userProfile={userProfile} modal_profile={onProfileOpen} onLogOut={onLogOutHandler} currentRole={userRole} isModalProfileOpen={modalProfileOpen} />
           <ModalLogin modal_login={onLoginOpen} onRegister={onRegisterHandler} isModalLoginOpen={modalLoginOpen} />
           <ModalRegister modal_register={onRegisterOpen} onLogin={onLoginHandler} isModalRegisterOpen={modalRegisterOpen} />
-          {clickedProduct && <ModalProductNew clickedProduct={clickedProduct} modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} changeRole={onChangeRoleHandler} />}
+          {clickedProduct && <ModalProductNew clickedProduct={clickedProduct} modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} tambahKeranjangHandler={tambahKeranjangHandler} />}
 
           <header className="z-10 sticky top-0">
             <Navbar userProfile={userProfile} currentRole={userRole} modal_cart={onCartOpen} statusCart={modalCartOpen} modal_profile={onProfileOpen} modal_login={onLoginOpen} modal_register={onRegisterOpen} statusProfile={modalProfileOpen} statusLoggedIn={loggedIn} />
@@ -202,7 +221,7 @@ export default function Home() {
               {/* MAIN CONTENT */}
               {/* PRODUCT CATALOGUE */}
 
-              <ProductCatalogue searchKeyword={keyword} currentRole={userRole} dataProduct={dataProduct} onProductCardHandler={onProductCardHandler} onKeranjangHandler={onKeranjangHandler} filterStat={filter} />
+              <ProductCatalogue searchKeyword={keyword} currentRole={userRole} dataProduct={dataProduct} onProductCardHandler={onProductCardHandler} tambahKeranjangHandler={tambahKeranjangHandler} filterStat={filter} />
             </div>
           </main>
           <Footer />

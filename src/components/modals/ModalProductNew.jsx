@@ -10,6 +10,7 @@ export default function ModalProductNew({
   modal_product,
   currentRole,
   isModalProductOpen,
+  tambahKeranjangHandler,
 }) {
   const { idProduct, name, price, category, desc, userGuide, productImg } =
     clickedProduct;
@@ -42,6 +43,12 @@ export default function ModalProductNew({
     return setDisabled(false);
   }, [counter]);
 
+  function numberWithCommas(x) {
+    const parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return parts.join(",");
+  }
+
   return (
     <>
       <Transition appear show={isModalProductOpen} as={Fragment}>
@@ -59,7 +66,7 @@ export default function ModalProductNew({
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center py-4 text-center">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -69,11 +76,11 @@ export default function ModalProductNew({
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-[98%] transform overflow-hidden rounded-[20px] bg-gradient-to-b from-mainBg_clr to-white py-[50px] px-12 text-left flex flex-col gap-[20px] items-center shadow-xl transition-all">
+                <Dialog.Panel className="w-full transform overflow-hidden rounded-[20px] bg-white p-6 text-left flex flex-col justify-between gap-[20px] lg:gap-[40px] items-center shadow-xl transition-all">
                   <div className="flex justify-end w-full relative items-center">
                     <Dialog.Title
                       as="h3"
-                      className={`text-lg md:text-xl px-3 py-1 md:px-6 md:py-2 rounded-[10px] mx-auto font-bold ${
+                      className={`text-base md:text-lg px-3 py-1 md:px-6 md:py-2 rounded-[10px] mr-auto font-bold ${
                         currentRole === "Konsumer"
                           ? "text-grn-950 bg-grn-300"
                           : "text-ble-950 bg-ble-300"
@@ -87,14 +94,18 @@ export default function ModalProductNew({
                     />
                   </div>
 
-                  <div className="flex">
+                  <div className="flex flex-col xs:flex-row items-center w-full justify-between gap-4 h-fit">
                     <Carousel
                       additionalTransfrom={0}
                       arrows
                       autoPlay
                       autoPlaySpeed={10000}
                       centerMode={false}
-                      className="w-[300px] border-2 border-red-500"
+                      className={`w-full xs:w-[350px] pr-4 border-8 ${
+                        currentRole === "Konsumer"
+                          ? "border-grn-500"
+                          : "border-ble-500"
+                      } rounded-3xl`}
                       containerClass="container-with-dots"
                       dotListClass=""
                       draggable
@@ -144,21 +155,21 @@ export default function ModalProductNew({
                     >
                       <div className="flex max-h-[300px] h-[50vh] justify-center">
                         <img
-                          className="max-h-[300px] w-8/12 object-contain object-center"
+                          className="max-h-[300px] w-10/12 pr-4 object-contain object-center"
                           src={mainImg.URL}
                           alt={name}
                         />
                       </div>
                       <div className="flex max-h-[300px] h-[50vh] justify-center">
                         <img
-                          className="max-h-[300px] w-8/12 object-contain object-center"
+                          className="max-h-[300px] w-10/12 pr-4 object-contain object-center"
                           src={optImg1.URL}
                           alt={name}
                         />
                       </div>
                       <div className="flex max-h-[300px] h-[50vh] justify-center">
                         <img
-                          className="max-h-[300px] w-8/12 object-contain object-center"
+                          className="max-h-[300px] w-10/12 pr-4 object-contain object-center"
                           src={optImg2.URL}
                           alt={name}
                         />
@@ -166,34 +177,40 @@ export default function ModalProductNew({
                     </Carousel>
 
                     {/* DESKRIPSI */}
-                    <div className="w-full flex flex-col relative z-50 items-center justify-center gap-[70px] text-footer_fontClr">
-                      <h1 className="font-bold text-lg md:text-2xl">{name}</h1>
-                      <div className="w-[90%] grid gap-y-[50px]">
-                        <h2 className="font-bold text-base md:text-xl">
-                          Rp.{" "}
-                          {currentRole === "Konsumer" ? priceEcer : priceBakul}
-                        </h2>
-                        <div className="flex flex-col gap-[30px]">
-                          <div className="text-sm md:text-lg font-normal">
-                            <p>
-                              Kategori
-                              <span className="pr-[10px] pl-[20px]">:</span>
-                            </p>
-                            <p>{category}</p>
-                          </div>
-                          <div className="text-base md:text-lg font-normal flex flex-col items-start">
-                            <div className="flex">
-                              <p>
-                                Keterangan<span className="px-[10px]">:</span>
-                              </p>
+                    <div className="w-full h-full flex flex-col gap-5 text-footer_fontClr">
+                      <h1 className={`font-bold text-xl md:text-3xl `}>
+                        {name}
+                      </h1>
+                      <h2
+                        className={`w-fit lg:hidden block font-bold text-base md:text-xl p-3 border-l-2 border-b-2 rounded-tl-none rounded-br-none rounded-xl ${(currentRole =
+                          "Konsumer" ? "border-grn-500" : "border-ble-500")}`}
+                      >
+                        Rp.{" "}
+                        {currentRole === "Konsumer"
+                          ? numberWithCommas(priceEcer)
+                          : numberWithCommas(priceBakul)}
+                      </h2>
+                      <div className="w-full h-[50vh] lg:h-full overflow-auto flex flex-col lg:flex-row gap-4 lg:gap-0 items-start lg:items-center justify-start lg:justify-around text-footer_fontClr">
+                        <div className="min-h-[50vh] lg:min-h-full gap-5 flex items-start basis-[50%] text-base md:text-lg font-normal flex-col">
+                          <h2
+                            className={`w-fit hidden lg:block font-bold text-base md:text-xl p-3 border-l-2 border-b-2 rounded-tl-none rounded-br-none rounded-xl ${
+                              currentRole === "Konsumer"
+                                ? "border-grn-500"
+                                : "border-ble-500"
+                            }`}
+                          >
+                            Rp.{" "}
+                            {currentRole === "Konsumer"
+                              ? numberWithCommas(priceEcer)
+                              : numberWithCommas(priceBakul)}
+                          </h2>
+                          <div className="min-h-[50vh] lg:min-h-full flex items-start px-4 basis-[50%] border-l-4 text-base md:text-lg font-normal flex-col">
+                            <h3 className="font-bold">Keterangan:</h3>
+                            <div className="flex flex-col max-h-[53.5vh] lg:max-h-[40vh] overflow-auto">
                               <p
-                                className={`keterangan text-justify ${
-                                  isReadMoreVisible
-                                    ? "line-clamp-3"
-                                    : "line-clamp-none"
-                                } text-justify`}
+                                className={`keterangan text-justify text-sm md:text-base`}
                               >
-                                {desc.split("\n").map((item, key) => {
+                                {desc.split("\n").map((item) => {
                                   return (
                                     <>
                                       {item}
@@ -203,78 +220,82 @@ export default function ModalProductNew({
                                 })}
                               </p>
                             </div>
-                            {isReadMoreVisible ? (
-                              <button
-                                className={`text-grn-600 font-bold ml-[57px]`}
-                                onClick={() =>
-                                  setIsReadMoreVisible(!isReadMoreVisible)
-                                }
-                              >
-                                Baca Selengkapnya
-                              </button>
-                            ) : (
-                              <button
-                                className={`text-grn-600 font-bold ml-[57px]`}
-                                onClick={() =>
-                                  setIsReadMoreVisible(!isReadMoreVisible)
-                                }
-                              >
-                                Baca Lebih Sedikit
-                              </button>
-                            )}
                           </div>
-                          <div className="text-sm md:text-base font-normal flex justify-between pt-[10px] pb-[20px] border-t-2 border-footer_fontClr">
-                            <div className="flex h-[30px] rounded-lg relative bg-transparent">
-                              <button
-                                onClick={() =>
-                                  setCounter((prevState) => prevState - 1)
-                                }
-                                disabled={disabled}
-                                className="border-[2px] border-black bg-gry-counterClr text-black hover:text-gray-700 hover:bg-grn-300 h-full w-[20px] rounded-l-[8px] cursor-pointer outline-none"
-                              >
-                                <span className="m-auto text-3xl font-normal">
-                                  −
-                                </span>
-                              </button>
-                              <input
-                                type="text"
-                                className="border-y-[2px] border-black focus:outline-none text-center w-[20px] bg-white font-semibold text-3xl hover:text-black focus:text-black  md:text-basecursor-default flex items-center text-grn-950  outline-none"
-                                name="custom-input-number"
-                                value={counter}
-                                disabled={true}
-                              ></input>
-                              <button
-                                onClick={() =>
-                                  setCounter((prevState) => prevState + 1)
-                                }
-                                className="bg-gry-counterClr border-[2px] border-black text-black hover:text-gray-700 hover:bg-grn-300 h-full w-[20px] rounded-r-[8px] cursor-pointer"
-                              >
-                                <span className="m-auto text-xl font-normal">
-                                  +
-                                </span>
-                              </button>
-                            </div>
-                            <div className="grid place-items-center">
-                              <p className="text-base font-light">Subtotal</p>
-                              <h3 className="font-bold">
-                                {new Intl.NumberFormat("id-ID", {
-                                  style: "currency",
-                                  currency: "IDR",
-                                }).format(
-                                  counter *
-                                    (currentRole === "Konsumer"
-                                      ? priceEcer
-                                      : priceBakul)
-                                )}
-                              </h3>
-                            </div>
-                            <button className="rounded-[8px] bg-footer_fontClr text-white font-normal text-base md:text-lg px-[20px] whitespace-nowrap">
-                              Masukkan ke keranjang
-                            </button>
+                        </div>
+
+                        <div className="min-h-full basis-[48%] justify-start border-l-4 text-base md:text-lg font-normal px-4 flex flex-col items-start">
+                          <h3 className="font-bold">Petunjuk Penggunaan:</h3>
+                          <div className="flex flex-col max-h-[53.5vh] overflow-auto">
+                            <p className="text-footer_fontClr text-justify text-sm md:text-base">
+                              {userGuide.split("\n").map((item) => {
+                                return (
+                                  <>
+                                    {item}
+                                    <br />
+                                  </>
+                                );
+                              })}
+                            </p>
                           </div>
                         </div>
                       </div>
                     </div>
+                  </div>
+                  <div className="w-full text-sm md:text-base font-normal flex text-footer_fontClr justify-between items-center pt-[10px] border-t-2 border-footer_fontClr">
+                    <div className="flex h-[40px] rounded-lg relative bg-transparent">
+                      <button
+                        onClick={() => setCounter((prevState) => prevState - 1)}
+                        disabled={disabled}
+                        className={`border-[2px] border-black bg-gry-counterClr text-black hover:text-gray-700 ${
+                          currentRole === "Konsumer"
+                            ? "hover:bg-grn-300"
+                            : "hover:bg-ble-300"
+                        } h-full w-[30px] sm:w-[40px] rounded-l-[8px] cursor-pointer outline-none`}
+                      >
+                        <span className="m-auto text-xl font-normal">−</span>
+                      </button>
+                      <input
+                        type="text"
+                        className="border-y-[2px] border-black focus:outline-none text-center w-[30px] sm:w-[40px] bg-white font-semibold hover:text-black focus:text-black text-base md:text-lg cursor-default flex items-center text-grn-950  outline-none"
+                        name="custom-input-number"
+                        value={counter}
+                        disabled={true}
+                      ></input>
+                      <button
+                        onClick={() => setCounter((prevState) => prevState + 1)}
+                        className={`bg-gry-counterClr border-[2px] border-black text-black hover:text-gray-700 ${
+                          currentRole === "Konsumer"
+                            ? "hover:bg-grn-300"
+                            : "hover:bg-ble-300"
+                        } h-full w-[30px] sm:w-[40px] rounded-r-[8px] cursor-pointer`}
+                      >
+                        <span className="m-auto text-xl font-normal">+</span>
+                      </button>
+                    </div>
+                    <div className="grid place-items-center">
+                      <p className="text-sm sm:text-base font-light">
+                        Subtotal
+                      </p>
+                      <h3 className="font-bold">
+                        {new Intl.NumberFormat("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                        }).format(
+                          counter *
+                            (currentRole === "Konsumer"
+                              ? priceEcer
+                              : priceBakul)
+                        )}
+                      </h3>
+                    </div>
+                    <button
+                      onClick={() => {
+                        tambahKeranjangHandler(idProduct, counter);
+                      }}
+                      className="rounded-[8px] bg-footer_fontClr text-white font-normal text-base md:text-lg px-[10px] md:px-[20px] py-2 hover:opacity-80 active:scale-95 transition-all whitespace-nowrap"
+                    >
+                      + Keranjang
+                    </button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

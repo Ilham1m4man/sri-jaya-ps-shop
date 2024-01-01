@@ -3,7 +3,7 @@ export default function BackBtn({ isLoading, backFrom, customClass }) {
     <button
       disabled={isLoading ? true : false}
       onClick={backFrom}
-      className={`${customClass ? customClass : "absolute"}`}
+      className={`${customClass ? customClass : "absolute"} hover:scale-110 active:scale-100 transition-all`}
     >
       <svg
         width="15"

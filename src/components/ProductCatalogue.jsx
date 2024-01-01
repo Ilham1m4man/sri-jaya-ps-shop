@@ -8,7 +8,7 @@ export default function ProductCatalogue({
   dataProduct,
   userProfile,
   onProductCardHandler,
-  onKeranjangHandler,
+  tambahKeranjangHandler,
   filterStat,
 }) {
   const role = currentRole
@@ -44,7 +44,7 @@ export default function ProductCatalogue({
               dataProduct={item}
               role={role}
               onProductCardHandler={onProductCardHandler}
-              onKeranjangHandler={onKeranjangHandler}
+              tambahKeranjangHandler={tambahKeranjangHandler}
             />
           );
         })

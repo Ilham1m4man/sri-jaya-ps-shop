@@ -6,7 +6,7 @@ export default function CardProduct({
   dataProduct,
   role,
   onProductCardHandler,
-  onKeranjangHandler,
+  tambahKeranjangHandler,
 }) {
   const { idProduct, name, price, productImg } = dataProduct;
   const router = useRouter()
@@ -75,12 +75,12 @@ export default function CardProduct({
       </button>
       <div className={`${role === "Admin" && "hidden"} absolute w-full flex justify-center bottom-5 left-0`}>
         <button
-          onClick={onKeranjangHandler}
+          onClick={() => {tambahKeranjangHandler(idProduct)}}
           className={`${
             role === "Konsumer"
               ? "text-grn-950 bg-green_cardClr"
               : "text-ble-950 bg-ble-200"
-          } rounded-lg px-3 py-2`}
+          } rounded-lg px-3 py-2 hover:opacity-80 hover:scale-105`}
         >
           + Keranjang
         </button>
