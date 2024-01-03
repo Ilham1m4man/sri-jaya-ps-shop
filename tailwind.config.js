@@ -25,6 +25,7 @@ module.exports = {
         'footer_fontClr': '#464646',
         'bg-blur-clr': '#1B1212',
         'gry-counterClr': '#EFEFF0',
+        'gry-cart': '#9598A0',
         'grn-50': '#EAFAF4',
         'grn-100': '#D6F5EA',
         'grn-200': '#ACECD5',

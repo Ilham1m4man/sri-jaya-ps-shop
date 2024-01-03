@@ -92,13 +92,18 @@ export default function Home() {
   }, [])
 
   const onCartOpen = async () => {
-    const querySnapshot = await getDocs(collection(firestore, "carts", userProfile.uid, "products"));
-    const iniMap = querySnapshot.docs.map((item) => {
-      return (item.data())
-    })
+    if (!modalCartOpen && loggedIn) {
+      console.log("modalCart opened")
+      const querySnapshot = await getDocs(collection(firestore, "carts", userProfile.uid, "products"));
+      const iniMap = querySnapshot.docs.map((item) => {
+        const { amount } = item.data()
+        return { idProduct: item.id, amount }
+      })
 
-    setDataCart(iniMap)
-    console.log("ini map "+ iniMap)
+      setDataCart(iniMap)
+    } else {
+      console.log("modalCart closed")
+    }
     return setModalCartOpen(!modalCartOpen)
   }
 
@@ -202,7 +207,7 @@ export default function Home() {
         </div>
       ) : (
         <>
-          <ModalCart userProfile={userProfile} dataCart={dataCart} modal_cart={onCartOpen} isModalCartOpen={modalCartOpen} />
+          <ModalCart userProfile={userProfile} currentRole={userRole} dataCart={dataCart} modal_cart={onCartOpen} isModalCartOpen={modalCartOpen} loggedIn={loggedIn} />
           <ModalProfile userProfile={userProfile} modal_profile={onProfileOpen} onLogOut={onLogOutHandler} currentRole={userRole} isModalProfileOpen={modalProfileOpen} />
           <ModalLogin modal_login={onLoginOpen} onRegister={onRegisterHandler} isModalLoginOpen={modalLoginOpen} />
           <ModalRegister modal_register={onRegisterOpen} onLogin={onLoginHandler} isModalRegisterOpen={modalRegisterOpen} />

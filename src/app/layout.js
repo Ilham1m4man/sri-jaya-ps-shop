@@ -1,31 +1,7 @@
 import { AppWrapper } from './(context)/AppWrapper'
+import { ChakraUIProviders } from './chakraUI/ChakraUIProviders'
+import { openSauceOne } from './chakraUI/ChakraUIFont'
 import './globals.css'
-import localFont from 'next/font/local'
-
-const OpenSauceOne = localFont({
-  src: [
-    {
-      path: './(font)/OpenSauceOne-Regular.ttf',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: './(font)/OpenSauceOne-Italic.ttf',
-      weight: '400',
-      style: 'italic',
-    },
-    {
-      path: './(font)/OpenSauceOne-Bold.ttf',
-      weight: '700',
-      style: 'normal',
-    },
-    {
-      path: './(font)/OpenSauceOne-BoldItalic.ttf',
-      weight: '700',
-      style: 'italic',
-    },
-  ],
-})
 
 export const metadata = {
   title: 'Sri Jaya PS',
@@ -35,8 +11,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${OpenSauceOne.className}`}>
-        <AppWrapper>{children}</AppWrapper>
+      <body className={`${openSauceOne.OpenSauceOne.className}`}>
+        <AppWrapper>
+          <ChakraUIProviders>
+            {children}
+          </ChakraUIProviders>
+        </AppWrapper>
       </body>
     </html>
   )

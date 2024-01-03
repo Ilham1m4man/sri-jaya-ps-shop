@@ -18,24 +18,7 @@ export default function ModalProductNew({
   const { mainImg, optImg1, optImg2 } = productImg;
   const [counter, setCounter] = useState(1);
   const [disabled, setDisabled] = useState(false);
-  const [isReadMoreVisible, setIsReadMoreVisible] = useState(true);
-  const [textCoba, setTextCoba] =
-    useState(`Bolt Tuna Cat Food Kibble Ikan merupakan pakan kucing yang diperkaya dengan taurine, antioksidan, vitamin dan mineral. Bermanfaat untuk membuat kulit sehat dan bulu berkilau, serta mengurangi resiko FLUTD (penyakit saluran kemih pada kucing).
-
-    Untuk segala jenis kucing dengan usia diatas 1 tahun
-    
-    Komposisi :
-    Jagung, Tepung Daging Unggas, Tepung Terigu, Isolat Protein Kedelai, Tepung Tuna, Lemak Unggas, Pencernaan Hati Ayam, Vitamin dan Mineral, (Vitamin A Palmitat, D3, E, L-ascorbyl-2-polyphosphate, Thiamin, Ribloflavin, Asam Pantotenat , Pyridoxine, Biotin, Choline Chloride, Ferrous Sulfate, Zinc Sulfate, Copper Sulfate, Manganese Sulfate, Sodium Selenite, Calcium Iodate), Taurine, Antioxidant.
-    
-    Nilai gizi :
-    Protein min.28%, lemak min.9%, serat max.4%, kadar air max.10%
-    
-    Keunggulan produk :
-    Membuat kulit sehat dan bulu berkilau, mempertajam penglihatan, membantu menjaga kesehatan gigi, mengurangi resiko FLUTD ( penyakit saluran kemih pada kucing ), dan meningkatkan sistem imunitas
-    
-    Berat bersih : 8kg dan 20kg
-    Kemasan : Bulky`);
-
+  
   useEffect(() => {
     if (counter === 1 || counter <= 1) {
       return setDisabled(true);
