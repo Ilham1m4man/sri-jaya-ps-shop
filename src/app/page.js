@@ -13,7 +13,7 @@ import Navbar from '@/components/Navbar'
 import ModalCart from '@/components/modals/ModalCart'
 import ModalProfile from '@/components/modals/ModalProfile'
 import ModalLogin from '@/components/modals/ModalLogin'
-import ModalProduct from '@/components/modals/ModalProduct'
+import ModalProductNew from '@/components/modals/ModalProductNew';
 import ProductCatalogue from '@/components/ProductCatalogue'
 import FilterBtn from '@/components/buttons/FilterBtn'
 import SearchBar from '@/components/SearchBar'
@@ -22,7 +22,6 @@ import Footer from '@/components/Footer'
 import Filters from '@/components/Filters'
 import ModalRegister from '@/components/modals/ModalRegister'
 import getUserData from './(services)/getUserData';
-import ModalProductNew from '@/components/modals/ModalProductNew';
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -94,13 +93,13 @@ export default function Home() {
   const onCartOpen = async () => {
     if (!modalCartOpen && loggedIn) {
       console.log("modalCart opened")
-      const querySnapshot = await getDocs(collection(firestore, "carts", userProfile.uid, "products"));
-      const iniMap = querySnapshot.docs.map((item) => {
-        const { amount } = item.data()
-        return { idProduct: item.id, amount }
-      })
-
-      setDataCart(iniMap)
+      const colRef = collection(firestore, "carts", userProfile.uid, "products")
+      onSnapshot(colRef, (doc) => {
+        setDataCart(doc.docs.map((item) => {
+          const { amount } = item.data()
+          return { idProduct: item.id, amount }
+        }))
+      });
     } else {
       console.log("modalCart closed")
     }

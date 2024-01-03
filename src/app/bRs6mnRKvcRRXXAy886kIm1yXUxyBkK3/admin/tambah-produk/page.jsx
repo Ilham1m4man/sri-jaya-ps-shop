@@ -6,21 +6,11 @@ import { useRouter } from "next/navigation";
 import { FaChevronLeft } from "react-icons/fa6";
 import { useAppContext } from "@/app/(context)/AppWrapper";
 import { useEffect, useReducer, useState } from "react";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import {
-  collection,
-  query,
-  where,
-  onSnapshot,
-  documentId,
-} from "firebase/firestore";
-import { storage, firestore } from "@/app/(firebase)/firebase.config";
 import MainImgInput from "../(components)/MainImgInput";
 import OptImgInput from "../(components)/OptImgInput";
 import BasicInfoInput from "../(components)/BasicInfoInput";
 import MoreInfoInput from "../(components)/MoreInfoInput";
 import storeProduk from "@/app/(services)/storeProduk";
-import updateProduk from "@/app/(services)/updateProduk";
 
 export default function TambahProduk() {
   const { isLoading, hideLoading, showLoading } = useAppContext();
@@ -59,44 +49,6 @@ export default function TambahProduk() {
 
   const batalHandler = () => {
     router.push(homeAdminURL);
-  };
-
-  const uploadProductImg = async (idProduct) => {
-    const imgRef = ref(
-      storage,
-      `images/product/${idProduct}/${mainImage.name}`
-    );
-    const imgRefOpt1 =
-      optImage1 &&
-      ref(storage, `images/product/${idProduct}/${optImage1.name}`);
-    const imgRefOpt2 =
-      optImage2 &&
-      ref(storage, `images/product/${idProduct}/${optImage2.name}`);
-
-    await uploadBytes(imgRef, mainImage);
-    const mainImgURL = await getDownloadURL(imgRef);
-
-    let optImg1URL = "";
-    let optImg2URL = "";
-
-    if (optImage1 && optImage2) {
-      await uploadBytes(imgRefOpt1, optImage1);
-      optImg1URL = await getDownloadURL(imgRefOpt1);
-
-      await uploadBytes(imgRefOpt2, optImage2);
-      optImg2URL = await getDownloadURL(imgRefOpt2);
-    } else if (optImage1) {
-      await uploadBytes(imgRefOpt1, optImage1);
-      optImg1URL = await getDownloadURL(imgRefOpt1);
-    } else if (optImage2) {
-      await uploadBytes(imgRefOpt2, optImage2);
-      optImg2URL = await getDownloadURL(imgRefOpt2);
-    }
-    return {
-      mainImg: { name: mainImage.name, URL: mainImgURL },
-      optImg1: { name: optImage1 ? optImage1.name : "", URL: optImg1URL },
-      optImg2: { name: optImage2 ? optImage2.name : "", URL: optImg2URL },
-    };
   };
 
   const uploadProduk = async (e) => {

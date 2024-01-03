@@ -1,6 +1,17 @@
 import Image from "next/image";
 import { Dialog, Transition } from "@headlessui/react";
 import { React, Fragment, useState, useEffect } from "react";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  documentId,
+  doc,
+  setDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import { firestore } from "@/app/(firebase)/firebase.config";
 import BackBtn from "../buttons/BackBtn";
 import CartTable from "../CartTable";
 import DeleteBtn from "../buttons/DeleteBtn";
@@ -12,10 +23,21 @@ export default function ModalCart({
   modal_cart,
   isModalCartOpen,
 }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isChecked, setIsChecked] = useState();
+  const [dataProduct, setDataProduct] = useState();
   const [checkedItems, setCheckedItems] = useState();
   const [idProduct, setIdProduct] = useState([]);
   const [counter, setCounter] = useState([]);
   const [disabled, setDisabled] = useState([]);
+  const [isCheckoutDisabled, setIsChekoutDisabled] = useState();
+  const [singularTotal, setSingularTotal] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [subtotal, setSubtotal] = useState(0);
+  const [appFee, setAppFee] = useState(2000);
+  const [shippingFee, setShippingFee] = useState(0);
+
+  const sumValues = (obj) => Object.values(obj).reduce((a, b) => a + b, 0);
 
   const objectMap = (obj, fn) => {
     dataCart &&
@@ -43,11 +65,43 @@ export default function ModalCart({
   }, [dataCart]);
 
   useEffect(() => {
-    !isModalCartOpen && setCheckedItems([]);
-  }, [isModalCartOpen]);
+    const cekProduk = async () => {
+      setIsLoading(true);
+      const colRef = collection(firestore, "products");
+      Object.values(idProduct).map(async (productId, index) => {
+        const q = query(colRef, where(documentId(), "==", productId));
+
+        onSnapshot(q, (doc) => {
+          doc.docs.map((item) => {
+            setDataProduct((prevState) => {
+              const infoProduct = { ...item.data(), idProduct: item.id };
+              return { ...prevState, [index]: infoProduct };
+            });
+          });
+        });
+      });
+
+      setIsLoading(false);
+    };
+
+    cekProduk();
+  }, [idProduct]);
 
   useEffect(() => {
     objectMap(checkedItems, (item, index) => {
+      userProfile &&
+        setDoc(
+          doc(
+            firestore,
+            "carts",
+            userProfile.uid,
+            "products",
+            idProduct[index]
+          ),
+          {
+            amount: counter[index] ? counter[index] : 1,
+          }
+        );
       if (counter[index] === 1 || counter[index] <= 1) {
         return setDisabled((prevState) => {
           return { ...prevState, [index]: true };
@@ -57,15 +111,89 @@ export default function ModalCart({
         return { ...prevState, [index]: false };
       });
     });
-    /* checkedItems.map((item, index) => {
-      if (counter[index] === 1 || counter[index] <= 1) {
-        return setDisabled((true));
-      }
-      return setDisabled(false);
-    }) */
   }, [counter]);
 
+  useEffect(() => {
+    checkedItems &&
+      setIsChekoutDisabled(!Object.values(checkedItems).some(Boolean));
+    checkedItems &&
+      Object.values(checkedItems).map((check, index) => {
+        if (dataProduct) {
+          const prodArray = Object.values(dataProduct);
+          if (prodArray[index]) {
+            const { price } = prodArray[index];
+            const { priceEcer, priceBakul } = price;
+            if (checkedItems[index]) {
+              setSingularTotal((prevState) => {
+                return {
+                  ...prevState,
+                  [index]:
+                    parseInt(counter[index]) *
+                    (currentRole === "Konsumer"
+                      ? parseInt(priceEcer)
+                      : parseInt(priceBakul)),
+                };
+              });
+            } else if (!checkedItems[index]) {
+              setSingularTotal((prevState) => {
+                return {
+                  ...prevState,
+                  [index]: 0,
+                };
+              });
+            }
+          }
+        }
+      });
+  }, [checkedItems, dataProduct, counter]);
+
+  useEffect(() => {
+    singularTotal && setSubtotal(sumValues(singularTotal));
+  }, [singularTotal]);
+
+  useEffect(() => {
+    if (subtotal === 0) {
+      setTotal(appFee + shippingFee);
+    } else {
+      setTotal(appFee + shippingFee + subtotal);
+    }
+  }, [subtotal, appFee, shippingFee]);
+
+  function numberWithCommas(x) {
+    if (x) {
+      const parts = x.toString().split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      return parts.join(",");
+    } else {
+      return 0;
+    }
+  }
+
   const hapusHandler = () => {
+    checkedItems &&
+      Object.values(checkedItems).map((check, index) => {
+        if (userProfile) {
+          if (checkedItems[index]) {
+            const firestoreRef = doc(
+              firestore,
+              "carts",
+              userProfile.uid,
+              "products",
+              idProduct[index]
+            );
+            console.log(idProduct[index])
+            deleteDoc(firestoreRef)
+              .then((res) => {
+                window.alert("berhasil dihapus");
+                return res;
+              })
+              .catch((err) => {
+                window.alert("Terjadi kesalahan, mohon coba lagi \n \n" + err);
+                return err;
+              });
+          }
+        }
+      });
     console.log("Hapus handler cart");
   };
 
@@ -123,41 +251,54 @@ export default function ModalCart({
                       >
                         Keranjang
                       </h3>
-                      <DeleteBtn hapusHandler={hapusHandler} />
+                      {isChecked && <DeleteBtn hapusHandler={hapusHandler} />}
                     </div>
-                    <CartTable
-                      objectMap={objectMap}
-                      currentRole={currentRole}
-                      checkedItems={checkedItems}
-                      idProduct={idProduct}
-                      counter={counter}
-                      disabled={disabled}
-                      setCheckedItems={setCheckedItems}
-                      setIdProduct={setIdProduct}
-                      setCounter={setCounter}
-                      setDisabled={setDisabled}
-                    />
+                    {dataProduct ? (
+                      <CartTable
+                        isLoading={isLoading}
+                        dataProduct={dataProduct}
+                        currentRole={currentRole}
+                        checkedItems={checkedItems}
+                        counter={counter}
+                        disabled={disabled}
+                        setIsChecked={setIsChecked}
+                        setCheckedItems={setCheckedItems}
+                        setCounter={setCounter}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-between text-footer_fontClr p-8">
+                        <img
+                          className="rounded-xl w-[300px]"
+                          src="https://firebasestorage.googleapis.com/v0/b/sri-jaya-shop.appspot.com/o/images%2Fillustration%2Fempty_cart.jpg?alt=media&token=e2bb091a-0be9-4f26-b3ca-7be5022c8e21"
+                        />
+                        <h3>Oop&apos;s, keranjangmu kosong</h3>
+                      </div>
+                    )}
                   </div>
                   <div className="p-6 col-span-4 flex flex-col gap-4 h-fit rounded-3xl border-2 border-footer_fontClr">
                     <div className="border-b-2 grid gap-4 pb-4 border-footer_fontClr">
                       <div className="flex justify-between">
                         <p>Subtotal</p>
-                        <p>Rp. 9014901</p>
+                        <p>Rp. {numberWithCommas(subtotal)}</p>
                       </div>
                       <div className="flex justify-between">
                         <p>Biaya aplikasi</p>
-                        <p>Rp. 9014901</p>
+                        <p>Rp. {numberWithCommas(appFee)}</p>
                       </div>
                       <div className="flex justify-between">
                         <p>Ongkir</p>
-                        <p>Rp. 9014901</p>
+                        <p>Rp. {numberWithCommas(shippingFee)}</p>
                       </div>
                     </div>
                     <div className="flex justify-between">
                       <p>Total</p>
-                      <p>Rp. 9014901</p>
+                      <p>Rp. {numberWithCommas(total)}</p>
                     </div>
-                    <button className="rounded-[8px] bg-footer_fontClr text-white font-normal text-base md:text-lg px-[10px] md:px-[20px] py-2 hover:opacity-80 active:scale-95 transition-all whitespace-nowrap">
+                    <button
+                      onClick={() => {onCheckoutHandler}}
+                      disabled={isCheckoutDisabled}
+                      className="rounded-[8px] bg-footer_fontClr text-white font-normal text-base md:text-lg px-[10px] md:px-[20px] py-2 hover:scale-[1.02] active:scale-100 disabled:hover:scale-100 disabled:active:scale-100 disabled:opacity-80 disabled:cursor-not-allowed transition-all whitespace-nowrap"
+                    >
                       Bayar sekarang
                     </button>
                   </div>
