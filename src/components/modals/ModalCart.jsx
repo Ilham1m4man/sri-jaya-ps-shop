@@ -15,6 +15,9 @@ import { firestore } from "@/app/(firebase)/firebase.config";
 import BackBtn from "../buttons/BackBtn";
 import CartTable from "../CartTable";
 import DeleteBtn from "../buttons/DeleteBtn";
+import getSnapToken from "@/app/(midtrans)/getSnapToken";
+import Spinner from "../loaders/Spinner";
+const serviceMidtrans = require("../../app/(midtrans)/service-midtrans.json");
 
 export default function ModalCart({
   userProfile,
@@ -36,6 +39,9 @@ export default function ModalCart({
   const [subtotal, setSubtotal] = useState(0);
   const [appFee, setAppFee] = useState(2000);
   const [shippingFee, setShippingFee] = useState(0);
+  const [order, setOrder] = useState({
+    paidProduct: "",
+  });
 
   const sumValues = (obj) => Object.values(obj).reduce((a, b) => a + b, 0);
 
@@ -44,6 +50,50 @@ export default function ModalCart({
       Object.fromEntries(
         Object.entries(obj).map(([k, v], i) => [k, fn(v, k, i)])
       );
+  };
+
+  const cobaBayar = (token) => {
+    snap.pay(token, {
+      // Optional
+      onSuccess: function (result) {
+        /* KIRIM TIKET LEWAT EMAIL */
+        checkedItems &&
+          Object.values(checkedItems).map((check, index) => {
+            if (userProfile) {
+              if (checkedItems[index]) {
+                const firestoreRef = doc(
+                  firestore,
+                  "carts",
+                  userProfile.uid,
+                  "products",
+                  idProduct[index]
+                );
+                console.log(idProduct[index]);
+                deleteDoc(firestoreRef)
+                  .then((res) => {
+                    window.alert("berhasil dihapus");
+                    return res;
+                  })
+                  .catch((err) => {
+                    window.alert(
+                      "Terjadi kesalahan, mohon coba lagi \n \n" + err
+                    );
+                    return err;
+                  });
+              }
+            }
+          });
+
+        window.alert("Status pembayara: Berhasil");
+        window.location.reload();
+      },
+      onPending: function (result) {
+        window.alert("Status pembayara: Pending");
+      },
+      onError: function (result) {
+        window.alert("Status pembayara: Error");
+      },
+    });
   };
 
   useEffect(() => {
@@ -145,7 +195,7 @@ export default function ModalCart({
           }
         }
       });
-  }, [checkedItems, dataProduct, counter]);
+  }, [checkedItems, dataProduct, counter, currentRole]);
 
   useEffect(() => {
     singularTotal && setSubtotal(sumValues(singularTotal));
@@ -181,7 +231,7 @@ export default function ModalCart({
               "products",
               idProduct[index]
             );
-            console.log(idProduct[index])
+            console.log(idProduct[index]);
             deleteDoc(firestoreRef)
               .then((res) => {
                 window.alert("berhasil dihapus");
@@ -196,6 +246,110 @@ export default function ModalCart({
       });
     console.log("Hapus handler cart");
   };
+
+  useEffect(() => {
+    setIsLoading(true);
+    const ambilSnap = async () => {
+      return await getSnapToken(order);
+    };
+
+    !!order.paidProduct &&
+      ambilSnap().then((token) => {
+        cobaBayar(token);
+      });
+    setIsLoading(false);
+  }, [order]);
+
+  const onCheckoutHandler = async () => {
+    const orderId = (length) => {
+      const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      const charactersLength = characters.length;
+      let result = "";
+
+      // Create an array of 32-bit unsigned integers
+      const randomValues = new Uint32Array(length);
+
+      // Generate random values
+      window.crypto.getRandomValues(randomValues);
+      randomValues.forEach((value) => {
+        result += characters.charAt(value % charactersLength);
+      });
+      return result;
+    };
+
+    Object.values(checkedItems).map((check, index) => {
+      if (userProfile && dataProduct) {
+        const prodArray = Object.values(dataProduct);
+        const singularTotalArray = Object.values(singularTotal);
+        if (prodArray[index]) {
+          const { price } = prodArray[index];
+          const { priceEcer, priceBakul } = price;
+          if (checkedItems[index]) {
+            const { name } = prodArray[index];
+            const dataOrder = {
+              id: idProduct[index],
+              name,
+              quantity: parseInt(counter[index]),
+              price:
+                currentRole === "Konsumer"
+                  ? parseInt(priceEcer)
+                  : parseInt(priceBakul),
+            };
+            setOrder((prevState) => {
+              return {
+                ...prevState,
+                paidProduct: { ...prevState.paidProduct, [index]: dataOrder },
+                Id: orderId(32),
+                userId: userProfile.uid,
+                userName: userProfile.displayName,
+                transactionTime: new Date(),
+                appFee: parseInt(appFee),
+                shippingFee: parseInt(shippingFee),
+                subtotal,
+                gross_amount: total,
+              };
+            });
+          } else if (!checkedItems[index]) {
+            setOrder((prevState) => {
+              return {
+                ...prevState,
+                paidProduct: { ...prevState.paidProduct, [index]: "" },
+                Id: orderId(32),
+                userId: userProfile.uid,
+                userName: userProfile.displayName,
+                transactionTime: new Date(),
+                appFee: parseInt(appFee),
+                shippingFee: parseInt(shippingFee),
+                subtotal,
+                gross_amount: total,
+              };
+            });
+          }
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
+    const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
+
+    let scriptTag = document.createElement("script");
+    scriptTag.src = midtransScriptUrl;
+
+    scriptTag.setAttribute("data-client-key", serviceMidtrans.clientKey);
+
+    document.body.appendChild(scriptTag);
+    return () => {
+      document.body.removeChild(scriptTag);
+    };
+  }, []);
+
+  const customClass = `${
+    currentRole === "Konsumer"
+      ? "w-12 h-6 fill-grn-400"
+      : "w-12 h-6 fill-ble-400"
+  }`;
 
   return (
     <Transition appear show={isModalCartOpen} as={Fragment}>
@@ -295,11 +449,15 @@ export default function ModalCart({
                       <p>Rp. {numberWithCommas(total)}</p>
                     </div>
                     <button
-                      onClick={() => {onCheckoutHandler}}
+                      onClick={onCheckoutHandler}
                       disabled={isCheckoutDisabled}
                       className="rounded-[8px] bg-footer_fontClr text-white font-normal text-base md:text-lg px-[10px] md:px-[20px] py-2 hover:scale-[1.02] active:scale-100 disabled:hover:scale-100 disabled:active:scale-100 disabled:opacity-80 disabled:cursor-not-allowed transition-all whitespace-nowrap"
                     >
-                      Bayar sekarang
+                      {isLoading ? (
+                        <Spinner customClass={customClass} />
+                      ) : (
+                        "Beli Sekarang"
+                      )}
                     </button>
                   </div>
                 </div>

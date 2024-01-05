@@ -173,23 +173,6 @@ export default function Home() {
     return console.log("Filter Click Handler")
   }
 
-  /* const coba = (length) => {
-    const characters =
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  let result = '';
-
-  // Create an array of 32-bit unsigned integers
-  const randomValues = new Uint32Array(length);
-  
-  // Generate random values
-  window.crypto.getRandomValues(randomValues);
-  randomValues.forEach((value) => {
-    result += characters.charAt(value % charactersLength);
-  });
-  return(result)
-  } */
-
   const onKeywordChangeHandler = (keyword) => {
     setKeyword(keyword)
   }
@@ -220,7 +203,7 @@ export default function Home() {
             </section>
           </header>
           <main className="relative flex bg-mainBg_clr min-h-screen gap-[55px] justify-between px-4 md:px-10 lg:px-20">
-            {filter ? <Filters minInputValue={minInput} onMinInput={minInputHandler} maxInputValue={maxInput} onMaxInput={maxInputHandler} /> : null}
+            {filter && <Filters minInputValue={minInput} onMinInput={minInputHandler} maxInputValue={maxInput} onMaxInput={maxInputHandler} />}
             <div className={`mb-[40px] ${filter ? "w-[73.85%]" : "w-full"}`}>
               {/* MAIN CONTENT */}
               {/* PRODUCT CATALOGUE */}

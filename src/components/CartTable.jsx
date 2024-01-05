@@ -33,7 +33,7 @@ export default function CartTable({
     : setIsChecked(isIndeterminate);
 
   const customClass = `${
-    currentRole === "Konsumer" ? "fill-grn-400" : "fill-ble-400"
+    currentRole === "Konsumer" ? "w-12 h-12 fill-grn-400" : "w-12 h-12 fill-ble-400"
   }`;
 
   return (
