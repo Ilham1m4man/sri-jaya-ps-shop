@@ -4,7 +4,7 @@ const midtransClient = require('midtrans-client');
 const serviceMidtrans = require('./service-midtrans.json');
 
 const getSnapToken = async (order) => {
-  const { Id, userId, userName, appFee, shippingFee, subtotal, gross_amount, transactionTime, paidProduct } = order
+  const { Id, userId, userName, userEmail, userPhone, userAddress, appFee, shippingFee, subtotal, gross_amount, transactionTime, paidProduct } = order
   const paidProdArray = Object.values(paidProduct)
   const itemDetails = paidProdArray.filter((item) => {
     return item
@@ -32,7 +32,16 @@ const getSnapToken = async (order) => {
     "item_details": [...itemDetails, appAndShippingFee],
     "customer_details": {
       userId,
-      userName
+      first_name: userName,
+      email: userEmail,
+      phone: userPhone,
+      billing_address: { address: userAddress },
+      shipping_address: {
+        first_name: userName,
+        email: userEmail,
+        phone: userPhone, 
+        address: userAddress,
+      },
     },
   };
 
