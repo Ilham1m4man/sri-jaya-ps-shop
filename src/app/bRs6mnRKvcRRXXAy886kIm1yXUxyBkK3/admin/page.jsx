@@ -32,6 +32,8 @@ export default function Home() {
   const [filter, setFilter] = useState(false);
   const [minInput, setMinInput] = useState();
   const [maxInput, setMaxInput] = useState();
+  const [checkedItems, setCheckedItems] = useState();
+  const [catProd, setCatProd] = useState();
   const [keyword, setKeyword] = useState("");
   const [dataProduct, setDataProduct] = useState();
   const router = useRouter();
@@ -75,6 +77,24 @@ export default function Home() {
     cekAuth();
     cekProduk();
   }, []);
+
+  useEffect(() => {
+    const rawCategoryProd =
+      dataProduct &&
+      dataProduct.map((item) => {
+        return item.category;
+      });
+
+    const categoryProd = [...new Set(rawCategoryProd)];
+
+    categoryProd.map((item, index) => {
+      setCheckedItems((prevState) => {
+        return { ...prevState, [index]: false };
+      });
+    });
+
+    setCatProd(categoryProd);
+  }, [dataProduct]);
 
   const onCartOpen = () => {
     return setModalCartOpen(!modalCartOpen);
@@ -188,19 +208,30 @@ export default function Home() {
             </section>
           </header>
           <main className="relative flex bg-mainBg_clr min-h-screen gap-[55px] justify-between px-4 md:px-10 lg:px-20">
-            {filter ? (
+            {filter && (
               <Filters
-                minInputValue={minInput}
-                onMinInput={minInputHandler}
-                maxInputValue={maxInput}
-                onMaxInput={maxInputHandler}
+                catProd={catProd}
+                currentRole={userRole}
+                checkedItems={checkedItems}
+                setCheckedItems={setCheckedItems}
               />
-            ) : null}
+            )}
             <div className={`mb-[40px] ${filter ? "w-[73.85%]" : "w-full"}`}>
               {/* MAIN CONTENT */}
               {/* PRODUCT CATALOGUE */}
 
               <ProductCatalogue
+                catProd={catProd}
+                checkedItems={checkedItems}
+                searchKeyword={keyword}
+                hapusHandler={hapusHandler}
+                currentRole={userRole}
+                dataProduct={dataProduct}
+                onKeranjangHandler={onKeranjangHandler}
+                onProductCardHandler={onProductCardHandler}
+                filterStat={filter}
+              />
+              {/* <ProductCatalogue
                 searchKeyword={keyword}
                 hapusHandler={hapusHandler}
                 currentRole={userRole}
@@ -209,7 +240,7 @@ export default function Home() {
                 onProductCardHandler={onProductCardHandler}
                 onKeranjangHandler={onKeranjangHandler}
                 filterStat={filter}
-              />
+              /> */}
             </div>
           </main>
           <Footer />

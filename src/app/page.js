@@ -40,6 +40,8 @@ export default function Home() {
   const [dataProduct, setDataProduct] = useState();
   const [dataCart, setDataCart] = useState();
   const [clickedProduct, setClickedProduct] = useState();
+  const [checkedItems, setCheckedItems] = useState();
+  const [catProd, setCatProd] = useState();
   const router = useRouter()
   const {
     isLoading,
@@ -90,16 +92,37 @@ export default function Home() {
     cekProduk()
   }, [])
 
+  useEffect(() => {
+    const rawCategoryProd = dataProduct && dataProduct.map((item) => {
+      return item.category
+    })
+
+    const categoryProd = [...new Set(rawCategoryProd)]
+
+    categoryProd.map((item, index) => {
+      setCheckedItems((prevState) => {
+        return { ...prevState, [index]: false }
+      })
+    })
+
+    setCatProd(categoryProd)
+  }, [dataProduct])
+
   const onCartOpen = async () => {
-    if (!modalCartOpen && loggedIn) {
-      console.log("modalCart opened")
-      const colRef = collection(firestore, "carts", userProfile.uid, "products")
-      onSnapshot(colRef, (doc) => {
-        setDataCart(doc.docs.map((item) => {
-          const { amount } = item.data()
-          return { idProduct: item.id, amount }
-        }))
-      });
+    if (!modalCartOpen) {
+      if (loggedIn) {
+        console.log("modalCart opened")
+        const colRef = collection(firestore, "carts", userProfile.uid, "products")
+        onSnapshot(colRef, (doc) => {
+          setDataCart(doc.docs.map((item) => {
+            const { amount } = item.data()
+            return { idProduct: item.id, amount }
+          }))
+        });
+      } else {
+        window.alert("Anda harus login terlebih dahulu untuk mulai berbelanja!")
+        window.location.reload()
+      }
     } else {
       console.log("modalCart closed")
     }
@@ -203,12 +226,12 @@ export default function Home() {
             </section>
           </header>
           <main className="relative flex bg-mainBg_clr min-h-screen gap-[55px] justify-between px-4 md:px-10 lg:px-20">
-            {filter && <Filters minInputValue={minInput} onMinInput={minInputHandler} maxInputValue={maxInput} onMaxInput={maxInputHandler} />}
+            {filter && <Filters catProd={catProd} currentRole={userRole} checkedItems={checkedItems} setCheckedItems={setCheckedItems} />}
             <div className={`mb-[40px] ${filter ? "w-[73.85%]" : "w-full"}`}>
               {/* MAIN CONTENT */}
               {/* PRODUCT CATALOGUE */}
 
-              <ProductCatalogue searchKeyword={keyword} currentRole={userRole} dataProduct={dataProduct} onProductCardHandler={onProductCardHandler} tambahKeranjangHandler={tambahKeranjangHandler} filterStat={filter} />
+              <ProductCatalogue catProd={catProd} checkedItems={checkedItems} searchKeyword={keyword} currentRole={userRole} dataProduct={dataProduct} onProductCardHandler={onProductCardHandler} tambahKeranjangHandler={tambahKeranjangHandler} filterStat={filter} />
             </div>
           </main>
           <Footer />

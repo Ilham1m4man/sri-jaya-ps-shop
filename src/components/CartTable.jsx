@@ -80,7 +80,7 @@ export default function CartTable({
             <Tbody>
               {Object.entries(Object.entries(counter)).map((item, index) => {
                 const productInfo = objProduct[index];
-                const { name, price, category, desc, userGuide, productImg } =
+                const { name, price, productImg } =
                   productInfo;
                 const { priceEcer, priceBakul } = price;
                 const { mainImg } = productImg;

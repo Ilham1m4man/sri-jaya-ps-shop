@@ -17,12 +17,10 @@ const getSnapToken = async (order) => {
     price: (appFee + shippingFee),
   }
 
-  const { iDMerchant,
-    clientKey,
-    serverKey, } = serviceMidtrans
+  const { serverKey, } = serviceMidtrans
 
   const snap = new midtransClient.Snap({
-    isProduction: false,
+    isProduction: true,
     serverKey: serverKey
   });
 
@@ -37,7 +35,7 @@ const getSnapToken = async (order) => {
       userName
     },
   };
-  
+
   const transaction = await snap.createTransaction(parameters)
   const transactionToken = transaction.token;
   return transactionToken
