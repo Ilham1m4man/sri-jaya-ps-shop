@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/react';
 import { AppWrapper } from './(context)/AppWrapper'
 import { ChakraUIProviders } from './chakraUI/ChakraUIProviders'
 import { openSauceOne } from './chakraUI/ChakraUIFont'
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
         <AppWrapper>
           <ChakraUIProviders>
             {children}
+            <Analytics />
           </ChakraUIProviders>
         </AppWrapper>
       </body>
