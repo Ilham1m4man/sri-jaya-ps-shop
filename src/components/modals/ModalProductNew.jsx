@@ -165,7 +165,7 @@ export default function ModalProductNew({
                         {name}
                       </h1>
                       <h2
-                        className={`${(currentRole = "Konsumer" ? "border-grn-500" : "border-ble-500")} w-fit lg:hidden block font-bold text-base md:text-xl p-3 border-l-2 border-b-2 rounded-tl-none rounded-br-none rounded-xl`}
+                        className={`${currentRole = "Konsumer" ? "border-grn-500" : "border-ble-500"} w-fit lg:hidden block font-bold text-base md:text-xl p-3 border-l-2 border-b-2 rounded-tl-none rounded-br-none rounded-xl`}
                       >
                         Rp.{" "}
                         {currentRole === "Konsumer"
