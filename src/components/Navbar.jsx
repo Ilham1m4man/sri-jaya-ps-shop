@@ -71,13 +71,13 @@ export default function Navbar({
     <>
       {isLoading ? null : (
         <nav className="w-full bg-mainBg_clr">
-          <div className="justify-between py-0 px-10 mx-auto lg:max-w-7xl md:items-center md:flex md:px-[3.7rem]">
+          <div className="justify-between  mx-auto lg:max-w-7xl md:items-center md:flex py-0 px-4 sm:px-10 md:px-[3.7rem]">
             <div>
               <div className="flex items-center justify-between py-3 md:py-5">
                 <div
                   className={`${
                     role === "Konsumer" ? "bg-grn-300" : "bg-ble-300"
-                  } rounded-[8px] py-[5px] px-[20px] md:rounded-[10px] md:py-[10px] md:px-[25px]`}
+                  } rounded-[8px] px-[10px] py-[5px] sm:px-[20px] md:rounded-[10px] md:py-[10px] md:px-[25px]`}
                 >
                   <h3
                     className={`text-base ${
@@ -92,7 +92,7 @@ export default function Navbar({
                 <div className="md:hidden">
                   <Link href="/">
                     <svg
-                      width="155.5"
+                      width="120"
                       height="30"
                       viewBox="0 0 368 71"
                       fill="none"
@@ -192,7 +192,7 @@ export default function Navbar({
                   navbar ? "block" : "hidden"
                 }`}
               >
-                <ul className="items-center justify-center space-y-[24px] md:flex md:space-x-[40px] md:space-y-0">
+                <ul className="items-center justify-center space-y-[24px] flex flex-col md:flex-row md:space-x-[40px] md:space-y-0">
                   <li className="text-white">
                     {/* CART BUTTON */}
                     <button

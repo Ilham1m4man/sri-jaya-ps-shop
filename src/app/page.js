@@ -225,7 +225,7 @@ export default function Home() {
               <SearchBar keyword={keyword} keywordChange={onKeywordChangeHandler} />
             </section>
           </header>
-          <main className="relative flex bg-mainBg_clr min-h-screen gap-[55px] justify-between px-4 md:px-10 lg:px-20">
+          <main className="relative flex overflow-auto bg-mainBg_clr min-h-screen gap-[55px] justify-between px-4 md:px-10 lg:px-20">
             {filter && <Filters catProd={catProd} currentRole={userRole} checkedItems={checkedItems} setCheckedItems={setCheckedItems} />}
             <div className={`mb-[40px] ${filter ? "w-[73.85%]" : "w-full"}`}>
               {/* MAIN CONTENT */}

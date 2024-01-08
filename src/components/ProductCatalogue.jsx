@@ -40,7 +40,7 @@ export default function ProductCatalogue({
         ) {
           return item.category.toLowerCase().includes(filteredProduct(item).toString().toLowerCase());
         } else {
-          return item.name.toLowerCase().includes(searchKeyword);
+          return item.name.toLowerCase().includes(searchKeyword.toLowerCase());
         }
       });
 

@@ -56,7 +56,6 @@ export default function ModalCart({
     snap.pay(token, {
       // Optional
       onSuccess: function (result) {
-        /* KIRIM TIKET LEWAT EMAIL */
         checkedItems &&
           Object.values(checkedItems).map((check, index) => {
             if (userProfile) {
@@ -338,7 +337,7 @@ export default function ModalCart({
   };
 
   useEffect(() => {
-    const midtransScriptUrl = "https://app.midtrans.com/snap/snap.js";
+    const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
 
     let scriptTag = document.createElement("script");
     scriptTag.src = midtransScriptUrl;
@@ -399,8 +398,8 @@ export default function ModalCart({
                   </Dialog.Title>
                   <BackBtn backFrom={modal_cart} />
                 </div>
-                <div className="grid grid-cols-12 w-full">
-                  <div className="px-4 mr-4 col-span-8 rounded-xl">
+                <div className="grid grid-rows-2 lg:grid-rows-1 grid-cols-12 w-full">
+                  <div className="px-4 mr-4 row-start-1 col-start-1 col-span-full lg:col-span-8 rounded-xl">
                     <div className="flex justify-between">
                       <h3
                         className={`font-bold ${
@@ -435,7 +434,7 @@ export default function ModalCart({
                       </div>
                     )}
                   </div>
-                  <div className="p-6 col-span-4 flex flex-col gap-4 h-fit rounded-3xl border-2 border-footer_fontClr">
+                  <div className="p-2 sm:p-6 row-start-2 lg:row-start-1 col-span-full lg:col-span-4 flex flex-col gap-4 h-fit rounded-xl sm:rounded-3xl border-2 border-footer_fontClr">
                     <div className="border-b-2 grid gap-4 pb-4 border-footer_fontClr">
                       <div className="flex justify-between">
                         <p>Subtotal</p>

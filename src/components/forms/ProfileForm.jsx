@@ -14,7 +14,7 @@ export default function ProfileForm({
       action={editProfileHandler}
       className={`flex flex-col w-full md:w-[60%] gap-5 border-2 ${
         isKonsumer ? "border-grn-950" : "border-ble-950"
-      } rounded-xl p-5`}
+      } rounded-xl p-2 md:p-5`}
     >
       <div className="grid">
         <label
@@ -69,7 +69,7 @@ export default function ProfileForm({
         </label>
         <PhoneInput
           name="phone"
-          className={`font-normal text-base md:text-lg border-b-2 ${
+          className={`font-normal text-sm md:text-lg border-b-2 ${
             isKonsumer
               ? "border-grn-950 text-grn-950"
               : "border-ble-950 text-ble-950"

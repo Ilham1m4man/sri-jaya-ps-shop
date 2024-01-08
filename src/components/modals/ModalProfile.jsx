@@ -256,7 +256,7 @@ export default function ModalProfile({
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-end p-4 text-center">
+          <div className="flex min-h-full items-center justify-end p-2 md:p-4 text-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -266,7 +266,7 @@ export default function ModalProfile({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full sm:w-[80%] lg:w-[60%] transform overflow-hidden rounded-[20px] bg-white py-[25px] px-10 text-left flex flex-col gap-[50px] items-center shadow-xl transition-all">
+              <Dialog.Panel className="w-full sm:w-[80%] lg:w-[60%] transform overflow-hidden rounded-[20px] bg-white py-4 md:py-[25px] px-4 md:px-10 text-left flex flex-col gap-[50px] items-center shadow-xl transition-all">
                 <div className="flex justify-between w-full relative">
                   <div
                     className={`rounded-[13px] mx-auto border-[2px] ${
