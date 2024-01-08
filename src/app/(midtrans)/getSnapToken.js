@@ -20,7 +20,7 @@ const getSnapToken = async (order) => {
   const { serverKey, } = serviceMidtrans
 
   const snap = new midtransClient.Snap({
-    isProduction: false,
+    isProduction: true,
     serverKey: serverKey
   });
 
