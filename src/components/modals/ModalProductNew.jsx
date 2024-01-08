@@ -175,7 +175,7 @@ export default function ModalProductNew({
                       <div className="w-full h-[50vh] lg:h-full overflow-auto flex flex-col lg:flex-row gap-4 lg:gap-0 items-center lg:items-start justify-start lg:justify-around text-footer_fontClr">
                         <div className="min-h-[50vh] lg:min-h-full gap-5 flex items-start basis-[50%] text-base md:text-lg font-normal flex-col">
                           <h2
-                            className={`${(currentRole = "Konsumer" ? "border-grn-500" : "border-ble-500")} w-fit hidden lg:block font-bold text-base md:text-xl p-3 border-l-2 border-b-2 rounded-tl-none rounded-br-none rounded-xl`}
+                            className={`${currentRole = "Konsumer" ? "border-grn-500" : "border-ble-500"} w-fit hidden lg:block font-bold text-base md:text-xl p-3 border-l-2 border-b-2 rounded-tl-none rounded-br-none rounded-xl`}
                           >
                             Rp.{" "}
                             {currentRole === "Konsumer"
