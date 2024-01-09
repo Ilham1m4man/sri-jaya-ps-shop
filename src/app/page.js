@@ -179,6 +179,11 @@ export default function Home() {
   }
 
   const tambahKeranjangHandler = async (idProduct, counter) => {
+    const namaProd = dataProduct && dataProduct.filter((item) => {
+      if (item.idProduct === idProduct) {
+        return item.name
+      }
+    })
     if (loggedIn && userRole !== "Admin") {
       setIsUploading(true)
       await setDoc(doc(firestore, "carts", userProfile.uid, "products", idProduct), {
@@ -187,7 +192,7 @@ export default function Home() {
     } else {
       window.alert("Anda belum login, silahkan login terlebih dahulu")
     }
-    window.alert(`${counter ? counter : 1} ${idProduct} telah ditambahkan `)
+    window.alert(`${counter ? counter : 1} ${namaProd[0].name} telah ditambahkan `)
     setIsUploading(false)
     return console.log(`${idProduct} ditambahkan sebanyak ${counter ? counter : 1}`)
   }

@@ -9,14 +9,14 @@ const editProfile = async (state) => {
     if (photo) {
       return {
         email: email,
-        phoneNumber: phone,
+        phoneNumber: phone ? phone : +62,
         displayName: name,
         photoURL: photo,
       }
     }
     return {
       email: email,
-      phoneNumber: phone,
+      phoneNumber: phone ? phone : +62,
       displayName: name,
     }
   }
@@ -38,7 +38,7 @@ const editProfile = async (state) => {
 
       return updatedUser.toJSON()
   } catch (err) {
-    return err;
+    return err.toJSON();
   }
 };
 

@@ -187,21 +187,23 @@ export default function ModalProfile({
           getDownloadURL(imgRef)
             .then((url) => {
               setPreviewsFromServer(url);
-              editProfile({
-                ...state,
-                photo: url,
-                businessName: state.businessName,
-                role: state.role,
-              })
-                .then((response) => {
-                  console.log(response);
-                  window.alert("Edit profil berhasil");
-                  window.location.reload();
+              if (name || email) {
+                editProfile({
+                  ...state,
+                  photo: url,
+                  businessName: state.businessName,
+                  role: state.role,
                 })
-                .catch((err) => {
-                  window.alert("Edit profil gagal");
-                  console.log(err);
-                });
+                  .then((response) => {
+                    if (response?.code) {
+                      window.alert(`${response?.code} \n \n ${response?.message}`);
+                    } else {
+                      window.alert("Edit profil berhasil");
+                    }
+                  })
+              } else {
+                window.alert("Nama atau email tidak boleh kosong!");
+              }
             })
             .catch((err) => {
               window.alert(err.message);
@@ -211,20 +213,23 @@ export default function ModalProfile({
           window.alert(err.message);
         });
     } else {
-      editProfile({
-        ...state,
-        businessName: state.businessName,
-        role: state.role,
-      })
-        .then((response) => {
-          console.log(response);
-          window.alert("Edit profil berhasil");
-          window.location.reload();
+      if (name || email) {
+        editProfile({
+          ...state,
+          businessName: state.businessName,
+          role: state.role,
         })
-        .catch((err) => {
-          window.alert("Edit profil gagal");
-          console.log(err);
-        });
+          .then((response) => {
+            if (response?.code) {
+              window.alert(`${response?.code} \n \n ${response?.message}`);
+            } else {
+              window.alert("Edit profil berhasil");
+            }
+            window.location.reload();
+          })
+      } else {
+        window.alert("Nama atau email tidak boleh kosong!");
+      }
     }
 
     setIsLoading(false);
@@ -266,7 +271,7 @@ export default function ModalProfile({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full sm:w-[80%] lg:w-[60%] transform overflow-hidden rounded-[20px] bg-white py-4 md:py-[25px] px-4 md:px-10 text-left flex flex-col gap-[50px] items-center shadow-xl transition-all">
+              <Dialog.Panel className="w-full sm:w-[80%] md:w-[90%] lg:w-[60%] transform overflow-hidden rounded-[20px] bg-white py-4 md:py-[25px] px-4 md:px-10 text-left flex flex-col gap-[50px] items-center shadow-xl transition-all">
                 <div className="flex justify-between w-full relative">
                   <div
                     className={`rounded-[13px] mx-auto border-[2px] ${
