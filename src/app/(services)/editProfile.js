@@ -9,14 +9,14 @@ const editProfile = async (state) => {
     if (photo) {
       return {
         email: email,
-        phoneNumber: phone ? phone : +62,
+        phoneNumber: phone,
         displayName: name,
         photoURL: photo,
       }
     }
     return {
       email: email,
-      phoneNumber: phone ? phone : +62,
+      phoneNumber: phone,
       displayName: name,
     }
   }

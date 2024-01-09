@@ -187,7 +187,7 @@ export default function ModalProfile({
           getDownloadURL(imgRef)
             .then((url) => {
               setPreviewsFromServer(url);
-              if (name || email) {
+              if (name && email && phone) {
                 editProfile({
                   ...state,
                   photo: url,
@@ -213,7 +213,7 @@ export default function ModalProfile({
           window.alert(err.message);
         });
     } else {
-      if (name || email) {
+      if (name && email && phone) {
         editProfile({
           ...state,
           businessName: state.businessName,
@@ -228,7 +228,7 @@ export default function ModalProfile({
             window.location.reload();
           })
       } else {
-        window.alert("Nama atau email tidak boleh kosong!");
+        window.alert("Nama, email, dan no. telepon tidak boleh kosong!");
       }
     }
 
