@@ -130,8 +130,7 @@ export default function RegistPeretail({
         </h5>
         <ul className="text-ble-950 text-xs font-normal list-disc list-inside flex flex-col gap-[15px]">
           <li>
-            Untuk wilayah Purbalingga, minimal pembelian 10 pcs atau 10kg per
-            produk
+            Untuk wilayah Purbalingga, minimal pembelian senilai Rp.100.000
           </li>
           <li>
             Untuk luar Purbalingga, minimal pembelian senilai Rp.20.000.000

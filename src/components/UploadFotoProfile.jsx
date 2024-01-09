@@ -30,7 +30,7 @@ export default function UploadFotoProfile({
     <div
       className={`dropzone flex flex-col ${
         imagePreviews || previewsFromServer ? "opacity-0" : "opacity-100"
-      } group justify-center cursor-pointer items-center border-ble-300 border-[3px] border-dashed rounded-full ${
+      } group justify-center cursor-pointer items-center rounded-full ${
         customClass && customClass
       }`}
     >

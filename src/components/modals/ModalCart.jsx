@@ -206,6 +206,12 @@ export default function ModalCart({
     } else {
       setTotal(appFee + shippingFee + subtotal);
     }
+
+    if (subtotal < 100000) {
+      setIsChekoutDisabled(true)
+    } else {
+      setIsChekoutDisabled(false)
+    }
   }, [subtotal, appFee, shippingFee]);
 
   function numberWithCommas(x) {
@@ -234,10 +240,12 @@ export default function ModalCart({
             deleteDoc(firestoreRef)
               .then((res) => {
                 window.alert("berhasil dihapus");
+                window.location.reload()
                 return res;
               })
               .catch((err) => {
                 window.alert("Terjadi kesalahan, mohon coba lagi \n \n" + err);
+                window.location.reload()
                 return err;
               });
           }
@@ -437,7 +445,7 @@ export default function ModalCart({
                   <div className="p-2 sm:p-6 row-start-2 lg:row-start-1 col-span-full lg:col-span-4 flex flex-col gap-4 h-fit rounded-xl sm:rounded-3xl border-2 border-footer_fontClr">
                     <div className="border-b-2 grid gap-4 pb-4 border-footer_fontClr">
                       <div className="flex justify-between">
-                        <p>Subtotal</p>
+                        <p>Subtotal{currentRole === "Peretail" && "*"}</p>
                         <p>Rp. {numberWithCommas(subtotal)}</p>
                       </div>
                       <div className="flex justify-between">
@@ -455,8 +463,8 @@ export default function ModalCart({
                     </div>
                     <button
                       onClick={onCheckoutHandler}
-                      disabled={isCheckoutDisabled}
-                      className="rounded-[8px] bg-footer_fontClr text-white font-normal text-base md:text-lg px-[10px] md:px-[20px] py-2 hover:scale-[1.02] active:scale-100 disabled:hover:scale-100 disabled:active:scale-100 disabled:opacity-80 disabled:cursor-not-allowed transition-all whitespace-nowrap"
+                      disabled={dataProduct ? isCheckoutDisabled : true}
+                      className="rounded-[8px] f bg-footer_fontClr text-white font-normal text-base md:text-lg px-[10px] md:px-[20px] py-2 hover:scale-[1.02] active:scale-100 disabled:hover:scale-100 disabled:active:scale-100 disabled:opacity-80 disabled:cursor-not-allowed transition-all whitespace-nowrap"
                     >
                       {isLoading ? (
                         <Spinner customClass={customClass} />
@@ -464,6 +472,12 @@ export default function ModalCart({
                         "Beli Sekarang"
                       )}
                     </button>
+                    {currentRole === "Peretail" && (
+                    <div className="text-sm">
+                      <p>*Minimal pembelian untuk wilayah Purbalingga adalah Rp.100.000</p>
+                      <p>*Minimal pembelian diluar wilayah Purbalingga adalah Rp.20.00.000</p>
+                    </div>
+                    )}
                   </div>
                 </div>
               </Dialog.Panel>
