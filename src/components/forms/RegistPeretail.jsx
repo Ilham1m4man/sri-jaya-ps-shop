@@ -22,7 +22,7 @@ export default function RegistPeretail({
       onSubmit={inputHandler}
       className={`${
         isLoading && "opacity-60 text-opacity-60"
-      } grid grid-cols-2 grid-rows-6 gap-x-[30px] gap-y-[15px] w-full`}
+      } flex flex-col xs:grid xs:grid-cols-2 xs:grid-rows-6 gap-x-[30px] gap-y-[15px] w-full`}
     >
       <div className="grid">
         <label

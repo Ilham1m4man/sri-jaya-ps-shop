@@ -85,6 +85,10 @@ footer {
   background: radial-gradient(214.88% 273.9% at -33.84% -41.25%, rgba(38, 166, 119, 0.90) 27.41%, rgba(3, 99, 201, 0.55) 100%);
 }
 
+.PhoneInput .PhoneInputInput {
+  width: 10px !important;
+}
+
 .PhoneInputInput {
   outline: none;
 }
