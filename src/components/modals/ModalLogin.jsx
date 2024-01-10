@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { auth } from "@/app/(firebase)/firebase.config";
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import BackBtn from "../buttons/BackBtn";
 import LoginForm from "../forms/LoginForm";
 
@@ -40,6 +40,24 @@ export default function ModalLogin({
       });
 
     setIsloading(false);
+  };
+
+  const resetPWHandler = () => {
+    if (email) {
+      sendPasswordResetEmail(auth, email)
+        .then(() => {
+          window.alert(
+            "Email reset password telah terkirim, mohon periksa email dan folder spam anda"
+          );
+          signOut(auth);
+          window.location.reload();
+        })
+        .catch((err) => {
+          window.alert(err);
+        });
+    } else {
+      window.alert("Mohon isi email terlebih dahulu!");
+    }
   };
 
   return (
@@ -86,6 +104,7 @@ export default function ModalLogin({
                     <BackBtn isLoading={isLoading} backFrom={modal_login} />
                   </div>
                   <LoginForm
+                    resetPWHandler={resetPWHandler}
                     isLoading={isLoading}
                     inputHandler={loginHandler}
                     setEmail={setEmail}

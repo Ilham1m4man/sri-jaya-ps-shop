@@ -4,6 +4,7 @@ import PeekBtn from "../buttons/PeekBtn";
 import Spinner from "../loaders/Spinner";
 
 export default function LoginForm({
+  resetPWHandler,
   isLoading,
   inputHandler,
   setEmail,
@@ -55,12 +56,13 @@ export default function LoginForm({
             className="w-full text-grn-950 font-normal text-base md:text-xl border-b-2 border-grn-950 p-[5px] md:p-[10px] outline-none"
           />
         </div>
-        <Link
-          href={`/`}
+        <button
+          onClick={resetPWHandler}
+          type="button"
           className="text-sm font-normal text-footer_fontClr place-self-end mt-[30px]"
         >
           Lupa Password
-        </Link>
+        </button>
       </div>
       <button
         disabled={isLoading ? true : false}
