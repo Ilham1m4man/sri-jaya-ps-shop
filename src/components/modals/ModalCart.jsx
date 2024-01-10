@@ -207,10 +207,12 @@ export default function ModalCart({
       setTotal(appFee + shippingFee + subtotal);
     }
 
-    if (subtotal < 100000) {
-      setIsChekoutDisabled(true)
-    } else {
-      setIsChekoutDisabled(false)
+    if (currentRole === "Peretail") {
+      if (subtotal < 100000) {
+        setIsChekoutDisabled(true);
+      } else {
+        setIsChekoutDisabled(false);
+      }
     }
   }, [subtotal, appFee, shippingFee]);
 
@@ -240,12 +242,12 @@ export default function ModalCart({
             deleteDoc(firestoreRef)
               .then((res) => {
                 window.alert("berhasil dihapus");
-                window.location.reload()
+                window.location.reload();
                 return res;
               })
               .catch((err) => {
                 window.alert("Terjadi kesalahan, mohon coba lagi \n \n" + err);
-                window.location.reload()
+                window.location.reload();
                 return err;
               });
           }
@@ -473,10 +475,16 @@ export default function ModalCart({
                       )}
                     </button>
                     {currentRole === "Peretail" && (
-                    <div className="text-sm">
-                      <p>*Minimal pembelian untuk wilayah Purbalingga adalah Rp.100.000</p>
-                      <p>*Minimal pembelian diluar wilayah Purbalingga adalah Rp.20.00.000</p>
-                    </div>
+                      <div className="text-sm">
+                        <p>
+                          *Minimal pembelian untuk wilayah Purbalingga adalah
+                          Rp.100.000
+                        </p>
+                        <p>
+                          *Minimal pembelian diluar wilayah Purbalingga adalah
+                          Rp.20.00.000
+                        </p>
+                      </div>
                     )}
                   </div>
                 </div>
