@@ -189,10 +189,11 @@ export default function Home() {
       await setDoc(doc(firestore, "carts", userProfile.uid, "products", idProduct), {
         amount: counter ? counter : 1,
       });
+      window.alert(`${counter ? counter : 1} ${namaProd[0].name} telah ditambahkan `)
     } else {
       window.alert("Anda belum login, silahkan login terlebih dahulu")
     }
-    window.alert(`${counter ? counter : 1} ${namaProd[0].name} telah ditambahkan `)
+
     setIsUploading(false)
     return console.log(`${idProduct} ditambahkan sebanyak ${counter ? counter : 1}`)
   }
