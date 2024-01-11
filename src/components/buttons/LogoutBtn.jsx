@@ -40,7 +40,7 @@ export default function LogoutBtn({ onLogOut }) {
           </clipPath>
         </defs>
       </svg>
-      Keluar
+      Logout
     </button>
   );
 }
