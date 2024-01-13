@@ -1,19 +1,20 @@
 import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 export default function ProfileForm({
+  currentRole,
   editProfileHandler,
   userProfile,
   cekNoTelepon,
   onChange,
   state,
 }) {
-  const isKonsumer = userProfile?.customClaims?.role.includes("Konsumer");
 
   return (
     <form
       action={editProfileHandler}
       className={`flex flex-col w-full md:w-[60%] gap-5 border-2 ${
-        isKonsumer ? "border-grn-950" : "border-ble-950"
+        currentRole === "Konsumer" ? "border-grn-950" : "border-ble-950"
       } rounded-xl p-2 md:p-5`}
     >
       <div className="grid">
@@ -30,7 +31,7 @@ export default function ProfileForm({
           onChange={onChange}
           defaultValue={userProfile && userProfile.displayName}
           className={`w-full font-normal text-base border-b-2 ${
-            isKonsumer
+            currentRole === "Konsumer"
               ? "border-grn-950 text-grn-950"
               : "border-ble-950 text-ble-950"
           } px-2 outline-none`}
@@ -50,7 +51,7 @@ export default function ProfileForm({
           onChange={onChange}
           defaultValue={userProfile && userProfile.email}
           className={`w-full font-normal text-base border-b-2 ${
-            isKonsumer
+            currentRole === "Konsumer"
               ? "border-grn-950 text-grn-950"
               : "border-ble-950 text-ble-950"
           } px-2 outline-none`}
@@ -70,7 +71,7 @@ export default function ProfileForm({
         <PhoneInput
           name="phone"
           className={`font-normal text-sm md:text-lg border-b-2 ${
-            isKonsumer
+            currentRole === "Konsumer"
               ? "border-grn-950 text-grn-950"
               : "border-ble-950 text-ble-950"
           } p-[5px] md:p-[10px] outline-none`}

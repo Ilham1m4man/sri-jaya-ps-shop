@@ -119,14 +119,14 @@ export default function Home() {
             return { idProduct: item.id, amount }
           }))
         });
+        return setModalCartOpen(!modalCartOpen)
       } else {
         window.alert("Anda harus login terlebih dahulu untuk mulai berbelanja!")
-        window.location.reload()
       }
     } else {
       console.log("modalCart closed")
+      return setModalCartOpen(!modalCartOpen)
     }
-    return setModalCartOpen(!modalCartOpen)
   }
 
   const onLogOutHandler = () => {
@@ -134,6 +134,7 @@ export default function Home() {
       setLoggedIn(false)
       window.alert("Berhasil logout");
       setUserRole("Konsumer")
+      window.location.reload()
     })
       .catch((err) => {
         window.alert(err);
@@ -222,7 +223,7 @@ export default function Home() {
           <ModalProfile userProfile={userProfile} modal_profile={onProfileOpen} onLogOut={onLogOutHandler} currentRole={userRole} isModalProfileOpen={modalProfileOpen} />
           <ModalLogin modal_login={onLoginOpen} onRegister={onRegisterHandler} isModalLoginOpen={modalLoginOpen} />
           <ModalRegister modal_register={onRegisterOpen} onLogin={onLoginHandler} isModalRegisterOpen={modalRegisterOpen} />
-          {clickedProduct && <ModalProductNew clickedProduct={clickedProduct} modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} tambahKeranjangHandler={tambahKeranjangHandler} />}
+          {clickedProduct && <ModalProductNew isUploading={isUploading} clickedProduct={clickedProduct} modal_product={onProductCardHandler} currentRole={userRole} isModalProductOpen={modalProductOpen} tambahKeranjangHandler={tambahKeranjangHandler} />}
 
           <header className="z-10 sticky top-0">
             <Navbar userProfile={userProfile} currentRole={userRole} modal_cart={onCartOpen} statusCart={modalCartOpen} modal_profile={onProfileOpen} modal_login={onLoginOpen} modal_register={onRegisterOpen} statusProfile={modalProfileOpen} statusLoggedIn={loggedIn} />
@@ -237,7 +238,7 @@ export default function Home() {
               {/* MAIN CONTENT */}
               {/* PRODUCT CATALOGUE */}
 
-              <ProductCatalogue catProd={catProd} checkedItems={checkedItems} searchKeyword={keyword} currentRole={userRole} dataProduct={dataProduct} onProductCardHandler={onProductCardHandler} tambahKeranjangHandler={tambahKeranjangHandler} filterStat={filter} />
+              <ProductCatalogue isUploading={isUploading} catProd={catProd} checkedItems={checkedItems} searchKeyword={keyword} currentRole={userRole} dataProduct={dataProduct} onProductCardHandler={onProductCardHandler} tambahKeranjangHandler={tambahKeranjangHandler} filterStat={filter} />
             </div>
           </main>
           <Footer />

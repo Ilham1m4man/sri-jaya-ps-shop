@@ -2,6 +2,7 @@ import AddProductCard from "@/app/bRs6mnRKvcRRXXAy886kIm1yXUxyBkK3/admin/(compon
 import CardProduct from "./CardProduct";
 
 export default function ProductCatalogue({
+  isUploading,
   searchKeyword,
   checkedItems,
   catProd,
@@ -66,6 +67,7 @@ export default function ProductCatalogue({
             return (
               <CardProduct
                 key={index}
+                isUploading={isUploading}
                 hapusHandler={hapusHandler}
                 dataProduct={item}
                 role={role}

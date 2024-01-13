@@ -4,8 +4,10 @@ import Link from "next/link";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import BackBtn from "../buttons/BackBtn";
+import Spinner from "../loaders/Spinner";
 
 export default function ModalProductNew({
+  isUploading,
   clickedProduct,
   modal_product,
   currentRole,
@@ -31,6 +33,8 @@ export default function ModalProductNew({
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     return parts.join(",");
   }
+
+  const customClass = `${currentRole === "Konsumer" ? "fill-grn-400" : "fill-ble-400"} w-24 h-6`;
 
   return (
     <>
@@ -275,12 +279,13 @@ export default function ModalProductNew({
                       </h3>
                     </div>
                     <button
+                    disabled={isUploading ? true : false}
                       onClick={() => {
                         tambahKeranjangHandler(idProduct, counter);
                       }}
                       className="rounded-[8px] bg-footer_fontClr text-white font-normal text-base md:text-lg px-[10px] md:px-[20px] py-2 hover:opacity-80 active:scale-95 transition-all whitespace-nowrap"
                     >
-                      + Keranjang
+                      {isUploading ? <Spinner customClass={customClass} /> : "+ Keranjang"}
                     </button>
                   </div>
                 </Dialog.Panel>

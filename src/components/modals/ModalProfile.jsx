@@ -193,14 +193,15 @@ export default function ModalProfile({
                   photo: url,
                   businessName: state.businessName,
                   role: state.role,
-                })
-                  .then((response) => {
-                    if (response?.code) {
-                      window.alert(`${response?.code} \n \n ${response?.message}`);
-                    } else {
-                      window.alert("Edit profil berhasil");
-                    }
-                  })
+                }).then((response) => {
+                  if (response?.code) {
+                    window.alert(
+                      `${response?.code} \n \n ${response?.message}`
+                    );
+                  } else {
+                    window.alert("Edit profil berhasil");
+                  }
+                });
               } else {
                 window.alert("Nama atau email tidak boleh kosong!");
               }
@@ -218,15 +219,14 @@ export default function ModalProfile({
           ...state,
           businessName: state.businessName,
           role: state.role,
-        })
-          .then((response) => {
-            if (response?.code) {
-              window.alert(`${response?.code} \n \n ${response?.message}`);
-            } else {
-              window.alert("Edit profil berhasil");
-            }
-            window.location.reload();
-          })
+        }).then((response) => {
+          if (response?.code) {
+            window.alert(`${response?.code} \n \n ${response?.message}`);
+          } else {
+            window.alert("Edit profil berhasil");
+          }
+          window.location.reload();
+        });
       } else {
         window.alert("Nama, email, dan no. telepon tidak boleh kosong!");
       }
@@ -340,13 +340,13 @@ export default function ModalProfile({
                     />
                   </div>
                   <ProfileForm
+                    currentRole={currentRole}
                     editProfileHandler={editProfileHandler}
                     userProfile={userProfile}
                     cekNoTelepon={cekNoTelepon}
                     onChange={onChange}
                     state={state}
                     dispatchState={dispatchState}
-                    phoneValue={phone}
                   />
                 </div>
 

@@ -193,7 +193,7 @@ export default function Navbar({
                 }`}
               >
                 <ul className="items-center justify-center space-y-[24px] flex flex-col md:flex-row md:space-x-[40px] md:space-y-0">
-                  <li className="text-white">
+                  <li className={`${role === "Admin" ? "hidden" : "block"} text-white`}>
                     {/* CART BUTTON */}
                     <button
                       className="flex justify-center align-middle"
