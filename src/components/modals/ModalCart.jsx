@@ -256,6 +256,9 @@ export default function ModalCart({
     console.log("Hapus handler cart");
   };
 
+  /* "clientKey": "SB-Mid-client-yHEvJy0kOinSsU_K",
+  "serverKey": "SB-Mid-server-vuO6-HFb7RTBxEf1xSZquyH_" */
+
   useEffect(() => {
     setIsLoading(true);
     const ambilSnap = async () => {

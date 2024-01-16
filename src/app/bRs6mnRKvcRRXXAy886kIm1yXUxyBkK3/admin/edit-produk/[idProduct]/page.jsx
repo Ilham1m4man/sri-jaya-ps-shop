@@ -382,6 +382,9 @@ export default function EditProduk({ params }) {
           },
         },
       });
+    } else {
+      console.log("ini 11");
+      await updateProduk(product)
     }
 
     window.alert(`Data produk ${product.name} berhasil diupdate`);
