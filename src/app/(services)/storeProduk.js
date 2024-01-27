@@ -4,7 +4,7 @@ import { firestore, storage } from "../(firebase)/firebase.config";
 import updateProduk from "./updateProduk";
 
 const storeProduk = async (product) => {
-  const { name, priceEcer, priceBakul, category, desc, userGuide, productImg, imgFile } = product
+  const { name, priceEcer, priceBakul, category, weight, desc, userGuide, productImg, imgFile } = product
   const price = { priceEcer, priceBakul }
   const { mainImage, optImage1, optImage2 } = imgFile
 
@@ -13,6 +13,7 @@ const storeProduk = async (product) => {
     name,
     price,
     category,
+    weight,
     desc,
     userGuide,
     productImg,

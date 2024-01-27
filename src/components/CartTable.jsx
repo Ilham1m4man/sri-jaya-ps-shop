@@ -47,7 +47,7 @@ export default function CartTable({
               <Tr>
                 <Th>
                   <Checkbox
-                    colorScheme={currentRole === "Konsuner" ? "green" : "blue"}
+                    colorScheme={currentRole === "Konsumer" ? "green" : "blue"}
                     size={"lg"}
                     className="text-gry-cart"
                     isChecked={allChecked}
@@ -80,16 +80,16 @@ export default function CartTable({
             <Tbody>
               {Object.entries(Object.entries(counter)).map((item, index) => {
                 const productInfo = objProduct[index];
-                const { name, price, productImg } =
+                const { idProduct, name, price, productImg } =
                   productInfo;
                 const { priceEcer, priceBakul } = price;
                 const { mainImg } = productImg;
                 return (
-                  <Tr key={index}>
+                  <Tr key={idProduct}>
                     <Td>
                       <Checkbox
                         colorScheme={
-                          currentRole === "Konsuner" ? "green" : "blue"
+                          currentRole === "Konsumer" ? "green" : "blue"
                         }
                         size={"lg"}
                         isChecked={checkedItems[index]}

@@ -42,6 +42,7 @@ export default function ModalCart({
   const [order, setOrder] = useState({
     paidProduct: "",
   });
+  const cityId = 375
 
   const sumValues = (obj) => Object.values(obj).reduce((a, b) => a + b, 0);
 
@@ -70,7 +71,6 @@ export default function ModalCart({
                 console.log(idProduct[index]);
                 deleteDoc(firestoreRef)
                   .then((res) => {
-                    window.alert("berhasil dihapus");
                     return res;
                   })
                   .catch((err) => {
@@ -83,14 +83,14 @@ export default function ModalCart({
             }
           });
 
-        window.alert("Status pembayara: Berhasil");
+        window.alert(`Status pembayara: Berhasil`);
         window.location.reload();
       },
       onPending: function (result) {
-        window.alert("Status pembayara: Pending");
+        window.alert(`Status pembayara: Pending \n\n ${result}`);
       },
       onError: function (result) {
-        window.alert("Status pembayara: Error");
+        window.alert(`Status pembayara: Error \n\n ${result}`);
       },
     });
   };
@@ -257,7 +257,11 @@ export default function ModalCart({
   };
 
   /* "clientKey": "SB-Mid-client-yHEvJy0kOinSsU_K",
-  "serverKey": "SB-Mid-server-vuO6-HFb7RTBxEf1xSZquyH_" */
+  "serverKey": "SB-Mid-server-vuO6-HFb7RTBxEf1xSZquyH_" 
+
+  "clientKey": "Mid-client-8AjhRj-9pGbg6zhv",
+  "serverKey": "Mid-server-bVxH6Vxc8o5fb_771nGRtvne"
+  */
 
   useEffect(() => {
     setIsLoading(true);
@@ -350,13 +354,14 @@ export default function ModalCart({
   };
 
   useEffect(() => {
-    const midtransScriptUrl = "https://app.midtrans.com/snap/snap.js";
+    const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
 
     let scriptTag = document.createElement("script");
     scriptTag.src = midtransScriptUrl;
 
     scriptTag.setAttribute("data-client-key", serviceMidtrans.clientKey);
 
+    /* hitungOngkir().then((res) => console.log(res.rajaongkir.results)) */
     document.body.appendChild(scriptTag);
     return () => {
       document.body.removeChild(scriptTag);
@@ -485,7 +490,7 @@ export default function ModalCart({
                         </p>
                         <p>
                           *Minimal pembelian diluar wilayah Purbalingga adalah
-                          Rp.20.00.000
+                          Rp.20.000.000
                         </p>
                       </div>
                     )}

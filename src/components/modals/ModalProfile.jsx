@@ -5,11 +5,13 @@ import { Fragment } from "react";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendPasswordResetEmail, signOut } from "firebase/auth";
 import { auth, storage } from "@/app/(firebase)/firebase.config";
+import Select from "react-select";
 import BackBtn from "../buttons/BackBtn";
 import LogoutBtn from "../buttons/LogoutBtn";
 import ProfileForm from "../forms/ProfileForm";
 import UploadFotoProfile from "../UploadFotoProfile";
 import editProfile from "@/app/(services)/editProfile";
+import getKota from "@/app/(rajaOngkir)/getKota";
 
 export default function ModalProfile({
   userProfile,
@@ -23,6 +25,8 @@ export default function ModalProfile({
   const [image, setImage] = useState();
   const [imagePreviews, setImagePreviews] = useState();
   const [previewsFromServer, setPreviewsFromServer] = useState();
+  const [kota, setKota] = useState([]);
+  const [kotaTinggal, setKotaTinggal] = useState();
 
   /* ================================================= INITIALSTATE OBJECT ================================================= */
   const initialState = {
@@ -35,8 +39,13 @@ export default function ModalProfile({
     address:
       userProfile &&
       (userProfile.customClaims.address === ""
-        ? "Mohon isi alamat anda untuk tujuan pengiriman"
+        ? "Mohon isi alamat lengkap anda untuk tujuan pengiriman"
         : userProfile.customClaims.address),
+    cityAddress:
+      userProfile &&
+      (userProfile.customClaims.cityAddress === ""
+        ? "Mohon isi kota tempat anda tinggal untuk tujuan pengiriman"
+        : userProfile.customClaims.cityAddress),
     businessName: userProfile && userProfile.customClaims.businessName,
     role: userProfile && userProfile.customClaims.role,
     photo:
@@ -67,7 +76,7 @@ export default function ModalProfile({
 
   /* ================================================= REDUCER FUNC FOR STATE ================================================= */
   const reducerState = (state, action) => {
-    const { name, email, phone, address } = initialState;
+    const { name, email, phone, address, cityAddress } = initialState;
     switch (action.type) {
       case "RESET":
         return initialState;
@@ -82,6 +91,7 @@ export default function ModalProfile({
           state?.email == email &&
           state?.phone == phone &&
           state?.address == address &&
+          state?.cityAddress?.value == cityAddress?.value &&
           data.fileList.length === 0
         ) {
           setIsDisabled(true);
@@ -98,7 +108,7 @@ export default function ModalProfile({
 
   /* ================================================= REDUCER FOR STATE ================================================= */
   const [state, dispatchState] = useReducer(reducerState, {});
-  const { uid, name, email, phone, address, photo } = state;
+  const { uid, name, email, phone, address, cityAddress, photo } = state;
 
   /* ================================================= PREVIEW IMG AND SETIMAGE ================================================= */
   data.fileList.map((item) => {
@@ -166,9 +176,12 @@ export default function ModalProfile({
 
   /* ================================================= ONCHANGE HANDLER ================================================= */
   const onChange = (e) => {
-    if (typeof e == "string" || e == undefined) {
+    if (typeof e == "string" || (e == undefined && e != null)) {
       const value = e;
       dispatchState({ type: "phone", value });
+    } else if (e?.value || e == null) {
+      const value = e;
+      dispatchState({ type: "cityAddress", value });
     } else {
       const { name, value } = e.target;
       dispatchState({ type: name, value });
@@ -214,7 +227,7 @@ export default function ModalProfile({
           window.alert(err.message);
         });
     } else {
-      if (name && email && phone) {
+      if (name && email && phone && cityAddress) {
         editProfile({
           ...state,
           businessName: state.businessName,
@@ -228,7 +241,7 @@ export default function ModalProfile({
           window.location.reload();
         });
       } else {
-        window.alert("Nama, email, dan no. telepon tidak boleh kosong!");
+        window.alert("Nama, email, no. telepon, dan kota tidak boleh kosong!");
       }
     }
 
@@ -241,8 +254,19 @@ export default function ModalProfile({
   }, [userProfile]);
 
   useEffect(() => {
+    getKota().then((res) => {
+      const result = res.rajaongkir.results;
+      result.map((item) => {
+        setKota((prevState) => {
+          return [...prevState, { value: item.city_id, label: item.city_name }];
+        });
+      });
+    });
+  }, []);
+
+  useEffect(() => {
     dispatchState({ type: "CEK_EDIT" });
-  }, [name, email, phone, address, imagePreviews]);
+  }, [name, email, phone, address, cityAddress, imagePreviews]);
 
   const customClass = "";
   return (
@@ -358,13 +382,34 @@ export default function ModalProfile({
                     >
                       Alamat
                     </label>
+                    <Select
+                      theme={(theme) => ({
+                        ...theme,
+                        borderRadius: 12,
+                        colors: {
+                          ...theme.colors,
+                          primary25: `${currentRole === "Konsumer" ? "mediumspringgreen" : "skyblue"}`,
+                          primary: `${currentRole === "Konsumer" ? "green" : "blue"}`,
+                        },
+                      })}
+                      placeholder="Kota tempat tinggal"
+                      className="basic-single"
+                      classNamePrefix="select"
+                      isClearable={true}
+                      isSearchable={true}
+                      name="cityAddress"
+                      options={kota}
+                      onChange={onChange}
+                      value={cityAddress}
+                      defaultValue={initialState && initialState.cityAddress}
+                    />
                     <textarea
                       rows={3}
                       name="address"
                       value={state.address}
                       defaultValue={userProfile && cekAlamat()}
                       onChange={onChange}
-                      className="w-full resize-none rounded-xl text-grn-950 font-normal text-base border-2 border-grn-950 p-[10px] outline-none"
+                      className="w-full resize-none rounded-xl text-grn-950 font-normal text-base border-2 border-grn-950 px-[16px] py-[8px] outline-none"
                     />
                   </div>
                 </form>

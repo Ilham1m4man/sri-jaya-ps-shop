@@ -11,7 +11,7 @@ export default function MoreInfoInput({ dataFromServer, isDisabled, onChange }) 
         <textarea
           disabled={isDisabled}
           required
-          rows={10}
+          rows={14}
           name="desc"
           defaultValue={dataFromServer && dataFromServer.desc}
           onChange={onChange}
@@ -28,7 +28,7 @@ export default function MoreInfoInput({ dataFromServer, isDisabled, onChange }) 
         <textarea
           disabled={isDisabled}
           required
-          rows={10}
+          rows={14}
           name="userGuide"
           defaultValue={dataFromServer && dataFromServer.userGuide}
           onChange={onChange}

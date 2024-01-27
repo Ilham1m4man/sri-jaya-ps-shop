@@ -1,12 +1,13 @@
 import { updateDoc, doc, Timestamp } from "firebase/firestore";
 import { firestore } from "../(firebase)/firebase.config";
 
-const updateProduk = async ({ idProduct, name, price, category, desc, userGuide, productImg }) => {
+const updateProduk = async ({ idProduct, name, price, category, weight, desc, userGuide, productImg }) => {
   const ref = doc(firestore, "products", idProduct);
   updateDoc(ref, {
     name,
     price,
     category,
+    weight,
     desc,
     userGuide,
     productImg,

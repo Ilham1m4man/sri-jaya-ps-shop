@@ -10,7 +10,7 @@ const registrasi = async ({ name, businessName, phone, email, password, role }) 
 
       // Menambah data sesuai jenis akun
       const uid = user.uid
-      await auth.setCustomUserClaims(uid, { address: "", role: role });
+      await auth.setCustomUserClaims(uid, { address: "", cityAddress:"", role: role });
       const customToken = await auth.createCustomToken(uid)
       return customToken;
     } catch (error) {
@@ -23,7 +23,7 @@ const registrasi = async ({ name, businessName, phone, email, password, role }) 
 
       // Menambah data sesuai jenis akun
       const uid = user.uid
-      await auth.setCustomUserClaims(uid, { address: "", businessName: businessName, role: role });
+      await auth.setCustomUserClaims(uid, { address: "", cityAddress:"", businessName: businessName, role: role });
 
       const customToken = await auth.createCustomToken(uid)
       return customToken;

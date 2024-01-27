@@ -1,6 +1,8 @@
-export default function BasicInfoInput({ dataFromServer, isDisabled, onChange }) {
-  
-  
+export default function BasicInfoInput({
+  dataFromServer,
+  isDisabled,
+  onChange,
+}) {
   return (
     <div className="bg-white grid gap-6 rounded-3xl shadow-xl p-6 grow">
       <div className="grid">
@@ -96,6 +98,35 @@ export default function BasicInfoInput({ dataFromServer, isDisabled, onChange })
           onChange={onChange}
           className="w-full text-grn-950 font-normal text-sm md:text-base border-b-[1px] border-grn-950 p-[3px] md:p-[5px] outline-none"
         />
+      </div>
+      <div className="grid">
+        <label
+          htmlFor="weight"
+          className="text-footer_fontClr font-normal text-sm md:text-base text-opacity-80"
+        >
+          Berat Produk
+        </label>
+        <div className="flex items-center w-full">
+          <input
+            required
+            disabled={isDisabled}
+            type="number"
+            className="remove-arrow text-grn-950 resize-none w-full h-full border-b-[1px] border-grn-950 p-[3px] md:p-[5px] outline-none"
+            id="weight"
+            name="weight"
+            defaultValue={dataFromServer && dataFromServer.weight}
+            onKeyDown={(e) => {
+              if ([38, 40].indexOf(e.keyCode) > -1) {
+                e.preventDefault();
+              }
+            }}
+            onWheel={(e) => e.target.blur()}
+            onChange={onChange}
+          />
+          <h3 className="leading-3 font-bold text-sm md:text-base text-ble-950 px-2">
+            gram
+          </h3>
+        </div>
       </div>
     </div>
   );

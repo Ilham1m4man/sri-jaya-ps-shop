@@ -65,7 +65,7 @@ export default function EditProduk({ params }) {
         return action.value;
       case "CEK_EDIT":
         if (dataFromServer) {
-          const { name, price, category, desc, userGuide, productImg } =
+          const { name, price, category, weight, desc, userGuide, productImg } =
             dataFromServer;
           const { priceBakul, priceEcer } = price;
           const { mainImg, optImg1, optImg2 } = productImg;
@@ -75,6 +75,7 @@ export default function EditProduk({ params }) {
             state?.price?.priceEcer == priceEcer &&
             state?.price?.priceBakul == priceBakul &&
             state?.category == category &&
+            state?.weight == weight &&
             state?.desc == desc &&
             state?.userGuide == userGuide &&
             mainImage == mainImg.URL &&
@@ -107,7 +108,7 @@ export default function EditProduk({ params }) {
   };
 
   const [product, dispatchProduct] = useReducer(reducerProduct, {});
-  const { name, price, category, desc, userGuide } = product;
+  const { name, price, category, weight, desc, userGuide } = product;
   let priceBakul;
   let priceEcer;
   price && (priceEcer = price.priceEcer);
@@ -120,6 +121,7 @@ export default function EditProduk({ params }) {
     priceBakul,
     priceEcer,
     category,
+    weight,
     desc,
     userGuide,
     mainImage,

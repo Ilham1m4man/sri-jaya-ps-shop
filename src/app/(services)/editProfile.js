@@ -3,7 +3,7 @@
 import { auth } from "../(firebase)/firebase.admin.config";
 
 const editProfile = async (state) => {
-  const { uid, name, phone, email, address, photo, businessName, role } = state
+  const { uid, name, phone, email, address, cityAddress, photo, businessName, role } = state
 
   const dataInputProfile = () => {
     if (photo) {
@@ -24,19 +24,19 @@ const editProfile = async (state) => {
   const dataInputClaims = () => {
     if (role === "Peretail") {
       return {
-        address: address, businessName: businessName, role: role
+        address: address, cityAddress: cityAddress, businessName: businessName, role: role
       }
     }
     return {
-      address: address, role: role
+      address: address, cityAddress: cityAddress, role: role
     }
   }
 
   try {
-      const updatedUser = await auth.updateUser(uid, dataInputProfile())
-      await auth.setCustomUserClaims(uid, dataInputClaims())
+    const updatedUser = await auth.updateUser(uid, dataInputProfile())
+    await auth.setCustomUserClaims(uid, dataInputClaims())
 
-      return updatedUser.toJSON()
+    return updatedUser.toJSON()
   } catch (err) {
     return err.toJSON();
   }
