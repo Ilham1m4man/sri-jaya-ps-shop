@@ -23,9 +23,7 @@ export default function Footer() {
             </h3>
             {/* GANTI SESUAI DATABASE */}
             <p className="font-normal text-base md:text-xl text-footer_fontClr hover:text-opacity-70">
-              <Link href="mailto:srijayaps17@gmail.com">
-                srijayaps17@gmail.com
-              </Link>
+              srijayaps17@gmail.com
             </p>
           </div>
         </div>
