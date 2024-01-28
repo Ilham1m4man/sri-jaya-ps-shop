@@ -1,17 +1,20 @@
 import Image from "next/image";
 import React, { useState, useReducer, useEffect } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog, Transition, Switch } from "@headlessui/react";
 import { Fragment } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { sendPasswordResetEmail, signOut } from "firebase/auth";
-import { auth, storage } from "@/app/(firebase)/firebase.config";
+import { firestore, auth, storage } from "@/app/(firebase)/firebase.config";
 import Select from "react-select";
 import BackBtn from "../buttons/BackBtn";
 import LogoutBtn from "../buttons/LogoutBtn";
 import ProfileForm from "../forms/ProfileForm";
 import UploadFotoProfile from "../UploadFotoProfile";
+import Spinner from "../loaders/Spinner";
 import editProfile from "@/app/(services)/editProfile";
 import getKota from "@/app/(rajaOngkir)/getKota";
+import setPromo from "@/app/(services)/setPromo";
 
 export default function ModalProfile({
   userProfile,
@@ -22,11 +25,11 @@ export default function ModalProfile({
 }) {
   const [isLoading, setIsLoading] = useState();
   const [isDisabled, setIsDisabled] = useState(true);
+  const [enabled, setEnabled] = useState();
   const [image, setImage] = useState();
   const [imagePreviews, setImagePreviews] = useState();
   const [previewsFromServer, setPreviewsFromServer] = useState();
   const [kota, setKota] = useState([]);
-  const [kotaTinggal, setKotaTinggal] = useState();
 
   /* ================================================= INITIALSTATE OBJECT ================================================= */
   const initialState = {
@@ -195,7 +198,7 @@ export default function ModalProfile({
 
     const imgRef = ref(storage, `images/profile/${uid}`);
     if (image) {
-      uploadBytes(imgRef, image)
+      await uploadBytes(imgRef, image)
         .then(() => {
           getDownloadURL(imgRef)
             .then((url) => {
@@ -228,7 +231,7 @@ export default function ModalProfile({
         });
     } else {
       if (name && email && phone && cityAddress) {
-        editProfile({
+        await editProfile({
           ...state,
           businessName: state.businessName,
           role: state.role,
@@ -251,6 +254,17 @@ export default function ModalProfile({
   useEffect(() => {
     userProfile && dispatchState({ type: "SET_DATA" });
     userProfile && setPreviewsFromServer(initialState.photo);
+    const cekPromo = async () => {
+      const colRef = collection(firestore, "promos");
+
+      onSnapshot(colRef, (doc) => {
+        doc.docs.map((item) => {
+          setEnabled(item.data().freeShip);
+        });
+      });
+    };
+
+    userProfile && cekPromo()
   }, [userProfile]);
 
   useEffect(() => {
@@ -268,7 +282,13 @@ export default function ModalProfile({
     dispatchState({ type: "CEK_EDIT" });
   }, [name, email, phone, address, cityAddress, imagePreviews]);
 
+  useEffect(() => {
+    enabled && setPromo(enabled)
+  }, [enabled]);
+
   const customClass = "";
+  const customClassMiniSpinner = `${currentRole === "Konsumer" ? "fill-grn-700 w-14 h-5" : "fill-ble-700 w-14 h-5"}`;
+
   return (
     <Transition appear show={isModalProfileOpen} as={Fragment}>
       <Dialog as="div" className="relative z-20" onClose={modal_profile}>
@@ -388,8 +408,14 @@ export default function ModalProfile({
                         borderRadius: 12,
                         colors: {
                           ...theme.colors,
-                          primary25: `${currentRole === "Konsumer" ? "mediumspringgreen" : "skyblue"}`,
-                          primary: `${currentRole === "Konsumer" ? "green" : "blue"}`,
+                          primary25: `${
+                            currentRole === "Konsumer"
+                              ? "mediumspringgreen"
+                              : "skyblue"
+                          }`,
+                          primary: `${
+                            currentRole === "Konsumer" ? "green" : "blue"
+                          }`,
                         },
                       })}
                       placeholder="Kota tempat tinggal"
@@ -414,6 +440,31 @@ export default function ModalProfile({
                   </div>
                 </form>
                 <div className="flex flex-col gap-4 w-full">
+                  {currentRole === "Admin" && (
+                    <div className="flex justify-between">
+                      <h5 className="text-footer_fontClr font-normal text-sm md:text-base">
+                        Promo gratis ongkir{" "}
+                        <span className="text-xs text-opacity-20">
+                          {enabled ? "(Aktif)" : "(Nonaktif)"}
+                        </span>
+                      </h5>
+                      <Switch
+                        checked={enabled}
+                        onChange={setEnabled}
+                        className={`${enabled ? "bg-ble-400" : "bg-ble-900"}
+          relative inline-flex h-[23px] w-[50px] shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white/75`}
+                      >
+                        <span className="sr-only">Use setting</span>
+                        <span
+                          aria-hidden="true"
+                          className={`${
+                            enabled ? "translate-x-[27px]" : "translate-x-0"
+                          }
+            pointer-events-none inline-block h-[19px] w-[19px] transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out`}
+                        />
+                      </Switch>
+                    </div>
+                  )}
                   <button
                     type="button"
                     onClick={resetPWHandler}
@@ -440,7 +491,11 @@ export default function ModalProfile({
                       type="submit"
                       onClick={editProfileHandler}
                     >
-                      Simpan
+                      {isLoading ? (
+                        <Spinner customClass={customClassMiniSpinner} />
+                      ) : (
+                        "Simpan"
+                      )}
                     </button>
                   </div>
                 </div>

@@ -17,6 +17,7 @@ import CartTable from "../CartTable";
 import DeleteBtn from "../buttons/DeleteBtn";
 import getSnapToken from "@/app/(midtrans)/getSnapToken";
 import Spinner from "../loaders/Spinner";
+import getOngkir from "@/app/(rajaOngkir)/getOngkir";
 const serviceMidtrans = require("../../app/(midtrans)/service-midtrans.json");
 
 export default function ModalCart({
@@ -37,12 +38,19 @@ export default function ModalCart({
   const [singularTotal, setSingularTotal] = useState(0);
   const [total, setTotal] = useState(0);
   const [subtotal, setSubtotal] = useState(0);
-  const [appFee, setAppFee] = useState(2000);
-  const [shippingFee, setShippingFee] = useState(0);
+  const [appFee, setAppFee] = useState(500);
+  const [shippingFee, setShippingFee] = useState({ value: 0, etd: "" });
+  const [isFreeOngkir, setIsFreeOngkir] = useState();
+  const [singularWeight, setSingularWeight] = useState();
+  const [weightTotal, setWeightTotal] = useState();
   const [order, setOrder] = useState({
     paidProduct: "",
   });
-  const cityId = 375
+  const dataOngkir = {
+    origin: "375",
+    destination: userProfile && userProfile?.customClaims?.cityAddress?.value,
+    weight: 0,
+  };
 
   const sumValues = (obj) => Object.values(obj).reduce((a, b) => a + b, 0);
 
@@ -87,10 +95,12 @@ export default function ModalCart({
         window.location.reload();
       },
       onPending: function (result) {
-        window.alert(`Status pembayara: Pending \n\n ${result}`);
+        window.alert(`Status pembayara: Pending`);
+        window.location.reload();
       },
       onError: function (result) {
-        window.alert(`Status pembayara: Error \n\n ${result}`);
+        window.alert(`Status pembayara: Error`);
+        window.location.reload();
       },
     });
   };
@@ -133,7 +143,20 @@ export default function ModalCart({
       setIsLoading(false);
     };
 
+    const cekPromo = async () => {
+      setIsLoading(true);
+      const colRef = collection(firestore, "promos");
+
+      onSnapshot(colRef, (doc) => {
+        doc.docs.map((item) => {
+          setIsFreeOngkir(item.data());
+        });
+      });
+      setIsLoading(false);
+    };
+
     cekProduk();
+    cekPromo();
   }, [idProduct]);
 
   useEffect(() => {
@@ -170,9 +193,15 @@ export default function ModalCart({
         if (dataProduct) {
           const prodArray = Object.values(dataProduct);
           if (prodArray[index]) {
-            const { price } = prodArray[index];
+            const { price, weight } = prodArray[index];
             const { priceEcer, priceBakul } = price;
             if (checkedItems[index]) {
+              setSingularWeight((prevState) => {
+                return {
+                  ...prevState,
+                  [index]: parseInt(counter[index]) * weight,
+                };
+              });
               setSingularTotal((prevState) => {
                 return {
                   ...prevState,
@@ -184,6 +213,12 @@ export default function ModalCart({
                 };
               });
             } else if (!checkedItems[index]) {
+              setSingularWeight((prevState) => {
+                return {
+                  ...prevState,
+                  [index]: 0,
+                };
+              });
               setSingularTotal((prevState) => {
                 return {
                   ...prevState,
@@ -198,13 +233,56 @@ export default function ModalCart({
 
   useEffect(() => {
     singularTotal && setSubtotal(sumValues(singularTotal));
+    singularTotal && setWeightTotal(sumValues(singularWeight));
   }, [singularTotal]);
 
   useEffect(() => {
-    if (subtotal === 0) {
-      setTotal(appFee + shippingFee);
-    } else {
-      setTotal(appFee + shippingFee + subtotal);
+    checkedItems &&
+      Object.values(checkedItems).map((check, index) => {
+        if (userProfile?.customClaims?.cityAddress?.value !== "") {
+          check
+            ? getOngkir({ ...dataOngkir, weight: weightTotal }).then((item) => {
+                if (item.rajaongkir.status.code === 400) {
+                  setCheckedItems((prevState) => {
+                    return { ...prevState, [index]: false };
+                  });
+                  setShippingFee({ value: "", etd: "" });
+                  window.alert(item.rajaongkir.status.description);
+                }
+                const hasilAPI =
+                  typeof item.rajaongkir.results == "object" &&
+                  item.rajaongkir.results[0];
+                const ongkir =
+                  typeof hasilAPI == "object" && hasilAPI.costs[0].cost[0];
+                setShippingFee(ongkir);
+              })
+            : setShippingFee({ value: "", etd: "" });
+        } else {
+          window.alert("Mohon lengkapi alamat anda terlebih dahulu");
+          window.location.reload();
+        }
+      });
+  }, [weightTotal]);
+
+  useEffect(() => {
+    if (isFreeOngkir) {
+      if (subtotal === 0) {
+        console.log(shippingFee?.value)
+        isFreeOngkir.freeShip
+          ? setTotal(
+              appFee +
+                (shippingFee?.value - shippingFee?.value)
+            )
+          : setTotal(appFee + shippingFee?.value)
+      } else {
+        isFreeOngkir.freeShip
+          ? setTotal(
+              appFee +
+                (shippingFee?.value - shippingFee?.value) +
+                subtotal
+            )
+          : setTotal(appFee + shippingFee?.value + subtotal)
+      }
     }
 
     if (currentRole === "Peretail") {
@@ -214,7 +292,7 @@ export default function ModalCart({
         setIsChekoutDisabled(false);
       }
     }
-  }, [subtotal, appFee, shippingFee]);
+  }, [subtotal, appFee, shippingFee, isFreeOngkir]);
 
   function numberWithCommas(x) {
     if (x) {
@@ -322,9 +400,12 @@ export default function ModalCart({
                 userEmail: userProfile.email,
                 userPhone: userProfile.phoneNumber,
                 userAddress: userProfile.customClaims.address,
+                userCityAddress: userProfile.customClaims.cityAddress.label,
                 transactionTime: new Date(),
                 appFee: parseInt(appFee),
-                shippingFee: parseInt(shippingFee),
+                shippingFee: isFreeOngkir.freeShip
+                ? shippingFee.value - shippingFee.value
+                : shippingFee.value,
                 subtotal,
                 gross_amount: total,
               };
@@ -340,9 +421,12 @@ export default function ModalCart({
                 userEmail: userProfile.email,
                 userPhone: userProfile.phoneNumber,
                 userAddress: userProfile.customClaims.address,
+                userCityAddress: userProfile.customClaims.cityAddress.label,
                 transactionTime: new Date(),
                 appFee: parseInt(appFee),
-                shippingFee: parseInt(shippingFee),
+                shippingFee: isFreeOngkir.freeShip
+                  ? shippingFee.value - shippingFee.value
+                  : shippingFee.value,
                 subtotal,
                 gross_amount: total,
               };
@@ -354,14 +438,13 @@ export default function ModalCart({
   };
 
   useEffect(() => {
-    const midtransScriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
+    const midtransScriptUrl = "https://app.midtrans.com/snap/snap.js";
 
     let scriptTag = document.createElement("script");
     scriptTag.src = midtransScriptUrl;
 
     scriptTag.setAttribute("data-client-key", serviceMidtrans.clientKey);
 
-    /* hitungOngkir().then((res) => console.log(res.rajaongkir.results)) */
     document.body.appendChild(scriptTag);
     return () => {
       document.body.removeChild(scriptTag);
@@ -464,17 +547,34 @@ export default function ModalCart({
                       </div>
                       <div className="flex justify-between">
                         <p>Ongkir</p>
-                        <p>Rp. {numberWithCommas(shippingFee)}</p>
+                        <p>
+                          <span
+                            className={`${
+                              isFreeOngkir &&
+                              (isFreeOngkir.freeShip && shippingFee.value
+                                ? "line-through decoration-2 text-danger_clr"
+                                : "no-underline text-footer_fontClr")
+                            }`}
+                          >
+                            Rp. {numberWithCommas(shippingFee.value)}
+                          </span>
+                        </p>
                       </div>
                     </div>
                     <div className="flex justify-between">
                       <p>Total</p>
                       <p>Rp. {numberWithCommas(total)}</p>
                     </div>
+                    <div className="grid">
+                      <p>Estimasi tiba</p>
+                      <p className={`text-footer_fontClr font-bold`}>
+                        {shippingFee.value ? `${shippingFee.etd} hari` : `-`}
+                      </p>
+                    </div>
                     <button
                       onClick={onCheckoutHandler}
                       disabled={dataProduct ? isCheckoutDisabled : true}
-                      className="rounded-[8px] f bg-footer_fontClr text-white font-normal text-base md:text-lg px-[10px] md:px-[20px] py-2 hover:scale-[1.02] active:scale-100 disabled:hover:scale-100 disabled:active:scale-100 disabled:opacity-80 disabled:cursor-not-allowed transition-all whitespace-nowrap"
+                      className="rounded-[8px] bg-footer_fontClr text-white font-normal text-base md:text-lg px-[10px] md:px-[20px] py-2 hover:scale-[1.02] active:scale-100 disabled:hover:scale-100 disabled:active:scale-100 disabled:opacity-80 disabled:cursor-not-allowed transition-all whitespace-nowrap"
                     >
                       {isLoading ? (
                         <Spinner customClass={customClass} />
