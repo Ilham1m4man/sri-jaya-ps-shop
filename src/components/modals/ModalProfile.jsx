@@ -254,17 +254,6 @@ export default function ModalProfile({
   useEffect(() => {
     userProfile && dispatchState({ type: "SET_DATA" });
     userProfile && setPreviewsFromServer(initialState.photo);
-    const cekPromo = async () => {
-      const colRef = collection(firestore, "promos");
-
-      onSnapshot(colRef, (doc) => {
-        doc.docs.map((item) => {
-          setEnabled(item.data().freeShip);
-        });
-      });
-    };
-
-    userProfile && cekPromo()
   }, [userProfile]);
 
   useEffect(() => {
@@ -276,6 +265,17 @@ export default function ModalProfile({
         });
       });
     });
+    const cekPromo = async () => {
+      const colRef = collection(firestore, "promos");
+
+      onSnapshot(colRef, (doc) => {
+        doc.docs.map((item) => {
+          setEnabled(item.data().freeShip);
+        });
+      });
+    };
+
+    cekPromo()
   }, []);
 
   useEffect(() => {
@@ -283,7 +283,7 @@ export default function ModalProfile({
   }, [name, email, phone, address, cityAddress, imagePreviews]);
 
   useEffect(() => {
-    enabled && setPromo(enabled)
+    enabled !== undefined && setPromo(enabled)
   }, [enabled]);
 
   const customClass = "";
