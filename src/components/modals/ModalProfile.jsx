@@ -443,7 +443,7 @@ export default function ModalProfile({
                   {currentRole === "Admin" && (
                     <div className="flex justify-between">
                       <h5 className="text-footer_fontClr font-normal text-sm md:text-base">
-                        Promo gratis ongkir{" "}
+                        Promo ongkir{" "}
                         <span className="text-xs text-opacity-20">
                           {enabled ? "(Aktif)" : "(Nonaktif)"}
                         </span>

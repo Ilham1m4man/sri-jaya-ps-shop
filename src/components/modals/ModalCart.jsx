@@ -269,28 +269,60 @@ export default function ModalCart({
       if (subtotal === 0) {
         isFreeOngkir.freeShip
           ? setTotal(() => {
-              console.log(weightTotal);
-              if (weightTotal < 5000) {
-                return appFee + (shippingFee?.value - shippingFee?.value);
+              if (dataOngkir.destination === dataOngkir.origin) {
+                if (weightTotal < 5000) {
+                  return (
+                    appFee + (shippingFee?.value - shippingFee?.value)
+                  );
+                } else {
+                  return (
+                    appFee + (shippingFee?.value - shippingFee?.value * 0.5)
+                  );
+                }
               } else {
-                return appFee + (shippingFee?.value - shippingFee?.value * 0.5);
+                if (weightTotal < 5000) {
+                  return (
+                    appFee + (shippingFee?.value - shippingFee?.value * 0.3)
+                  );
+                } else {
+                  return (
+                    appFee + (shippingFee?.value - shippingFee?.value * 0.1)
+                  );
+                }
               }
             })
           : setTotal(appFee + shippingFee?.value);
       } else {
         isFreeOngkir.freeShip
           ? setTotal(() => {
-              console.log(weightTotal);
-              if (weightTotal < 5000) {
-                return (
-                  appFee + (shippingFee?.value - shippingFee?.value) + subtotal
-                );
+              if (dataOngkir.destination === dataOngkir.origin) {
+                if (weightTotal < 5000) {
+                  return (
+                    appFee +
+                    (shippingFee?.value - shippingFee?.value) +
+                    subtotal
+                  );
+                } else {
+                  return (
+                    appFee +
+                    (shippingFee?.value - shippingFee?.value * 0.5) +
+                    subtotal
+                  );
+                }
               } else {
-                return (
-                  appFee +
-                  (shippingFee?.value - shippingFee?.value * 0.5) +
-                  subtotal
-                );
+                if (weightTotal < 5000) {
+                  return (
+                    appFee +
+                    (shippingFee?.value - shippingFee?.value * 0.3) +
+                    subtotal
+                  );
+                } else {
+                  return (
+                    appFee +
+                    (shippingFee?.value - shippingFee?.value * 0.1) +
+                    subtotal
+                  );
+                }
               }
             })
           : setTotal(appFee + shippingFee?.value + subtotal);
@@ -352,6 +384,22 @@ export default function ModalCart({
   "clientKey": "Mid-client-8AjhRj-9pGbg6zhv",
   "serverKey": "Mid-server-bVxH6Vxc8o5fb_771nGRtvne"
   */
+
+  const displayOngkir = () => {
+    if (dataOngkir.destination === dataOngkir.origin) {
+      if (weightTotal < 5000) {
+        return shippingFee?.value - shippingFee?.value;
+      } else {
+        return shippingFee?.value - shippingFee?.value * 0.5;
+      }
+    } else {
+      if (weightTotal < 5000) {
+        return shippingFee?.value - shippingFee?.value * 0.3;
+      } else {
+        return shippingFee?.value - shippingFee?.value * 0.1;
+      }
+    }
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -416,9 +464,7 @@ export default function ModalCart({
                 transactionTime: new Date(),
                 appFee: parseInt(appFee),
                 shippingFee: isFreeOngkir.freeShip
-                  ? weightTotal < 5000
-                    ? shippingFee.value - shippingFee.value
-                    : shippingFee.value - shippingFee.value * 0.5
+                  ? displayOngkir()
                   : shippingFee.value,
                 subtotal,
                 gross_amount: total,
@@ -439,9 +485,7 @@ export default function ModalCart({
                 transactionTime: new Date(),
                 appFee: parseInt(appFee),
                 shippingFee: isFreeOngkir.freeShip
-                  ? weightTotal < 5000
-                    ? shippingFee.value - shippingFee.value
-                    : shippingFee.value - shippingFee.value * 0.5
+                  ? displayOngkir()
                   : shippingFee.value,
                 subtotal,
                 gross_amount: total,
@@ -574,7 +618,11 @@ export default function ModalCart({
                           >
                             Rp. {numberWithCommas(shippingFee.value)}
                           </span>
-                          {` Rp. ${numberWithCommas(weightTotal < 5000 ? shippingFee.value - shippingFee.value : shippingFee.value * 0.5)} `}
+                          {` Rp. ${numberWithCommas(
+                            isFreeOngkir && isFreeOngkir.freeShip
+                              ? displayOngkir()
+                              : shippingFee?.value
+                          )} `}
                         </p>
                       </div>
                     </div>

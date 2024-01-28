@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-white w-full md:max-h-[300px] flex justify-center">
+    <footer className="bg-white w-full md:max-h-[400px] flex justify-center">
       <div className="w-[90%] md:w-[80%] lg:w-[70%] flex flex-col md:flex-row justify-center md:justify-between gap-4 md:gap-0 py-[20px] md:py-[50px]">
         <div className="grid gap-4 md:gap-[52px]">
           <div className="grid gap-5">
@@ -11,19 +11,28 @@ export default function Footer() {
             </h3>
             {/* GANTI SESUAI DATABASE */}
             <p className="font-normal text-base md:text-xl text-footer_fontClr">
-              +62 815-4237-4898
+              +62 815-4237-4898 (Ibu Munasri)
+            </p>
+            <p className="font-normal text-base md:text-xl text-footer_fontClr">
+              +62 896-5809-9028 (Ilham)
             </p>
           </div>
           <div className="grid gap-5">
-            <h3 className="font-bold text-lg md:text-2xl text-footer_fontClr">Feedback</h3>
+            <h3 className="font-bold text-lg md:text-2xl text-footer_fontClr">
+              Feedback
+            </h3>
             {/* GANTI SESUAI DATABASE */}
-            <p className="font-normal text-base md:text-xl text-footer_fontClr">
-              srijayaps@gmail.com
+            <p className="font-normal text-base md:text-xl text-footer_fontClr hover:text-opacity-70">
+              <Link href="mailto:srijayaps17@gmail.com">
+                srijayaps17@gmail.com
+              </Link>
             </p>
           </div>
         </div>
         <div className="flex flex-col gap-5">
-          <h3 className="font-bold text-lg md:text-2xl text-footer_fontClr">Ikuti Kami</h3>
+          <h3 className="font-bold text-lg md:text-2xl text-footer_fontClr">
+            Ikuti Kami
+          </h3>
           {/* GANTI SESUAI DATABASE */}
           <Link
             href={`https://www.instagram.com/srijayaps/`}
