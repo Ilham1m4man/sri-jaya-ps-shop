@@ -147,14 +147,14 @@ export default function ModalProductNew({
                           alt={name}
                         />
                       </div>
-                      <div className={`${optImg1 === "" ? "block" : "hidden"} flex max-h-[300px] h-[50vh] justify-center`}>
+                      <div className={`${optImg1.URL !== "" ? "block" : "hidden"} flex max-h-[300px] h-[50vh] justify-center`}>
                         <img
                           className={`max-h-[300px] w-10/12 pr-4 object-contain object-center`}
                           src={optImg1 && optImg1.URL}
                           alt={name}
                         />
                       </div>
-                      <div className={`${optImg2 === "" ? "block" : "hidden"} flex max-h-[300px] h-[50vh] justify-center`}>
+                      <div className={`${optImg2.URL !== "" ? "block" : "hidden"} flex max-h-[300px] h-[50vh] justify-center`}>
                         <img
                           className={`max-h-[300px] w-10/12 pr-4 object-contain object-center`}
                           src={optImg2 && optImg2.URL}
