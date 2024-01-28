@@ -246,7 +246,7 @@ export default function ModalCart({
                   setCheckedItems((prevState) => {
                     return { ...prevState, [index]: false };
                   });
-                  setShippingFee({ value: "", etd: "" });
+                  setShippingFee({ value: 0, etd: "" });
                   window.alert(item.rajaongkir.status.description);
                 }
                 const hasilAPI =
@@ -256,7 +256,7 @@ export default function ModalCart({
                   typeof hasilAPI == "object" && hasilAPI.costs[0].cost[0];
                 setShippingFee(ongkir);
               })
-            : setShippingFee({ value: "", etd: "" });
+            : setShippingFee({ value: 0, etd: "" });
         } else {
           window.alert("Mohon lengkapi alamat anda terlebih dahulu");
           window.location.reload();
@@ -267,21 +267,33 @@ export default function ModalCart({
   useEffect(() => {
     if (isFreeOngkir) {
       if (subtotal === 0) {
-        console.log(shippingFee?.value)
         isFreeOngkir.freeShip
-          ? setTotal(
-              appFee +
-                (shippingFee?.value - shippingFee?.value)
-            )
-          : setTotal(appFee + shippingFee?.value)
+          ? setTotal(() => {
+              console.log(weightTotal);
+              if (weightTotal < 5000) {
+                return appFee + (shippingFee?.value - shippingFee?.value);
+              } else {
+                return appFee + (shippingFee?.value - shippingFee?.value * 0.5);
+              }
+            })
+          : setTotal(appFee + shippingFee?.value);
       } else {
         isFreeOngkir.freeShip
-          ? setTotal(
-              appFee +
-                (shippingFee?.value - shippingFee?.value) +
-                subtotal
-            )
-          : setTotal(appFee + shippingFee?.value + subtotal)
+          ? setTotal(() => {
+              console.log(weightTotal);
+              if (weightTotal < 5000) {
+                return (
+                  appFee + (shippingFee?.value - shippingFee?.value) + subtotal
+                );
+              } else {
+                return (
+                  appFee +
+                  (shippingFee?.value - shippingFee?.value * 0.5) +
+                  subtotal
+                );
+              }
+            })
+          : setTotal(appFee + shippingFee?.value + subtotal);
       }
     }
 
@@ -404,8 +416,10 @@ export default function ModalCart({
                 transactionTime: new Date(),
                 appFee: parseInt(appFee),
                 shippingFee: isFreeOngkir.freeShip
-                ? shippingFee.value - shippingFee.value
-                : shippingFee.value,
+                  ? weightTotal < 5000
+                    ? shippingFee.value - shippingFee.value
+                    : shippingFee.value - shippingFee.value * 0.5
+                  : shippingFee.value,
                 subtotal,
                 gross_amount: total,
               };
@@ -425,7 +439,9 @@ export default function ModalCart({
                 transactionTime: new Date(),
                 appFee: parseInt(appFee),
                 shippingFee: isFreeOngkir.freeShip
-                  ? shippingFee.value - shippingFee.value
+                  ? weightTotal < 5000
+                    ? shippingFee.value - shippingFee.value
+                    : shippingFee.value - shippingFee.value * 0.5
                   : shippingFee.value,
                 subtotal,
                 gross_amount: total,
@@ -553,11 +569,12 @@ export default function ModalCart({
                               isFreeOngkir &&
                               (isFreeOngkir.freeShip && shippingFee.value
                                 ? "line-through decoration-2 text-danger_clr"
-                                : "no-underline text-footer_fontClr")
+                                : "hidden")
                             }`}
                           >
                             Rp. {numberWithCommas(shippingFee.value)}
                           </span>
+                          {` Rp. ${numberWithCommas(weightTotal < 5000 ? shippingFee.value - shippingFee.value : shippingFee.value * 0.5)} `}
                         </p>
                       </div>
                     </div>
