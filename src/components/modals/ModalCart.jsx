@@ -378,11 +378,11 @@ export default function ModalCart({
     console.log("Hapus handler cart");
   };
 
-  /* "clientKey": "SB-Mid-client-yHEvJy0kOinSsU_K",
-  "serverKey": "SB-Mid-server-vuO6-HFb7RTBxEf1xSZquyH_" 
+  /* "clientKey": "SB-Mid-client-k4hv69nMZheVWDvT",
+  "serverKey": "SB-Mid-server-CIYISrVyVP95D_JVfcgrPsXf" 
 
-  "clientKey": "Mid-client-8AjhRj-9pGbg6zhv",
-  "serverKey": "Mid-server-bVxH6Vxc8o5fb_771nGRtvne"
+  "clientKey": "Mid-client-cyed1LkF_mKW6qKW",
+  "serverKey": "Mid-server-zng75xJvMiMDsuIqh8Eqxl5D"
   */
 
   const displayOngkir = () => {
